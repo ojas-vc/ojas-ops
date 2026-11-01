@@ -701,7 +701,29 @@ Rescheduling should preserve unaffected portions of an existing schedule wheneve
 - Observability.
 - Human approval workflows.
 
-## 13. Contributing
+## 13. Development, Build & Release Commands
+
+A comprehensive `Makefile` automates local development, testing, packaging, and release operations:
+
+| Command | Purpose |
+| :--- | :--- |
+| `make help` | Display available targets and documentation |
+| `make install` | Sync workspace dependencies and virtualenv with `uv` |
+| `make check` | Run format check, Ruff linter, and Mypy static type checker |
+| `make fmt` | Format codebase with Ruff |
+| `make lint-fix` | Auto-fix autofixable Ruff lint violations |
+| `make test` | Run full pytest test suite (28+ tests) |
+| `make test-fast` | Run tests in quiet, fail-fast mode |
+| `make examples` | Execute all 8 domain examples and verify end-to-end solutions |
+| `make clean` | Clean build artifacts (`dist/`, `build/`), cache directories, and `.pytest_cache` |
+| `make build` | Build source distribution (`.tar.gz`) and wheel (`.whl`) into `dist/` |
+| `make build-check` | Verify integrity and inspect contents of built distribution packages |
+| `make bump-patch` | Increment patch version (`0.1.0` -> `0.1.1`) across `pyproject.toml` files |
+| `make tag` | Create annotated git release tag `v$(VERSION)` |
+| `make publish-dry-run`| Test PyPI package publishing in dry-run mode |
+| `make release` | Complete end-to-end release pipeline (checks, tests, build, dry-run publish) |
+
+## 14. Contributing
 
 Contributions are welcome.
 
@@ -718,7 +740,7 @@ Areas of contribution include:
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
-## 14. License
+## 15. License
 
 Ojas Ops is licensed under the Apache License, Version 2.0.
 
@@ -726,7 +748,7 @@ Copyright © 2026 CHITRAM.AI PRIVATE LIMITED.
 
 See [LICENSE](LICENSE) for the complete licence text and [LICENCE.md](LICENCE.md) for licensing and intellectual property information.
 
-## 15. Maintainers & Ownership
+## 16. Maintainers & Ownership
 
 **Project:** Ojas Ops
 

@@ -6,7 +6,7 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from ojas_ops.constraints.base import Constraint, SolverContext
 from ojas_ops.validation.report import ConstraintViolation, Severity
@@ -24,7 +24,7 @@ class MaxWorkloadConstraint(Constraint):
         self.max_duration = max_duration
 
     def apply_to_solver(self, context: SolverContext) -> None:
-        duration_terms = []
+        duration_terms: list[Any] = []
         for tid, task in context.tasks.items():
             tv = context.task_vars.get(tid)
             if not tv:

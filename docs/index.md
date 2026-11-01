@@ -125,3 +125,20 @@ for task_id, task in result.tasks.items():
 validation = scheduler.validate(result)
 print(f"Validation: {'PASSED' if validation.is_valid else 'FAILED'} - {validation.summary}")
 ```
+
+---
+
+## Development & Makefile Commands
+
+The repository provides a unified `Makefile` for testing, quality checks, building, packaging, and releases:
+
+```bash
+make help          # View all available targets and descriptions
+make check         # Run Ruff formatting check, Ruff linter, and Mypy static analysis
+make test          # Run full pytest test suite
+make test-fast     # Run pytest in quiet, fail-fast mode
+make examples      # Run all 8 domain examples and verify end-to-end solutions
+make build         # Build sdist (.tar.gz) and binary wheel (.whl) into dist/
+make build-check   # Verify and inspect package archives in dist/
+make release       # Run complete release pipeline (checks, tests, build, dry-run publish)
+```
