@@ -1,0 +1,30 @@
+[project]
+name = "ojas-ops-workspace"
+version = "0.1.0"
+description = "Ojas Ops workspace — Open Operations Research & Optimization Framework"
+readme = "README.md"
+requires-python = ">=3.11, <3.15"
+dependencies = [
+    "ojas-ops",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.8.0",
+    "mypy>=1.10.0",
+]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+ojas-ops = { workspace = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4"]
+ignore = ["E501"]

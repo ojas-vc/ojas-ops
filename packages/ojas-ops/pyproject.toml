@@ -1,0 +1,21 @@
+[project]
+name = "ojas-ops"
+version = "0.1.0"
+description = "Open Operations Research & Optimization Framework"
+readme = "README.md"
+requires-python = ">=3.11, <3.15"
+dependencies = [
+    "ortools>=9.15.6755",
+    "msgspec>=0.22.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.8.0",
+    "mypy>=1.10.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
