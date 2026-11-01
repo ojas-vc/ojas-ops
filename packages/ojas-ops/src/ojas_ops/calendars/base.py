@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from abc import ABC, abstractmethod
 
 from ojas_ops.models.calendar import CalendarEvent, CalendarKind
@@ -30,4 +34,3 @@ class CalendarProvider(ABC):
             if window.hard and window.overlaps(start, end):
                 return False
         return True
-

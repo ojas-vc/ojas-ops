@@ -1,5 +1,9 @@
 """Basic environment and dependency verification tests for Ojas Ops."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 import msgspec
 import ojas_ops
 import ortools

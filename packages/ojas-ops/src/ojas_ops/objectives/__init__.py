@@ -1,5 +1,9 @@
 """Optimization objectives for Ojas Ops."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.objectives.base import Objective
 from ojas_ops.objectives.composite import WeightedCompositeObjective
 from ojas_ops.objectives.cost import MinimizeCostObjective
@@ -17,4 +21,3 @@ __all__ = [
     "ScheduleStabilityObjective",
     "WeightedCompositeObjective",
 ]
-

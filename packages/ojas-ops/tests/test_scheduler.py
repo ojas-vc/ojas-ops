@@ -1,5 +1,9 @@
 """Unit tests for the fluent Scheduler API matching README Quick Start."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops import Scheduler
 from ojas_ops.models import IntervalWindow, ScheduleStatus
 
@@ -45,4 +49,3 @@ def test_quick_start_api_flow() -> None:
     assert task_result.start >= 180
     assert task_result.end <= 300
     assert not (max(task_result.start, 90) < min(task_result.end, 150))
-

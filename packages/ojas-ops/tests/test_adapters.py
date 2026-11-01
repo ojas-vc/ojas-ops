@@ -1,5 +1,9 @@
 """Unit tests for all 6 domain adapters and industry use cases."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.adapters import (
     AcademicTimetableScheduler,
     EventRunSheetScheduler,

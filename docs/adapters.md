@@ -87,7 +87,9 @@ mfg.set_family_setup_time("cnc_mill", "aluminum", "steel", setup_minutes=30)
 # Job 1: Precision Gears
 job1 = mfg.add_job("order_gears", name="Gears Batch", due_date=240)
 mfg.add_operation("order_gears", "cut_gears", "laser_cutter", duration_minutes=40)
-mfg.add_operation("order_gears", "mill_gears", "cnc_mill", duration_minutes=60, product_family="steel")
+mfg.add_operation(
+    "order_gears", "mill_gears", "cnc_mill", duration_minutes=60, product_family="steel"
+)
 
 scheduler = mfg.build_scheduler()
 result = scheduler.solve()
@@ -214,7 +216,9 @@ mkt.add_channel("meta_video", name="Meta Video", max_concurrent_flights=1)
 mkt.add_channel("google_search", name="Google Search", max_concurrent_flights=2)
 
 mkt.add_flight("teaser", channel_id="meta_video", duration_days=5, stage="teaser")
-mkt.add_flight("blitz", channel_id="meta_video", duration_days=10, stage="launch", dependencies=["teaser"])
+mkt.add_flight(
+    "blitz", channel_id="meta_video", duration_days=10, stage="launch", dependencies=["teaser"]
+)
 
 scheduler = mkt.build_scheduler()
 result = scheduler.solve()

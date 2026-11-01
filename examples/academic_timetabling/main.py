@@ -1,5 +1,9 @@
 """Academic course and classroom timetabling example."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.adapters import AcademicTimetableScheduler
 
 
@@ -50,4 +54,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

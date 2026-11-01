@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 import msgspec
 
 
@@ -14,4 +18,3 @@ class SolverConfig(msgspec.Struct, kw_only=True):
     log_search_progress: bool = False
     relative_gap_limit: float = 0.0
     stop_after_first_solution: bool = False
-

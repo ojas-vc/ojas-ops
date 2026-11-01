@@ -4,6 +4,7 @@ The `Scheduler` class (`ojas_ops.scheduling.Scheduler`) provides the primary flu
 
 ```python
 from ojas_ops import Scheduler
+
 scheduler = Scheduler()
 ```
 

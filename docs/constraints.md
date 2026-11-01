@@ -123,8 +123,8 @@ $$s_j \ge e_i + \text{setup}(i, j)$$
 scheduler.add_transition_matrix(
     resource_id="main_auditorium",
     transition_matrix={
-        ("keynote_session", "panel_session"): 20, # 20 mins to set up panel table
-        ("panel_session", "banquet"): 45,        # 45 mins to clear hall for dining
+        ("keynote_session", "panel_session"): 20,  # 20 mins to set up panel table
+        ("panel_session", "banquet"): 45,  # 45 mins to clear hall for dining
     },
     default_buffer=15,
 )

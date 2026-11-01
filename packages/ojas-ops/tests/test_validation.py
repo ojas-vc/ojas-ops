@@ -1,5 +1,9 @@
 """Unit tests for independent deterministic schedule validation."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.models import (
     Resource,
     ResourceType,

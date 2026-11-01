@@ -1,5 +1,9 @@
 """Unit tests for Ojas Ops typed domain models."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 import msgspec
 import pytest
 from ojas_ops.models import (

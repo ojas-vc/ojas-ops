@@ -1,5 +1,9 @@
 """Constraint models and definitions for Ojas Ops."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.constraints.base import Constraint, SolverContext, TaskVars
 from ojas_ops.constraints.resource import (
     CumulativeResourceConstraint,
@@ -35,4 +39,3 @@ __all__ = [
     "TimeWindowConstraint",
     "TransitionConstraint",
 ]
-

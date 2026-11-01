@@ -99,20 +99,20 @@ class Task(msgspec.Struct, kw_only=True):
 
 ```python
 class TaskPriority(StrEnum):
-    LOW = "low"          # Weight = 1
-    NORMAL = "normal"    # Weight = 2
-    HIGH = "high"        # Weight = 5
-    CRITICAL = "critical"# Weight = 10
+    LOW = "low"  # Weight = 1
+    NORMAL = "normal"  # Weight = 2
+    HIGH = "high"  # Weight = 5
+    CRITICAL = "critical"  # Weight = 10
 ```
 
 ### `DependencyType`
 
 ```python
 class DependencyType(StrEnum):
-    FS = "finish_to_start"   # Pred ends before Succ starts
-    SS = "start_to_start"    # Pred starts before Succ starts
+    FS = "finish_to_start"  # Pred ends before Succ starts
+    SS = "start_to_start"  # Pred starts before Succ starts
     FF = "finish_to_finish"  # Pred ends before Succ ends
-    SF = "start_to_finish"   # Pred starts before Succ ends
+    SF = "start_to_finish"  # Pred starts before Succ ends
 ```
 
 ### `ResourceRequirement`

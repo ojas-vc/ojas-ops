@@ -1,5 +1,9 @@
 """Healthcare and nurse shift rostering example."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.adapters import WorkforceScheduler
 
 

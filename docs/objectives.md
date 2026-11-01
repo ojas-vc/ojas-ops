@@ -36,10 +36,12 @@ Penalizes tasks that finish beyond their operational due dates or deadlines:
 $$\min \sum_{i \in T} \max(0, e_i - \text{deadline}_i)$$
 
 ```python
-scheduler.minimize(MinimizeTardinessObjective(
-    deadlines={"job_1": 180, "job_2": 240},
-    weight=2.0,
-))
+scheduler.minimize(
+    MinimizeTardinessObjective(
+        deadlines={"job_1": 180, "job_2": 240},
+        weight=2.0,
+    )
+)
 ```
 
 ### 1.3 `MinimizeIdleTimeObjective`
@@ -48,10 +50,12 @@ Minimizes dead gap-time between tasks on high-value resources (e.g., expensive a
 $$\min \sum_{r} \left( \max_{i \in T_r}(e_i) - \min_{i \in T_r}(s_i) - \sum_{i \in T_r} d_i \right)$$
 
 ```python
-scheduler.minimize(MinimizeIdleTimeObjective(
-    resource_ids=["lead_actor", "soundstage_1"],
-    weight=0.5,
-))
+scheduler.minimize(
+    MinimizeIdleTimeObjective(
+        resource_ids=["lead_actor", "soundstage_1"],
+        weight=0.5,
+    )
+)
 ```
 
 ### 1.4 `MinimizeCostObjective`
@@ -69,10 +73,12 @@ Used during **rescheduling and disruption simulation**. Minimizes deviation from
 $$\min \sum_{i \in T} |s_i - s_i^{\text{baseline}}|$$
 
 ```python
-scheduler.minimize(ScheduleStabilityObjective(
-    baseline_starts={"scene_1": 0, "scene_2": 90, "scene_3": 210},
-    weight=1.5,
-))
+scheduler.minimize(
+    ScheduleStabilityObjective(
+        baseline_starts={"scene_1": 0, "scene_2": 90, "scene_3": 210},
+        weight=1.5,
+    )
+)
 ```
 
 ---
@@ -93,11 +99,13 @@ from ojas_ops.objectives import (
     WeightedCompositeObjective,
 )
 
-composite = WeightedCompositeObjective([
-    MinimizeMakespanObjective(weight=1.0),
-    MinimizeTardinessObjective(weight=3.0),   # 3x priority on meeting deadlines
-    MinimizeIdleTimeObjective(resource_ids=["actor_1"], weight=0.4),
-])
+composite = WeightedCompositeObjective(
+    [
+        MinimizeMakespanObjective(weight=1.0),
+        MinimizeTardinessObjective(weight=3.0),  # 3x priority on meeting deadlines
+        MinimizeIdleTimeObjective(resource_ids=["actor_1"], weight=0.4),
+    ]
+)
 
 scheduler.minimize(composite)
 ```

@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -15,4 +19,3 @@ class DomainAdapter(ABC):
     @abstractmethod
     def build_scheduler(self) -> Scheduler:
         """Construct and configure an Ojas Ops Scheduler for this domain problem."""
-

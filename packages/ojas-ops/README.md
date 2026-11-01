@@ -42,7 +42,9 @@ scheduler.add_resource("main-hall", capacity=1, resource_type=ResourceType.FACIL
 
 # 2. Add tasks
 scheduler.add_task("prep-session", duration=30, required_resources=["main-hall"])
-scheduler.add_task("keynote", duration=60, required_resources=["main-hall"], dependencies=["prep-session"])
+scheduler.add_task(
+    "keynote", duration=60, required_resources=["main-hall"], dependencies=["prep-session"]
+)
 
 # 3. Add blackout & target windows
 scheduler.add_blackout_window(

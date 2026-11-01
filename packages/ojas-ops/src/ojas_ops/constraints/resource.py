@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from typing import TYPE_CHECKING
 
 from ojas_ops.constraints.base import Constraint, SolverContext
@@ -113,4 +117,3 @@ class CumulativeResourceConstraint(Constraint):
                 break  # Record one violation per peak to keep reports concise
 
         return violations
-

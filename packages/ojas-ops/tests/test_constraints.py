@@ -1,5 +1,9 @@
 """Unit tests for constraint formulations and independent validation checks."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.constraints import (
     CumulativeResourceConstraint,
     MaxWorkloadConstraint,

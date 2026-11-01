@@ -1,5 +1,9 @@
 """Unit tests for scenario simulation, disruption handling, and schedule stability."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.models import ResourceType
 from ojas_ops.scheduling import Scheduler
 from ojas_ops.simulation import Disruption, DisruptionType, ScenarioSimulator

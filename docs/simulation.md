@@ -76,7 +76,7 @@ outcome = scheduler.reschedule(
     disruptions=[breakdown],
     current_time=100,
     freeze_completed_tasks=True,
-    stability_weight=1.5,   # High weight minimizes moving unrelated tasks
+    stability_weight=1.5,  # High weight minimizes moving unrelated tasks
     makespan_weight=0.5,
 )
 
@@ -95,12 +95,12 @@ Ojas Ops quantitatively measures the disruption caused by rescheduling:
 
 ```python
 class ScheduleStabilityMetrics(msgspec.Struct, kw_only=True):
-    tasks_moved_count: int = 0         # Number of tasks whose start time shifted
-    total_tasks_count: int = 0         # Total tasks in baseline
-    preserved_ratio: float = 1.0       # Fraction of tasks remaining at baseline time
-    total_displacement: int = 0        # Sum of absolute start deviations
-    max_displacement: int = 0          # Maximum single-task start shift
-    makespan_delta: int = 0            # Change in overall completion time
-    cost_delta: float = 0.0            # Change in financial objective
-    displaced_tasks: list[str] = []    # IDs of tasks that shifted
+    tasks_moved_count: int = 0  # Number of tasks whose start time shifted
+    total_tasks_count: int = 0  # Total tasks in baseline
+    preserved_ratio: float = 1.0  # Fraction of tasks remaining at baseline time
+    total_displacement: int = 0  # Sum of absolute start deviations
+    max_displacement: int = 0  # Maximum single-task start shift
+    makespan_delta: int = 0  # Change in overall completion time
+    cost_delta: float = 0.0  # Change in financial objective
+    displaced_tasks: list[str] = []  # IDs of tasks that shifted
 ```

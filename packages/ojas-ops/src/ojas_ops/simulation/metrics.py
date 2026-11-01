@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 import msgspec
 
 from ojas_ops.models.schedule import ScheduleResult
@@ -63,4 +67,3 @@ def calculate_stability_metrics(
         cost_delta=cost_delta,
         displaced_tasks=moved_tasks,
     )
-

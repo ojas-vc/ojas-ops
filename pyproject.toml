@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "Ojas Ops workspace — Open Operations Research & Optimization Framework"
 readme = "README.md"
 requires-python = ">=3.11, <3.15"
+authors = [
+    { name = "Balu Varanasi", email = "balu@chitram.ai" },
+]
 dependencies = [
     "ojas-ops",
 ]

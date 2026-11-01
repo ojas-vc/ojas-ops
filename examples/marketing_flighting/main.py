@@ -1,5 +1,9 @@
 """Multi-channel marketing campaign cadence and budget flighting example."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.adapters import MarketingFlightingScheduler
 
 

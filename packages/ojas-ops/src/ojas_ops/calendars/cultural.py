@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.calendars.base import CalendarProvider
 from ojas_ops.models.calendar import CalendarEvent, CalendarKind
 from ojas_ops.models.time import IntervalWindow

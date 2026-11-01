@@ -57,7 +57,9 @@ validator = scheduler.validate(result)
 if not validator.is_valid:
     print(f"Validation FAILED: {validator.error_count} errors discovered.")
     for violation in validator.violations:
-        print(f"[{violation.severity.value.upper()}] {violation.constraint_name}: {violation.message}")
+        print(
+            f"[{violation.severity.value.upper()}] {violation.constraint_name}: {violation.message}"
+        )
         if violation.task_id:
             print(f"  Affected Task: {violation.task_id}")
         if violation.resource_id:

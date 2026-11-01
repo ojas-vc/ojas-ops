@@ -3,6 +3,10 @@
 Model. Schedule. Optimize. Execute.
 """
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.adapters import (
     AcademicTimetableScheduler,
     DomainAdapter,
@@ -133,6 +137,8 @@ __all__ = [
     "ValidationReport",
     "WeightedCompositeObjective",
     "WorkforceScheduler",
+    "__author__",
+    "__email__",
     "__version__",
     "calculate_stability_metrics",
 ]

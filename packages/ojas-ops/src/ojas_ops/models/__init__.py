@@ -1,5 +1,9 @@
 """Core typed domain models for Ojas Ops."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.models.calendar import CalendarEvent, CalendarKind
 from ojas_ops.models.resource import Resource, ResourceType
 from ojas_ops.models.schedule import (

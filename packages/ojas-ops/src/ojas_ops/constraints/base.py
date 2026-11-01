@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 

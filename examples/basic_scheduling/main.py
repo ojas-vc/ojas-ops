@@ -1,5 +1,9 @@
 """Basic scheduling example demonstrating core flow: modeling, solving, and validation."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops import Scheduler
 from ojas_ops.models import IntervalWindow, ResourceType
 
@@ -58,4 +62,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

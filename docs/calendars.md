@@ -50,9 +50,9 @@ from ojas_ops.calendars import StandardCalendarProvider
 calendar = StandardCalendarProvider(
     horizon_days=14,
     day_minutes=1440,
-    work_start_minute=9 * 60,   # 09:00 (minute 540)
-    work_end_minute=17 * 60,    # 17:00 (minute 1020)
-    working_days=(0, 1, 2, 3, 4), # Monday to Friday
+    work_start_minute=9 * 60,  # 09:00 (minute 540)
+    work_end_minute=17 * 60,  # 17:00 (minute 1020)
+    working_days=(0, 1, 2, 3, 4),  # Monday to Friday
 )
 
 # Mark Day 7 as a company holiday
@@ -62,7 +62,7 @@ calendar.add_holiday(day=7, name="Quarterly Inventory Day")
 calendar.add_maintenance(
     resource_id="cnc_mill_01",
     start=2 * 1440 + 10 * 60,  # Day 2 at 10:00
-    end=2 * 1440 + 14 * 60,    # Day 2 at 14:00
+    end=2 * 1440 + 14 * 60,  # Day 2 at 14:00
     name="Spindle Calibration",
 )
 
@@ -127,7 +127,7 @@ Enforces municipal sound amplification curfew limits (e.g. 22:00 to 06:00) or st
 ```python
 cultural_cal.add_curfew_blackout(
     start_minute=22 * 60,  # 22:00
-    end_minute=24 * 60,    # 24:00
+    end_minute=24 * 60,  # 24:00
     name="Municipal Noise Ordinance",
 )
 ```

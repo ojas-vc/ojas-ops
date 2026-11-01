@@ -1,5 +1,9 @@
 """Domain adapters and industry use-case scheduling models."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.adapters.academic import AcademicTimetableScheduler
 from ojas_ops.adapters.base import DomainAdapter
 from ojas_ops.adapters.event_run_sheets import EventRunSheetScheduler
@@ -17,4 +21,3 @@ __all__ = [
     "MarketingFlightingScheduler",
     "WorkforceScheduler",
 ]
-

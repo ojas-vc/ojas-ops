@@ -1,5 +1,9 @@
 """Unit tests for standard and cultural calendar providers."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.calendars import CulturalCalendarProvider, StandardCalendarProvider
 
 

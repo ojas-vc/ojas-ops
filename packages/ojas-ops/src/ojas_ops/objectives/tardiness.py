@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from typing import TYPE_CHECKING, Any
 
 from ojas_ops.objectives.base import Objective

@@ -1,5 +1,9 @@
 """Unit tests for the Google OR-Tools CP-SAT solver compilation and execution."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.models import (
     IntervalWindow,
     Resource,

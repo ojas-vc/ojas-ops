@@ -1,5 +1,9 @@
 """Simulation, disruption management, and rescheduling engine for Ojas Ops."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops.simulation.disruption import Disruption, DisruptionType
 from ojas_ops.simulation.metrics import (
     ScheduleStabilityMetrics,
@@ -15,4 +19,3 @@ __all__ = [
     "SimulationOutcome",
     "calculate_stability_metrics",
 ]
-

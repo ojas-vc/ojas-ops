@@ -1,5 +1,9 @@
 """Cultural, Panchang, and festival calendar-aware scheduling example."""
 
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
+
+
 from ojas_ops import Scheduler
 from ojas_ops.calendars import CulturalCalendarProvider
 from ojas_ops.models import ResourceType
@@ -63,4 +67,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
