@@ -124,7 +124,12 @@ class ScheduleValidator:
                 no_overlap = NoOverlapConstraint(rid)
                 violations.extend(no_overlap.validate(schedule.tasks, schedule.resources))
             else:
-                cumul = CumulativeResourceConstraint(rid, res.capacity)
+                demands: dict[str, int] = {}
+                for t_id, task in self.tasks.items():
+                    for req in task.resource_requirements:
+                        if req.resource_id == rid or rid in req.candidate_pool:
+                            demands[t_id] = req.capacity
+                cumul = CumulativeResourceConstraint(rid, res.capacity, task_demands=demands)
                 violations.extend(cumul.validate(schedule.tasks, schedule.resources))
 
             for b_win in res.blackout_windows:

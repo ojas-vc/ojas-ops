@@ -23,8 +23,9 @@ class MinimizeTardinessObjective(Objective):
         deadlines: dict[str, int] | None = None,
         name: str = "MinimizeTardiness",
         weight: float = 1.0,
+        is_maximize: bool = False,
     ) -> None:
-        super().__init__(name=name, weight=weight)
+        super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.deadlines = deadlines or {}
 
     def build_expression(self, context: SolverContext) -> Any:

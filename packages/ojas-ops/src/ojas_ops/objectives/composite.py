@@ -23,8 +23,9 @@ class WeightedCompositeObjective(Objective):
         objectives: list[Objective],
         name: str = "CompositeObjective",
         weight: float = 1.0,
+        is_maximize: bool = False,
     ) -> None:
-        super().__init__(name=name, weight=weight)
+        super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.objectives = objectives
 
     def build_expression(self, context: SolverContext) -> Any:

@@ -17,9 +17,15 @@ if TYPE_CHECKING:
 class Objective(ABC):
     """Abstract optimization objective."""
 
-    def __init__(self, name: str = "", weight: float = 1.0) -> None:
+    def __init__(
+        self,
+        name: str = "",
+        weight: float = 1.0,
+        is_maximize: bool = False,
+    ) -> None:
         self.name = name or self.__class__.__name__
         self.weight = weight
+        self.is_maximize = is_maximize
 
     @abstractmethod
     def build_expression(self, context: SolverContext) -> Any:

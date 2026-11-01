@@ -23,8 +23,9 @@ class ScheduleStabilityObjective(Objective):
         baseline_starts: dict[str, int],
         name: str = "ScheduleStability",
         weight: float = 1.0,
+        is_maximize: bool = False,
     ) -> None:
-        super().__init__(name=name, weight=weight)
+        super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.baseline_starts = baseline_starts
 
     def build_expression(self, context: SolverContext) -> Any:

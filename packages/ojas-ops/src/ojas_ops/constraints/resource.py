@@ -63,10 +63,17 @@ class NoOverlapConstraint(Constraint):
 class CumulativeResourceConstraint(Constraint):
     """Enforces that total demand on a shared resource does not exceed its capacity at any moment."""
 
-    def __init__(self, resource_id: str, capacity: int, name: str = "") -> None:
+    def __init__(
+        self,
+        resource_id: str,
+        capacity: int,
+        task_demands: dict[str, int] | None = None,
+        name: str = "",
+    ) -> None:
         super().__init__(name=name or f"Cumulative_{resource_id}")
         self.resource_id = resource_id
         self.capacity = capacity
+        self.task_demands = task_demands or {}
 
     def apply_to_solver(self, context: SolverContext) -> None:
         demands_list = context.resource_demands.get(self.resource_id, [])
@@ -92,10 +99,11 @@ class CumulativeResourceConstraint(Constraint):
         for tid in assignment.task_ids:
             if tid in tasks:
                 t = tasks[tid]
-                events.append((t.start, 1, tid))
-                events.append((t.end, -1, tid))
+                demand = self.task_demands.get(tid, 1)
+                events.append((t.start, demand, tid))
+                events.append((t.end, -demand, tid))
 
-        # Sort events: if same time, end (-1) precedes start (+1)
+        # Sort events: if same time, end (negative delta) precedes start (positive delta)
         events.sort(key=lambda x: (x[0], x[1]))
 
         current_usage = 0

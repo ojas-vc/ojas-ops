@@ -178,7 +178,10 @@ class CpSatSolver:
         # 6. Apply objective
         active_objective = objective or MinimizeMakespanObjective()
         obj_expr = active_objective.build_expression(context)
-        model.minimize(obj_expr)
+        if getattr(active_objective, "is_maximize", False):
+            model.maximize(obj_expr)
+        else:
+            model.minimize(obj_expr)
 
         # 7. Configure and run CP-SAT solver
         solver = cp_model.CpSolver()

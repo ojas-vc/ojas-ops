@@ -49,3 +49,37 @@ def test_quick_start_api_flow() -> None:
     assert task_result.start >= 180
     assert task_result.end <= 300
     assert not (max(task_result.start, 90) < min(task_result.end, 150))
+
+
+def test_scheduler_cumulative_multi_demand() -> None:
+    scheduler = Scheduler()
+    scheduler.add_resource("technicians", capacity=5)
+
+    # Task requiring 3 technicians
+    from ojas_ops.models import ResourceRequirement
+
+    req = ResourceRequirement(resource_id="technicians", capacity=3)
+    scheduler.add_task("task_heavy", duration=60, resource_requirements=[req])
+
+    # Task requiring 3 technicians (cannot run at the same time since 3 + 3 = 6 > 5)
+    req2 = ResourceRequirement(resource_id="technicians", capacity=3)
+    scheduler.add_task("task_heavy_2", duration=60, resource_requirements=[req2])
+
+    scheduler.minimize("makespan")
+    result = scheduler.solve()
+    validation = scheduler.validate(result)
+
+    assert result.status == ScheduleStatus.OPTIMAL
+    assert validation.is_valid
+    # Since each requires 3 of 5, they cannot run simultaneously => makespan >= 120
+    assert result.makespan >= 120
+
+
+def test_scheduler_maximize() -> None:
+    scheduler = Scheduler()
+    scheduler.add_resource("worker", capacity=1)
+    scheduler.add_task("task_a", duration=30, required_resources=["worker"], cost=100.0)
+
+    scheduler.maximize("cost")
+    result = scheduler.solve()
+    assert result.is_feasible

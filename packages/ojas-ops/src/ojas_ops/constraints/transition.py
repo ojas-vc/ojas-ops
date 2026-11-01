@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-__author__ = "Balu Varanasi"
-__email__ = "balu@chitram.ai"
-
-
 from typing import TYPE_CHECKING
 
 from ojas_ops.constraints.base import Constraint, SolverContext
 from ojas_ops.validation.report import ConstraintViolation, Severity
+
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
 
 if TYPE_CHECKING:
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
@@ -34,10 +33,17 @@ class TransitionConstraint(Constraint):
         return self.transition_matrix.get((task1_id, task2_id), self.default_buffer)
 
     def apply_to_solver(self, context: SolverContext) -> None:
-        # Find all tasks that require this resource
-        relevant_task_ids = [
-            tid for tid, t in context.tasks.items() if self.resource_id in t.required_resources
-        ]
+        # Find all tasks that could run on this resource (static or optional candidate pool)
+        relevant_task_ids = []
+        for tid, t in context.tasks.items():
+            tv = context.task_vars.get(tid)
+            if not tv:
+                continue
+            if (
+                self.resource_id in tv.resource_intervals
+                or self.resource_id in t.required_resources
+            ):
+                relevant_task_ids.append(tid)
 
         if len(relevant_task_ids) < 2:
             return
@@ -47,8 +53,21 @@ class TransitionConstraint(Constraint):
 
         for i in range(len(relevant_task_ids)):
             t1_id = relevant_task_ids[i]
+            tv1 = task_vars[t1_id]
+            pres1 = (
+                tv1.resource_intervals[self.resource_id][1]
+                if self.resource_id in tv1.resource_intervals
+                else None
+            )
+
             for j in range(i + 1, len(relevant_task_ids)):
                 t2_id = relevant_task_ids[j]
+                tv2 = task_vars[t2_id]
+                pres2 = (
+                    tv2.resource_intervals[self.resource_id][1]
+                    if self.resource_id in tv2.resource_intervals
+                    else None
+                )
 
                 buf_1_to_2 = self.get_buffer(t1_id, t2_id)
                 buf_2_to_1 = self.get_buffer(t2_id, t1_id)
@@ -56,11 +75,36 @@ class TransitionConstraint(Constraint):
                 # Boolean var: True if t1 precedes t2, False if t2 precedes t1
                 b_precedes = model.new_bool_var(f"trans_{self.resource_id}_{t1_id}_{t2_id}")
 
-                tv1 = task_vars[t1_id]
-                tv2 = task_vars[t2_id]
+                if pres1 is not None and pres2 is not None:
+                    both = model.new_bool_var(f"both_trans_{self.resource_id}_{t1_id}_{t2_id}")
+                    model.add_bool_and([pres1, pres2]).only_enforce_if(both)
+                    model.add_bool_or([pres1.negated(), pres2.negated()]).only_enforce_if(
+                        both.negated()
+                    )
 
-                model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if(b_precedes)
-                model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(b_precedes.negated())
+                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if([both, b_precedes])
+                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
+                        [both, b_precedes.negated()]
+                    )
+                elif pres1 is not None:
+                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if(
+                        [pres1, b_precedes]
+                    )
+                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
+                        [pres1, b_precedes.negated()]
+                    )
+                elif pres2 is not None:
+                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if(
+                        [pres2, b_precedes]
+                    )
+                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
+                        [pres2, b_precedes.negated()]
+                    )
+                else:
+                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if(b_precedes)
+                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
+                        b_precedes.negated()
+                    )
 
     def validate(
         self,

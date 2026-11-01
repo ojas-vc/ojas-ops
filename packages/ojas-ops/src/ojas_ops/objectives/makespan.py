@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-__author__ = "Balu Varanasi"
-__email__ = "balu@chitram.ai"
-
-
 from typing import TYPE_CHECKING, Any
 
 from ojas_ops.objectives.base import Objective
+
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
 
 if TYPE_CHECKING:
     from ojas_ops.constraints.base import SolverContext
@@ -18,8 +17,13 @@ if TYPE_CHECKING:
 class MinimizeMakespanObjective(Objective):
     """Minimizes the overall schedule completion time: max(task.end)."""
 
-    def __init__(self, name: str = "MinimizeMakespan", weight: float = 1.0) -> None:
-        super().__init__(name=name, weight=weight)
+    def __init__(
+        self,
+        name: str = "MinimizeMakespan",
+        weight: float = 1.0,
+        is_maximize: bool = False,
+    ) -> None:
+        super().__init__(name=name, weight=weight, is_maximize=is_maximize)
 
     def build_expression(self, context: SolverContext) -> Any:
         if not context.task_vars:

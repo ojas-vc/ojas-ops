@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-__author__ = "Balu Varanasi"
-__email__ = "balu@chitram.ai"
-
-
 from typing import TYPE_CHECKING, Any
 
 from ojas_ops.objectives.base import Objective
+
+__author__ = "Balu Varanasi"
+__email__ = "balu@chitram.ai"
 
 if TYPE_CHECKING:
     from ojas_ops.constraints.base import SolverContext
@@ -23,8 +22,9 @@ class MinimizeIdleTimeObjective(Objective):
         resource_ids: list[str] | None = None,
         name: str = "MinimizeIdleTime",
         weight: float = 1.0,
+        is_maximize: bool = False,
     ) -> None:
-        super().__init__(name=name, weight=weight)
+        super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.resource_ids = resource_ids
 
     def build_expression(self, context: SolverContext) -> Any:

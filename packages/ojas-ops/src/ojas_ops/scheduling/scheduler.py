@@ -194,11 +194,33 @@ class Scheduler:
         self.horizon = Horizon(start=start, end=end, granularity=granularity)
 
     def minimize(self, objective_name: str | Objective, **kwargs: Any) -> None:
-        """Configure the solver optimization goal."""
+        """Configure the solver optimization goal to minimize."""
         if isinstance(objective_name, Objective):
+            objective_name.is_maximize = False
             self.objective = objective_name
             return
 
+        name_lower = str(objective_name).lower()
+        if name_lower == "makespan":
+            self.objective = MinimizeMakespanObjective(**kwargs)
+        elif name_lower == "cost":
+            self.objective = MinimizeCostObjective(**kwargs)
+        elif name_lower == "idle_time":
+            self.objective = MinimizeIdleTimeObjective(**kwargs)
+        elif name_lower == "tardiness":
+            self.objective = MinimizeTardinessObjective(**kwargs)
+        else:
+            msg = f"Unknown optimization objective: '{objective_name}'"
+            raise ValueError(msg)
+
+    def maximize(self, objective_name: str | Objective, **kwargs: Any) -> None:
+        """Configure the solver optimization goal to maximize."""
+        if isinstance(objective_name, Objective):
+            objective_name.is_maximize = True
+            self.objective = objective_name
+            return
+
+        kwargs["is_maximize"] = True
         name_lower = str(objective_name).lower()
         if name_lower == "makespan":
             self.objective = MinimizeMakespanObjective(**kwargs)
