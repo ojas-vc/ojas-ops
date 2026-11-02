@@ -7,9 +7,13 @@ __email__ = "balu@chitram.ai"
 
 import msgspec
 from ojas_ops.adapters.film_production import (
+    CalendarDay,
     DOODStatusCode,
     FilmProductionScheduler,
+    Location,
     ProductionDataset,
+    Scene,
+    Talent,
     WeatherType,
     optimize_production_schedule,
 )
@@ -237,3 +241,132 @@ def test_adapter_fluent_api_and_rescheduling() -> None:
         completed_days=[1],
     )
     assert rescheduled.is_feasible
+
+
+def test_sag_aftra_drop_and_pickup_10_day_rule() -> None:
+    """Test SAG-AFTRA 10-day hiatus drop-and-pickup logic and DOOD notation."""
+    scheduler = FilmProductionScheduler(
+        project_title="Epic 14-Day Production",
+        shoot_day_hours=10,
+        max_shooting_days=14,
+    )
+    scheduler.add_cast_member(1, name="Movie Star", daily_rate=10000.0)
+    scheduler.add_location(1, name="Studio Main", permitted_days=list(range(1, 15)))
+
+    for d in range(1, 15):
+        scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
+
+    # Scene 1 locked to Day 1, Scene 2 locked to Day 14
+    scheduler.add_scene(
+        id=1,
+        scene_number="1",
+        duration_hours=4.0,
+        required_cast=[1],
+        location_id=1,
+    )
+    scheduler.add_scene(
+        id=2,
+        scene_number="2",
+        duration_hours=4.0,
+        required_cast=[1],
+        location_id=1,
+    )
+
+    # 1. With enable_drop_pickup=False (standard continuous hold span)
+    res_no_drop = scheduler.optimize(
+        fixed_assignments={1: 1, 2: 14},
+        enable_drop_pickup=False,
+    )
+    assert res_no_drop.is_feasible
+    dood_no_drop = res_no_drop.dood_reports[0]
+    # Without drop, Star is held for 12 intervening days: paid for all 14 days
+    assert dood_no_drop.total_paid_days == 14
+    assert dood_no_drop.total_cost == 140000.0
+    assert dood_no_drop.daily_codes[1] == DOODStatusCode.START_WORK
+    assert dood_no_drop.daily_codes[7] == DOODStatusCode.HOLD
+    assert dood_no_drop.daily_codes[14] == DOODStatusCode.WORK_FINISH
+
+    # 2. With enable_drop_pickup=True (SAG-AFTRA 10-day hiatus applied)
+    res_drop = scheduler.optimize(
+        fixed_assignments={1: 1, 2: 14},
+        enable_drop_pickup=True,
+    )
+    assert res_drop.is_feasible
+    dood_drop = res_drop.dood_reports[0]
+    # Dropped between Day 1 and Day 14 (12 intervening days >= 10 hiatus limit)
+    # Paid days = 2 (Day 1 + Day 14), savings = 120,000!
+    assert dood_drop.total_work_days == 2
+    assert dood_drop.total_hold_days == 0
+    assert dood_drop.total_paid_days == 2
+    assert dood_drop.total_cost == 20000.0
+    assert dood_drop.daily_codes[1] == DOODStatusCode.START_WORK
+    assert dood_drop.daily_codes[2] == DOODStatusCode.DROP
+    assert dood_drop.daily_codes[7] == DOODStatusCode.DROP
+    assert dood_drop.daily_codes[13] == DOODStatusCode.DROP
+    assert dood_drop.daily_codes[14] == DOODStatusCode.WORK_FINISH
+
+
+def test_precedence_min_lag_grooming_continuity() -> None:
+    """Test min_lag_days enforcement for grooming continuity (e.g. beard shaved)."""
+    scheduler = FilmProductionScheduler(
+        project_title="Grooming Continuity Test",
+        shoot_day_hours=10,
+        max_shooting_days=5,
+    )
+    scheduler.add_cast_member(1, name="Character", daily_rate=2000.0)
+    scheduler.add_location(1, name="Stage 1", permitted_days=[1, 2, 3, 4, 5])
+    for d in range(1, 6):
+        scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
+
+    # Scene 1 (full beard) must precede Scene 2 (clean shaven) by at least 2 days
+    scheduler.add_scene(
+        id=1,
+        scene_number="10",
+        duration_hours=3.0,
+        required_cast=[1],
+        location_id=1,
+        requires_precedence_over=2,
+        min_lag_days=2,
+    )
+    scheduler.add_scene(
+        id=2,
+        scene_number="11",
+        duration_hours=3.0,
+        required_cast=[1],
+        location_id=1,
+    )
+
+    res = scheduler.optimize()
+    assert res.is_feasible
+    day_s1 = res.scene_day_assignments["1"]
+    day_s2 = res.scene_day_assignments["2"]
+    # min_lag_days=2 requires day_s2 >= day_s1 + 2
+    assert day_s2 >= day_s1 + 2
+
+
+def test_call_sheet_second_meal_calculation() -> None:
+    """Test second meal calculation on daily call sheet for long shoot days."""
+    dataset = ProductionDataset(
+        project_title="Long Day Production",
+        talents=[Talent(id=1, name="Actor", character_name="Lead", daily_rate=1000.0)],
+        locations=[Location(id=1, name="Studio")],
+        calendar=[CalendarDay(day_number=1, calendar_date="2026-11-01")],
+        scenes=[
+            Scene(
+                id=1,
+                scene_number="1",
+                duration_hours=7.0,
+                required_cast=[1],
+                location_id=1,
+            )
+        ],
+        max_shooting_days=1,
+        max_hours_per_day=12.0,
+    )
+
+    res = optimize_production_schedule(dataset)
+    assert res.is_feasible
+    call_sheet = res.call_sheets[1]
+    assert call_sheet.first_meal_due == "01:00 PM"
+    assert call_sheet.second_meal_due == "07:00 PM"
+

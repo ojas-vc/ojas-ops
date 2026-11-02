@@ -265,6 +265,9 @@ class Scene(msgspec.Struct, kw_only=True, gc=False):
     is_cover_set: bool = False
     cover_for_scene_id: int | str | None = None
     requires_precedence_over: int | str | None = None
+    min_lag_days: int = 0
+    is_second_unit: bool = False
+    is_vfx_heavy: bool = False
     dependencies: list[str] = msgspec.field(default_factory=list)
     is_night: bool = False
     is_exterior: bool = False
@@ -402,6 +405,7 @@ class DailyCallSheet(msgspec.Struct, kw_only=True, gc=False):
     general_crew_call: str
     shooting_call: str
     first_meal_due: str
+    second_meal_due: str | None = None
     hospital_info: str
     scene_entries: list[CallSheetSceneEntry]
     character_calls: list[CallSheetCharacterEntry]
@@ -683,7 +687,8 @@ def optimize_production_schedule(
                     [x[target_id, d] for d in feasible_days_by_scene[target_id]],
                     feasible_days_by_scene[target_id],
                 )
-                model.add(s1_day < s2_day)
+                min_lag = max(1, s.min_lag_days)
+                model.add(s1_day + min_lag <= s2_day)
 
         if s.dependencies:
             for dep_id in s.dependencies:
@@ -692,6 +697,7 @@ def optimize_production_schedule(
                     and feasible_days_by_scene[dep_id]
                     and feasible_days_by_scene[s.id]
                 ):
+                    dep_scene = scene_dict[dep_id]
                     dep_day = cp_model.LinearExpr.WeightedSum(
                         [x[dep_id, d] for d in feasible_days_by_scene[dep_id]],
                         feasible_days_by_scene[dep_id],
@@ -700,7 +706,8 @@ def optimize_production_schedule(
                         [x[s.id, d] for d in feasible_days_by_scene[s.id]],
                         feasible_days_by_scene[s.id],
                     )
-                    model.add(dep_day < this_day)
+                    min_lag = max(1, dep_scene.min_lag_days)
+                    model.add(dep_day + min_lag <= this_day)
 
     # Constraint 4: Linear Stage-Chaining for Costume Distress Ladders
     character_costumes: dict[int | str, list[Costume]] = defaultdict(list)
@@ -778,6 +785,16 @@ def optimize_production_schedule(
     talent_work: dict[tuple[int | str, int], cp_model.IntVar] = {}
     earliest: dict[int | str, cp_model.IntVar] = {}
     latest: dict[int | str, cp_model.IntVar] = {}
+    talent_drop_info: dict[
+        int | str,
+        tuple[
+            cp_model.IntVar,
+            cp_model.IntVar,
+            cp_model.IntVar,
+            cp_model.IntVar,
+            cp_model.IntVar,
+        ],
+    ] = {}
 
     for t in data.talents:
         scenes_with_t = scenes_by_talent[t.id]
@@ -789,29 +806,105 @@ def optimize_production_schedule(
             continue
 
         t_min_day, t_max_day = min(all_t_days), max(all_t_days)
-        earliest[t.id] = model.new_int_var(t_min_day, t_max_day, f"earliest_t{t.id}")
-        latest[t.id] = model.new_int_var(t_min_day, t_max_day, f"latest_t{t.id}")
 
-        for d in range(1, num_days + 1):
-            active_cast_scenes = [
-                scene_vars_by_day[d][s.id] for s in scenes_with_t if s.id in scene_vars_by_day[d]
-            ]
-            if active_cast_scenes:
-                w_var = model.new_bool_var(f"twork_t{t.id}_d{d}")
-                talent_work[t.id, d] = w_var
-                model.add_max_equality(w_var, active_cast_scenes)
-                model.add(earliest[t.id] <= d).only_enforce_if(w_var)
-                model.add(latest[t.id] >= d).only_enforce_if(w_var)
+        if enable_drop_pickup and num_days >= 12 and t.daily_rate > 0:
+            is_drop = model.new_bool_var(f"is_drop_t{t.id}")
+            e1 = model.new_int_var(t_min_day, t_max_day, f"e1_t{t.id}")
+            l1 = model.new_int_var(t_min_day, t_max_day, f"l1_t{t.id}")
+            e2 = model.new_int_var(t_min_day, t_max_day, f"e2_t{t.id}")
+            l2 = model.new_int_var(t_min_day, t_max_day, f"l2_t{t.id}")
+            model.add(e1 <= l1)
+            model.add(e2 <= l2).only_enforce_if(is_drop)
+            # Minimum 10 drop days hiatus between intervals: e2 - l1 >= 11
+            model.add(e2 - l1 >= 11).only_enforce_if(is_drop)
 
-        span_var = model.new_int_var(0, num_days, f"span_t{t.id}")
-        model.add(span_var == latest[t.id] - earliest[t.id] + 1)
-        hold_cost_terms.append(span_var * int(t.daily_rate))
+            span1 = model.new_int_var(0, num_days, f"span1_t{t.id}")
+            span2 = model.new_int_var(0, num_days, f"span2_t{t.id}")
+            model.add(span1 == l1 - e1 + 1)
+            model.add(span2 == l2 - e2 + 1).only_enforce_if(is_drop)
+            model.add(span2 == 0).only_enforce_if(is_drop.negated())
 
-    # Move Penalties
+            for d in range(1, num_days + 1):
+                active_cast_scenes = [
+                    scene_vars_by_day[d][s.id]
+                    for s in scenes_with_t
+                    if s.id in scene_vars_by_day[d]
+                ]
+                if active_cast_scenes:
+                    w_var = model.new_bool_var(f"twork_t{t.id}_d{d}")
+                    talent_work[t.id, d] = w_var
+                    model.add_max_equality(w_var, active_cast_scenes)
+                    in_b1 = model.new_bool_var(f"in_b1_t{t.id}_d{d}")
+                    in_b2 = model.new_bool_var(f"in_b2_t{t.id}_d{d}")
+                    model.add(in_b1 + in_b2 == w_var)
+                    model.add(in_b2 == 0).only_enforce_if(is_drop.negated())
+                    model.add(e1 <= d).only_enforce_if(in_b1)
+                    model.add(l1 >= d).only_enforce_if(in_b1)
+                    model.add(e2 <= d).only_enforce_if(in_b2)
+                    model.add(l2 >= d).only_enforce_if(in_b2)
+
+            comp_span = model.new_int_var(0, num_days, f"comp_span_t{t.id}")
+            model.add(comp_span == span1 + span2)
+            hold_cost_terms.append(comp_span * int(t.daily_rate))
+            earliest[t.id] = e1
+            actual_latest = model.new_int_var(t_min_day, t_max_day, f"actual_latest_t{t.id}")
+            model.add(actual_latest == l1).only_enforce_if(is_drop.negated())
+            model.add(actual_latest == l2).only_enforce_if(is_drop)
+            latest[t.id] = actual_latest
+            talent_drop_info[t.id] = (is_drop, e1, l1, e2, l2)
+        else:
+            earliest[t.id] = model.new_int_var(t_min_day, t_max_day, f"earliest_t{t.id}")
+            latest[t.id] = model.new_int_var(t_min_day, t_max_day, f"latest_t{t.id}")
+
+            for d in range(1, num_days + 1):
+                active_cast_scenes = [
+                    scene_vars_by_day[d][s.id]
+                    for s in scenes_with_t
+                    if s.id in scene_vars_by_day[d]
+                ]
+                if active_cast_scenes:
+                    w_var = model.new_bool_var(f"twork_t{t.id}_d{d}")
+                    talent_work[t.id, d] = w_var
+                    model.add_max_equality(w_var, active_cast_scenes)
+                    model.add(earliest[t.id] <= d).only_enforce_if(w_var)
+                    model.add(latest[t.id] >= d).only_enforce_if(w_var)
+
+            span_var = model.new_int_var(0, num_days, f"span_t{t.id}")
+            model.add(span_var == latest[t.id] - earliest[t.id] + 1)
+            hold_cost_terms.append(span_var * int(t.daily_rate))
+
+    # Move Penalties & Turnaround (Fraturday) Penalties
     move_cost_terms = [var * move_penalty for var in loc_active.values()]
 
-    # Objective Function: Minimize Talent Hold Spans + Location Moves
-    model.minimize(cp_model.LinearExpr.Sum(hold_cost_terms + move_cost_terms))
+    turnaround_penalty_terms: list[cp_model.LinearExpr] = []
+    night_scenes = [s for s in data.scenes if s.time_of_day in (TimeOfDay.NIGHT, "NIGHT")]
+    day_scenes = [s for s in data.scenes if s.time_of_day in (TimeOfDay.DAY, "DAY")]
+
+    if night_scenes and day_scenes:
+        for d in range(1, num_days):
+            night_vars_d = [
+                scene_vars_by_day[d][s.id] for s in night_scenes if s.id in scene_vars_by_day[d]
+            ]
+            day_vars_next = [
+                scene_vars_by_day[d + 1][s.id]
+                for s in day_scenes
+                if s.id in scene_vars_by_day[d + 1]
+            ]
+            if night_vars_d and day_vars_next:
+                has_night_d = model.new_bool_var(f"has_night_d{d}")
+                has_day_next = model.new_bool_var(f"has_day_d{d+1}")
+                model.add_max_equality(has_night_d, night_vars_d)
+                model.add_max_equality(has_day_next, day_vars_next)
+
+                turnaround_violation = model.new_bool_var(f"turnaround_violation_d{d}")
+                model.add_bool_and([has_night_d, has_day_next]).only_enforce_if(turnaround_violation)
+                model.add(turnaround_violation == 1).only_enforce_if([has_night_d, has_day_next])
+                turnaround_penalty_terms.append(turnaround_violation * 1000)
+
+    # Objective Function: Minimize Talent Hold Spans + Location Moves + Turnaround Violations
+    model.minimize(
+        cp_model.LinearExpr.Sum(hold_cost_terms + move_cost_terms + turnaround_penalty_terms)
+    )
 
     # Multithreaded CP-SAT Solver Parameters
     solver = cp_model.CpSolver()
@@ -911,6 +1004,75 @@ def optimize_production_schedule(
                         earliest_work_day=None,
                         latest_work_day=None,
                         total_cost=0.0,
+                    )
+                )
+                talent_daily_status[str(t.id)] = daily_codes
+                continue
+
+            if t.id in talent_drop_info and solver.value(talent_drop_info[t.id][0]) == 1:
+                e1_val = solver.value(talent_drop_info[t.id][1])
+                l1_val = solver.value(talent_drop_info[t.id][2])
+                e2_val = solver.value(talent_drop_info[t.id][3])
+                l2_val = solver.value(talent_drop_info[t.id][4])
+                work_days = 0
+                hold_days = 0
+
+                for d in range(1, num_days + 1):
+                    is_working = (t.id, d) in talent_work and solver.value(talent_work[t.id, d]) == 1
+                    if d < e1_val:
+                        daily_codes[d] = DOODStatusCode.OFF
+                    elif d == e1_val and d == l1_val:
+                        daily_codes[d] = DOODStatusCode.START_WORK
+                        work_days += 1
+                    elif d == e1_val:
+                        daily_codes[d] = DOODStatusCode.START_WORK
+                        work_days += 1
+                    elif d == l1_val:
+                        daily_codes[d] = DOODStatusCode.WORK
+                        work_days += 1
+                    elif d < l1_val:
+                        if is_working:
+                            daily_codes[d] = DOODStatusCode.WORK
+                            work_days += 1
+                        else:
+                            daily_codes[d] = DOODStatusCode.HOLD
+                            hold_days += 1
+                    elif d < e2_val:
+                        # Drop hiatus days (unpaid)
+                        daily_codes[d] = DOODStatusCode.DROP
+                    elif d == e2_val and d == l2_val:
+                        daily_codes[d] = DOODStatusCode.WORK_FINISH
+                        work_days += 1
+                    elif d == e2_val:
+                        daily_codes[d] = DOODStatusCode.WORK
+                        work_days += 1
+                    elif d == l2_val:
+                        daily_codes[d] = DOODStatusCode.WORK_FINISH
+                        work_days += 1
+                    elif d < l2_val:
+                        if is_working:
+                            daily_codes[d] = DOODStatusCode.WORK
+                            work_days += 1
+                        else:
+                            daily_codes[d] = DOODStatusCode.HOLD
+                            hold_days += 1
+                    else:
+                        daily_codes[d] = DOODStatusCode.OFF
+
+                total_paid = work_days + hold_days
+                total_cost = total_paid * t.daily_rate
+                dood_reports.append(
+                    DayOutOfDaysReport(
+                        talent_id=t.id,
+                        talent_name=t.name,
+                        character_name=t.character_name,
+                        daily_codes=daily_codes,
+                        total_work_days=work_days,
+                        total_hold_days=hold_days,
+                        total_paid_days=total_paid,
+                        earliest_work_day=e1_val,
+                        latest_work_day=l2_val,
+                        total_cost=total_cost,
                     )
                 )
                 talent_daily_status[str(t.id)] = daily_codes
@@ -1071,6 +1233,12 @@ def generate_daily_call_sheet(
             )
         )
 
+    second_meal_due = (
+        (first_meal_due + timedelta(hours=6)).strftime("%I:%M %p")
+        if sum(s.duration_hours for s in scenes) >= 6.0
+        else None
+    )
+
     return DailyCallSheet(
         day_number=day_num,
         calendar_date=cal.calendar_date,
@@ -1081,6 +1249,7 @@ def generate_daily_call_sheet(
         general_crew_call=general_crew_call.strftime("%I:%M %p"),
         shooting_call=shooting_call.strftime("%I:%M %p"),
         first_meal_due=first_meal_due.strftime("%I:%M %p"),
+        second_meal_due=second_meal_due,
         hospital_info=hospital_info,
         scene_entries=scene_entries,
         character_calls=character_calls,
@@ -1176,6 +1345,9 @@ def reschedule_production(
                 is_cover_set=is_cover,
                 cover_for_scene_id=s.cover_for_scene_id,
                 requires_precedence_over=s.requires_precedence_over,
+                min_lag_days=s.min_lag_days,
+                is_second_unit=s.is_second_unit,
+                is_vfx_heavy=s.is_vfx_heavy,
                 dependencies=s.dependencies,
             )
         )
@@ -1444,6 +1616,9 @@ class FilmProductionScheduler(DomainAdapter):
         is_cover_set: bool = False,
         cover_for_scene_id: int | str | None = None,
         requires_precedence_over: int | str | None = None,
+        min_lag_days: int = 0,
+        is_second_unit: bool = False,
+        is_vfx_heavy: bool = False,
     ) -> Scene:
         cast_list: list[int | str] = list(required_cast) if required_cast is not None else [str(c) for c in (character_ids or [])]
         dur_h = duration_hours if duration_hours is not None else (duration_minutes / 60.0)
@@ -1487,6 +1662,9 @@ class FilmProductionScheduler(DomainAdapter):
             is_cover_set=is_cover_set,
             cover_for_scene_id=cover_for_scene_id,
             requires_precedence_over=requires_precedence_over,
+            min_lag_days=min_lag_days,
+            is_second_unit=is_second_unit,
+            is_vfx_heavy=is_vfx_heavy,
             dependencies=dependencies or [],
             is_night=is_night,
             is_exterior=is_exterior,
@@ -1553,6 +1731,9 @@ class FilmProductionScheduler(DomainAdapter):
         *,
         max_time_in_seconds: float = 30.0,
         num_workers: int | None = None,
+        move_penalty: int = 500,
+        enable_drop_pickup: bool = False,
+        fixed_assignments: dict[int | str, int] | None = None,
     ) -> FilmScheduleResult:
         """Run the extended combinatorial CP-SAT solver and generate stripboard and DOOD reports."""
         ds = dataset or self.to_dataset()
@@ -1560,6 +1741,9 @@ class FilmProductionScheduler(DomainAdapter):
             ds,
             max_time_in_seconds=max_time_in_seconds,
             num_workers=num_workers,
+            move_penalty=move_penalty,
+            enable_drop_pickup=enable_drop_pickup,
+            fixed_assignments=fixed_assignments,
         )
 
     def reschedule(
