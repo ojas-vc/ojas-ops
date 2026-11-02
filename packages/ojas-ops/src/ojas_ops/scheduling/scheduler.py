@@ -234,7 +234,13 @@ class Scheduler:
             msg = f"Unknown optimization objective: '{objective_name}'"
             raise ValueError(msg)
 
-    def solve(self, config: SolverConfig | None = None) -> ScheduleResult:
+    def solve(
+        self,
+        config: SolverConfig | None = None,
+        *,
+        solution_hints: dict[str, int] | None = None,
+        callback: Any = None,
+    ) -> ScheduleResult:
         """Compile and solve the optimization model using Google OR-Tools CP-SAT."""
         solver = CpSatSolver(config or self.solver_config)
         self.last_result = solver.solve(
@@ -244,6 +250,8 @@ class Scheduler:
             constraints=self.constraints,
             objective=self.objective,
             calendars=self.calendars,
+            solution_hints=solution_hints,
+            callback=callback,
         )
         return self.last_result
 

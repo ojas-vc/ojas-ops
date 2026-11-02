@@ -35,6 +35,9 @@ class WeightedCompositeObjective(Objective):
             # Scale float weights into integers for CP-SAT
             int_weight = int(round(obj.weight * 100))
             if int_weight != 0:
+                # If direction differs from composite direction, negate term
+                if self.is_maximize != getattr(obj, "is_maximize", False):
+                    int_weight = -int_weight
                 weighted_terms.append(int_weight * expr)
 
         return sum(weighted_terms) if weighted_terms else 0
@@ -46,5 +49,9 @@ class WeightedCompositeObjective(Objective):
     ) -> float:
         total = 0.0
         for obj in self.objectives:
-            total += obj.weight * obj.evaluate(tasks, resources)
+            val = obj.evaluate(tasks, resources)
+            if self.is_maximize != getattr(obj, "is_maximize", False):
+                total -= obj.weight * val
+            else:
+                total += obj.weight * val
         return total

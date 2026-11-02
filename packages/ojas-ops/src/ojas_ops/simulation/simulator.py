@@ -146,7 +146,7 @@ class ScenarioSimulator:
         ]
         composite_objective = WeightedCompositeObjective(objectives)
 
-        # 4. Solve
+        # 4. Solve with warm-start solution hints from baseline schedule
         solver = CpSatSolver()
         rescheduled_result = solver.solve(
             tasks=tasks_copy,
@@ -155,6 +155,7 @@ class ScenarioSimulator:
             constraints=self.constraints,
             objective=composite_objective,
             calendars=self.calendars,
+            solution_hints=baseline_starts,
         )
 
         # 5. Validate independently

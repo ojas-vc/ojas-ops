@@ -128,3 +128,91 @@ def test_cpsat_solver_blackout_and_target_windows() -> None:
     for st in result.tasks.values():
         # Neither task should overlap with [30, 90)
         assert not (max(st.start, 30) < min(st.end, 90))
+
+
+def test_cpsat_circuit_transition_constraint() -> None:
+    """Verifies OR-Tools circuit transition formulation applies delay only between immediate consecutive tasks."""
+    from ojas_ops.constraints import TransitionConstraint
+    from ojas_ops.models import Horizon
+
+    solver = CpSatSolver()
+    res = {"cnc": Resource(id="cnc", capacity=1, resource_type=ResourceType.MACHINE)}
+    tasks = {
+        "t1": Task(id="t1", duration=10, required_resources=["cnc"], fixed_start=0),
+        "t2": Task(id="t2", duration=10, required_resources=["cnc"]),
+        "t3": Task(id="t3", duration=10, required_resources=["cnc"]),
+    }
+    # Direct t1 -> t2 has large delay 50. But t1 -> t3 is 5, t3 -> t2 is 5.
+    trans = TransitionConstraint(
+        resource_id="cnc",
+        transition_matrix={
+            ("t1", "t2"): 50,
+            ("t1", "t3"): 5,
+            ("t3", "t2"): 5,
+        },
+        default_buffer=0,
+    )
+
+    result = solver.solve(
+        tasks=tasks,
+        resources=res,
+        horizon=Horizon(start=0, end=100),
+        constraints=[trans],
+    )
+
+    assert result.status == ScheduleStatus.OPTIMAL
+    # The optimal sequence is t1 -> t3 -> t2, achieving makespan 40, NOT >= 70!
+    assert result.makespan == 40
+    assert result.tasks["t1"].start == 0
+    assert result.tasks["t1"].end == 10
+    assert result.tasks["t3"].start == 15
+    assert result.tasks["t3"].end == 25
+    assert result.tasks["t2"].start == 30
+    assert result.tasks["t2"].end == 40
+
+
+def test_cpsat_cost_optimization_with_candidate_selection() -> None:
+    """Verifies cost minimization correctly selects cheaper candidate resource."""
+    from ojas_ops.objectives import MinimizeCostObjective
+
+    solver = CpSatSolver()
+    res = {
+        "cheap_worker": Resource(id="cheap_worker", capacity=1, cost_per_time_unit=5.0),
+        "expensive_worker": Resource(id="expensive_worker", capacity=1, cost_per_time_unit=50.0),
+    }
+    req = ResourceRequirement(
+        resource_id="cheap_worker",
+        capacity=1,
+        candidate_pool=["cheap_worker", "expensive_worker"],
+    )
+    tasks = {
+        "job_1": Task(id="job_1", duration=20, resource_requirements=[req]),
+    }
+
+    cost_obj = MinimizeCostObjective()
+    result = solver.solve(tasks=tasks, resources=res, objective=cost_obj)
+
+    assert result.status == ScheduleStatus.OPTIMAL
+    assert result.tasks["job_1"].assigned_resources == ["cheap_worker"]
+    expected_cost = 20 * 5.0  # 100.0
+    assert result.objective_value == expected_cost
+    assert cost_obj.evaluate(result.tasks, result.resources) == expected_cost
+
+
+def test_cpsat_solver_metadata_and_hints() -> None:
+    """Verifies solver telemetry reporting and solution hinting."""
+    solver = CpSatSolver()
+    res = {"m1": Resource(id="m1", capacity=1)}
+    tasks = {
+        "a": Task(id="a", duration=15, required_resources=["m1"]),
+        "b": Task(id="b", duration=15, required_resources=["m1"]),
+    }
+
+    hints = {"a": 0, "b": 15}
+    result = solver.solve(tasks=tasks, resources=res, solution_hints=hints)
+
+    assert result.status == ScheduleStatus.OPTIMAL
+    assert "best_objective_bound" in result.metadata
+    assert "user_time" in result.metadata
+    assert "num_branches" in result.metadata
+    assert "num_conflicts" in result.metadata

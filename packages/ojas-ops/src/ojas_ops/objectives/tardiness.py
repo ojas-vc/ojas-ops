@@ -36,6 +36,7 @@ class MinimizeTardinessObjective(Objective):
             deadline = self.deadlines.get(tid)
             if deadline is None and task and task.time_window and task.time_window.deadline:
                 deadline = task.time_window.deadline
+                self.deadlines[tid] = deadline
 
             if deadline is not None:
                 lateness = context.model.new_int_var(0, context.horizon.end, f"late_{tid}")
@@ -52,6 +53,11 @@ class MinimizeTardinessObjective(Objective):
         total_lateness = 0
         for tid, task in tasks.items():
             deadline = self.deadlines.get(tid)
+            if deadline is None and "deadline" in task.metadata:
+                try:
+                    deadline = int(task.metadata["deadline"])
+                except ValueError:
+                    pass
             if deadline is not None and task.end > deadline:
                 total_lateness += task.end - deadline
         return float(total_lateness)

@@ -38,37 +38,36 @@ class BlackoutWindowConstraint(Constraint):
     def apply_to_solver(self, context: SolverContext) -> None:
         model = context.model
 
-        # 1. If bound to a task directly
+        # 1. If bound to a task directly: enforce non-overlap between task interval and blackout interval
         if self.task_id and self.task_id in context.task_vars:
             tv = context.task_vars[self.task_id]
-            b_before = model.new_bool_var(f"{self.name}_before")
-            model.add(tv.end <= self.window.start).only_enforce_if(b_before)
-            model.add(tv.start >= self.window.end).only_enforce_if(b_before.negated())
+            b_int = model.new_interval_var(
+                self.window.start, self.window.duration, self.window.end, f"{self.name}_task_int"
+            )
+            model.add_no_overlap([tv.interval, b_int])
 
-        # 2. If bound to a resource
+        # 2. If bound to a resource: add fixed interval to the resource's interval list
         if self.resource_id and self.resource_id in context.resources:
-            for tid, tv in context.task_vars.items():
-                task = context.tasks[tid]
-                if self.resource_id in tv.resource_intervals:
-                    # Optional resource assignment: enforce non-overlap only if assigned
-                    _, pres = tv.resource_intervals[self.resource_id]
-                    b_before = model.new_bool_var(f"blackout_{self.resource_id}_{tid}_before")
-                    model.add(tv.end <= self.window.start).only_enforce_if([pres, b_before])
-                    model.add(tv.start >= self.window.end).only_enforce_if(
-                        [pres, b_before.negated()]
-                    )
-                elif self.resource_id in task.required_resources:
-                    # Statically assigned resource
-                    b_before = model.new_bool_var(f"blackout_{self.resource_id}_{tid}_before")
-                    model.add(tv.end <= self.window.start).only_enforce_if(b_before)
-                    model.add(tv.start >= self.window.end).only_enforce_if(b_before.negated())
+            res = context.resources[self.resource_id]
+            b_int = model.new_interval_var(
+                self.window.start,
+                self.window.duration,
+                self.window.end,
+                f"blackout_{self.resource_id}_{self.window.start}_{self.window.end}",
+            )
+            context.resource_intervals[self.resource_id].append(b_int)
+            context.resource_demands[self.resource_id].append((b_int, res.capacity))
 
         # 3. If global (neither resource nor task specified - e.g. general Rahu Kalam)
         if not self.resource_id and not self.task_id:
             for tid, tv in context.task_vars.items():
-                b_before = model.new_bool_var(f"{self.name}_{tid}_before")
-                model.add(tv.end <= self.window.start).only_enforce_if(b_before)
-                model.add(tv.start >= self.window.end).only_enforce_if(b_before.negated())
+                b_int = model.new_interval_var(
+                    self.window.start,
+                    self.window.duration,
+                    self.window.end,
+                    f"{self.name}_{tid}_int",
+                )
+                model.add_no_overlap([tv.interval, b_int])
 
     def validate(
         self,
@@ -150,6 +149,18 @@ class TargetWindowConstraint(Constraint):
         if self.hard:
             context.model.add(tv.start >= self.window.start)
             context.model.add(tv.end <= self.window.end)
+        else:
+            # Soft target window: create linear violation slacks penalized in objective
+            early_slack = context.model.new_int_var(
+                0, context.horizon.end, f"{self.name}_early_slack"
+            )
+            late_slack = context.model.new_int_var(
+                0, context.horizon.end, f"{self.name}_late_slack"
+            )
+            context.model.add(early_slack >= self.window.start - tv.start)
+            context.model.add(late_slack >= tv.end - self.window.end)
+            context.soft_penalties.append(early_slack)
+            context.soft_penalties.append(late_slack)
 
     def validate(
         self,

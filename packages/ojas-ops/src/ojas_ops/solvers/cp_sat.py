@@ -56,6 +56,8 @@ class CpSatSolver:
         constraints: list[Constraint] | None = None,
         objective: Objective | None = None,
         calendars: list[CalendarProvider] | None = None,
+        solution_hints: dict[str, int] | None = None,
+        callback: cp_model.CpSolverSolutionCallback | None = None,
     ) -> ScheduleResult:
         wall_start = time.perf_counter()
 
@@ -143,16 +145,8 @@ class CpSatSolver:
                     prec = PrecedenceConstraint(pred_id, tid, DependencyType.FS)
                     prec.apply_to_solver(context)
 
-        # 3. Add implicit resource constraints (NoOverlap or Cumulative)
+        # 3. Add resource blackout windows to resource interval lists
         for rid, res in resources.items():
-            if res.capacity == 1:
-                no_overlap = NoOverlapConstraint(rid)
-                no_overlap.apply_to_solver(context)
-            else:
-                cumulative = CumulativeResourceConstraint(rid, res.capacity)
-                cumulative.apply_to_solver(context)
-
-            # Add resource blackout windows
             for b_win in res.blackout_windows:
                 b_constraint = BlackoutWindowConstraint(b_win, resource_id=rid)
                 b_constraint.apply_to_solver(context)
@@ -170,20 +164,38 @@ class CpSatSolver:
                         t_constraint = TargetWindowConstraint(tid, t_win)
                         t_constraint.apply_to_solver(context)
 
-        # 5. Apply user-provided explicit constraints
+        # 5. Apply user-provided explicit constraints (transitions, custom windows, workloads)
         if constraints:
             for c in constraints:
                 c.apply_to_solver(context)
 
-        # 6. Apply objective
+        # 6. Apply implicit resource capacity constraints (NoOverlap or Cumulative) over all intervals
+        for rid, res in resources.items():
+            if res.capacity == 1:
+                no_overlap = NoOverlapConstraint(rid)
+                no_overlap.apply_to_solver(context)
+            else:
+                cumulative = CumulativeResourceConstraint(rid, res.capacity)
+                cumulative.apply_to_solver(context)
+
+        # 7. Apply objective
         active_objective = objective or MinimizeMakespanObjective()
         obj_expr = active_objective.build_expression(context)
+
+        # Integrate soft constraint penalty slack variables if present
+        if context.soft_penalties:
+            penalty_sum = sum(context.soft_penalties)
+            if getattr(active_objective, "is_maximize", False):
+                obj_expr = obj_expr - penalty_sum
+            else:
+                obj_expr = obj_expr + penalty_sum
+
         if getattr(active_objective, "is_maximize", False):
             model.maximize(obj_expr)
         else:
             model.minimize(obj_expr)
 
-        # 7. Configure and run CP-SAT solver
+        # 8. Configure CP-SAT solver parameters
         solver = cp_model.CpSolver()
         solver.parameters.max_time_in_seconds = self.config.time_limit_seconds
         solver.parameters.num_workers = self.config.num_workers
@@ -191,11 +203,23 @@ class CpSatSolver:
         solver.parameters.log_search_progress = self.config.log_search_progress
         if self.config.stop_after_first_solution:
             solver.parameters.stop_after_first_solution = True
+        if self.config.relative_gap_limit > 0.0:
+            solver.parameters.relative_gap_limit = self.config.relative_gap_limit
 
-        solve_status = solver.solve(model)
+        # Apply solution hints if provided
+        if solution_hints:
+            for tid, hint_start in solution_hints.items():
+                if tid in context.task_vars:
+                    model.add_hint(context.task_vars[tid].start, hint_start)
+
+        # Execute solve
+        if callback is not None:
+            solve_status = solver.solve(model, callback)
+        else:
+            solve_status = solver.solve(model)
         solve_time = solver.wall_time
 
-        # 8. Translate status
+        # 9. Translate status
         status_map = {
             cp_model.OPTIMAL: ScheduleStatus.OPTIMAL,
             cp_model.FEASIBLE: ScheduleStatus.FEASIBLE,
@@ -204,6 +228,16 @@ class CpSatSolver:
             cp_model.UNKNOWN: ScheduleStatus.UNKNOWN,
         }
         res_status = status_map.get(solve_status, ScheduleStatus.UNKNOWN)
+
+        meta = {
+            "solver_status_name": solver.status_name(solve_status),
+            "num_branches": str(solver.num_branches),
+            "num_conflicts": str(solver.num_conflicts),
+            "user_time": f"{solver.user_time:.4f}s",
+            "deterministic_time": f"{solver.deterministic_time:.4f}",
+        }
+        if res_status in (ScheduleStatus.OPTIMAL, ScheduleStatus.FEASIBLE):
+            meta["best_objective_bound"] = f"{solver.best_objective_bound:.4f}"
 
         if res_status not in (ScheduleStatus.OPTIMAL, ScheduleStatus.FEASIBLE):
             return ScheduleResult(
@@ -214,7 +248,7 @@ class CpSatSolver:
                 makespan=0,
                 solve_time_seconds=solve_time,
                 wall_time=time.perf_counter() - wall_start,
-                metadata={"solver_status_name": solver.status_name(solve_status)},
+                metadata=meta,
             )
 
         # 9. Extract scheduled tasks and resource assignments
@@ -241,13 +275,19 @@ class CpSatSolver:
                         assigned.append(req.resource_id)
                         resource_task_map[req.resource_id].append(tid)
 
+            meta_dict = dict(task.metadata)
+            if task.cost:
+                meta_dict["cost"] = str(task.cost)
+            if task.time_window and task.time_window.deadline is not None:
+                meta_dict["deadline"] = str(task.time_window.deadline)
+
             scheduled_tasks[tid] = ScheduledTask(
                 task_id=tid,
                 start=start_val,
                 end=end_val,
                 duration=task.duration,
                 assigned_resources=assigned,
-                metadata=dict(task.metadata),
+                metadata=meta_dict,
             )
 
         # Build ResourceAssignment summaries
@@ -286,5 +326,5 @@ class CpSatSolver:
             makespan=makespan,
             solve_time_seconds=solve_time,
             wall_time=time.perf_counter() - wall_start,
-            metadata={"solver_status_name": solver.status_name(solve_status)},
+            metadata=meta,
         )

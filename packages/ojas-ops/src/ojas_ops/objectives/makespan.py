@@ -30,9 +30,7 @@ class MinimizeMakespanObjective(Objective):
             return 0
 
         makespan = context.model.new_int_var(0, context.horizon.end, f"{self.name}_var")
-        for tv in context.task_vars.values():
-            context.model.add(makespan >= tv.end)
-
+        context.model.add_max_equality(makespan, [tv.end for tv in context.task_vars.values()])
         return makespan
 
     def evaluate(

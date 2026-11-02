@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ortools.sat.python import cp_model
+
 from ojas_ops.constraints.base import Constraint, SolverContext
 from ojas_ops.validation.report import ConstraintViolation, Severity
 
@@ -50,61 +52,51 @@ class TransitionConstraint(Constraint):
 
         model = context.model
         task_vars = context.task_vars
+        k = len(relevant_task_ids)
 
-        for i in range(len(relevant_task_ids)):
-            t1_id = relevant_task_ids[i]
-            tv1 = task_vars[t1_id]
-            pres1 = (
-                tv1.resource_intervals[self.resource_id][1]
-                if self.resource_id in tv1.resource_intervals
-                else None
-            )
+        presences = []
+        for tid in relevant_task_ids:
+            tv = task_vars[tid]
+            if self.resource_id in tv.resource_intervals:
+                # Optional interval: presence is tv.resource_intervals[self.resource_id][1]
+                presences.append(tv.resource_intervals[self.resource_id][1])
+            else:
+                # Statically assigned task: always present on this resource
+                presences.append(model.new_constant(1))
 
-            for j in range(i + 1, len(relevant_task_ids)):
-                t2_id = relevant_task_ids[j]
-                tv2 = task_vars[t2_id]
-                pres2 = (
-                    tv2.resource_intervals[self.resource_id][1]
-                    if self.resource_id in tv2.resource_intervals
-                    else None
-                )
+        # Build Hamiltonian circuit through node 0 (dummy) and 1..K (tasks)
+        arcs: list[cp_model.ArcT] = []
+        for i in range(k):
+            tid_i = relevant_task_ids[i]
+            # Arc 0 -> i + 1: task i is first in sequence on this resource
+            start_lit = model.new_bool_var(f"circ_start_{self.resource_id}_{tid_i}")
+            arcs.append((0, i + 1, start_lit))
 
-                buf_1_to_2 = self.get_buffer(t1_id, t2_id)
-                buf_2_to_1 = self.get_buffer(t2_id, t1_id)
+            # Arc i + 1 -> 0: task i is last in sequence on this resource
+            end_lit = model.new_bool_var(f"circ_end_{self.resource_id}_{tid_i}")
+            arcs.append((i + 1, 0, end_lit))
 
-                # Boolean var: True if t1 precedes t2, False if t2 precedes t1
-                b_precedes = model.new_bool_var(f"trans_{self.resource_id}_{t1_id}_{t2_id}")
-
-                if pres1 is not None and pres2 is not None:
-                    both = model.new_bool_var(f"both_trans_{self.resource_id}_{t1_id}_{t2_id}")
-                    model.add_bool_and([pres1, pres2]).only_enforce_if(both)
-                    model.add_bool_or([pres1.negated(), pres2.negated()]).only_enforce_if(
-                        both.negated()
-                    )
-
-                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if([both, b_precedes])
-                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
-                        [both, b_precedes.negated()]
-                    )
-                elif pres1 is not None:
-                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if(
-                        [pres1, b_precedes]
-                    )
-                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
-                        [pres1, b_precedes.negated()]
-                    )
-                elif pres2 is not None:
-                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if(
-                        [pres2, b_precedes]
-                    )
-                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
-                        [pres2, b_precedes.negated()]
-                    )
+            for j in range(k):
+                if i == j:
+                    # Self-loop when task i is not present
+                    arcs.append((i + 1, i + 1, ~presences[i]))
                 else:
-                    model.add(tv2.start >= tv1.end + buf_1_to_2).only_enforce_if(b_precedes)
-                    model.add(tv1.start >= tv2.end + buf_2_to_1).only_enforce_if(
-                        b_precedes.negated()
+                    tid_j = relevant_task_ids[j]
+                    arc_lit = model.new_bool_var(f"circ_arc_{self.resource_id}_{tid_i}_{tid_j}")
+                    arcs.append((i + 1, j + 1, arc_lit))
+                    buf = self.get_buffer(tid_i, tid_j)
+                    # Enforce transition buffer when j immediately succeeds i
+                    model.add(task_vars[tid_j].start >= task_vars[tid_i].end + buf).only_enforce_if(
+                        arc_lit
                     )
+
+        # Handle empty circuit if no tasks execute on this resource
+        empty_lit = model.new_bool_var(f"circ_empty_{self.resource_id}")
+        arcs.append((0, 0, empty_lit))
+        for i in range(k):
+            model.add_implication(empty_lit, ~presences[i])
+
+        model.add_circuit(arcs)
 
     def validate(
         self,

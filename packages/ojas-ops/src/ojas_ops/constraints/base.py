@@ -63,6 +63,7 @@ class SolverContext:
             rid: [] for rid in resources
         }
         self.custom_data: dict[str, Any] = {}
+        self.soft_penalties: list[Any] = []
 
 
 class Constraint(ABC):

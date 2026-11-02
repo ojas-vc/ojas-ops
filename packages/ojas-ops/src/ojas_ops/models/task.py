@@ -77,10 +77,23 @@ class Task(msgspec.Struct, kw_only=True):
             raise ValueError(msg)
         if not self.name:
             self.name = self.id
-        # Automatically populate resource_requirements from required_resources if empty
+        # Synchronize required_resources and resource_requirements
         if self.required_resources and not self.resource_requirements:
             self.resource_requirements = [
                 ResourceRequirement(resource_id=rid, capacity=1) for rid in self.required_resources
             ]
         elif self.resource_requirements and not self.required_resources:
-            self.required_resources = [req.resource_id for req in self.resource_requirements]
+            self.required_resources = [
+                req.resource_id for req in self.resource_requirements if req.resource_id
+            ]
+        elif self.required_resources and self.resource_requirements:
+            existing_rids = {
+                req.resource_id for req in self.resource_requirements if req.resource_id
+            }
+            for req in self.resource_requirements:
+                existing_rids.update(req.candidate_pool)
+            for rid in self.required_resources:
+                if rid not in existing_rids:
+                    self.resource_requirements.append(
+                        ResourceRequirement(resource_id=rid, capacity=1)
+                    )
