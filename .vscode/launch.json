@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Pytest All",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["packages/ojas-ops/tests"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Run Basic Scheduling Example",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/examples/basic_scheduling/main.py",
+      "console": "integratedTerminal"
+    }
+  ]
+}

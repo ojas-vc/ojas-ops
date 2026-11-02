@@ -381,3 +381,4 @@ release: ## Complete release pipeline: checks, tests, examples, build, verificat
 	@echo ""
 	@echo -e "$(BOLD)$(GREEN)=== Release pipeline v$(VERSION) completed with ZERO errors! ===$(RESET)"
 	@echo -e "Ready to tag and publish: run $(CYAN)make tag$(RESET) and $(CYAN)make publish$(RESET)."
+
