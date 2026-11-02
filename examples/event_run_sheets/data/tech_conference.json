@@ -1,0 +1,150 @@
+{
+  "metadata": {
+    "name": "Global Tech Summit Multi-Track Run Sheet",
+    "description": "Multi-track conference agenda with hall turnarounds, speaker transitions, and fixed plenary keynotes.",
+    "domain": "events",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": ["events", "conferences", "run_sheet", "speakers", "turnaround"]
+  },
+  "horizon": {
+    "start": 0,
+    "end": 600,
+    "granularity": 1
+  },
+  "resources": [
+    {
+      "id": "hall:main_plenary",
+      "name": "Grand Plenary Hall",
+      "capacity": 1,
+      "resource_type": "facility"
+    },
+    {
+      "id": "hall:track_b",
+      "name": "Track B Innovation Hall",
+      "capacity": 1,
+      "resource_type": "facility"
+    },
+    {
+      "id": "speaker:dr_turing",
+      "name": "Dr. A. Turing (AI Visionary)",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "speaker:prof_mccarthy",
+      "name": "Prof. J. McCarthy (Foundations)",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "speaker:dr_curie",
+      "name": "Dr. M. Curie (Quantum Computing)",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "speaker:prof_feynman",
+      "name": "Prof. R. Feynman (Keynote)",
+      "capacity": 1,
+      "resource_type": "person"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "opening_keynote",
+      "name": "Opening Plenary Keynote Address",
+      "duration": 60,
+      "fixed_start": 0,
+      "required_resources": ["hall:main_plenary", "speaker:dr_turing"]
+    },
+    {
+      "id": "ai_foundations_talk",
+      "name": "Session: Logical AI & Modern LLMs",
+      "duration": 45,
+      "required_resources": ["hall:main_plenary", "speaker:prof_mccarthy"],
+      "dependencies": ["opening_keynote"]
+    },
+    {
+      "id": "quantum_breakout",
+      "name": "Session: Quantum Decoherence in Silicon",
+      "duration": 50,
+      "required_resources": ["hall:track_b", "speaker:dr_curie"]
+    },
+    {
+      "id": "networking_tea",
+      "name": "Summit Networking & Coffee Break",
+      "duration": 30,
+      "required_resources": ["hall:main_plenary", "hall:track_b"],
+      "dependencies": ["ai_foundations_talk", "quantum_breakout"]
+    },
+    {
+      "id": "ai_quantum_panel",
+      "name": "Cross-Disciplinary Panel: AI meets Quantum",
+      "duration": 60,
+      "required_resources": ["hall:main_plenary", "speaker:dr_turing", "speaker:dr_curie", "speaker:prof_mccarthy"],
+      "dependencies": ["networking_tea"]
+    },
+    {
+      "id": "open_source_lightning",
+      "name": "Open Source Community Lightning Talks",
+      "duration": 60,
+      "required_resources": ["hall:track_b"],
+      "dependencies": ["networking_tea"]
+    },
+    {
+      "id": "lunch_break",
+      "name": "Catered Summit Lunch & Exhibition",
+      "duration": 60,
+      "fixed_start": 270,
+      "required_resources": ["hall:main_plenary", "hall:track_b"]
+    },
+    {
+      "id": "afternoon_keynote",
+      "name": "Afternoon Keynote: The Character of Physical Law",
+      "duration": 75,
+      "required_resources": ["hall:main_plenary", "speaker:prof_feynman"],
+      "dependencies": ["lunch_break"]
+    },
+    {
+      "id": "closing_awards",
+      "name": "Awards Ceremony & Closing Remarks",
+      "duration": 45,
+      "required_resources": ["hall:main_plenary", "speaker:dr_turing", "speaker:prof_feynman"],
+      "dependencies": ["afternoon_keynote"]
+    }
+  ],
+  "transitions": [
+    {
+      "resource_id": "hall:main_plenary",
+      "default_buffer": 15
+    },
+    {
+      "resource_id": "hall:track_b",
+      "default_buffer": 10
+    }
+  ],
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 450,
+    "max_makespan": 580,
+    "expected_task_count": 9,
+    "task_assertions": {
+      "opening_keynote": {
+        "min_start": 0,
+        "max_end": 60
+      },
+      "lunch_break": {
+        "min_start": 270,
+        "max_end": 330
+      }
+    }
+  }
+}
+

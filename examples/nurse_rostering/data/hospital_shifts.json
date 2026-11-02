@@ -1,0 +1,231 @@
+{
+  "metadata": {
+    "name": "Hospital Emergency Department Shift Rostering (12 Staff, 15 Shifts, 48 Hours)",
+    "description": "Multi-skill healthcare workforce rostering with ICU, triage, emergency, and pediatric coverage, enforcing minimum 8h rest and max workload.",
+    "domain": "healthcare",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": ["healthcare", "nurse_rostering", "skills", "candidate_pools", "rest"]
+  },
+  "horizon": {
+    "start": 0,
+    "end": 2880,
+    "granularity": 1
+  },
+  "resources": [
+    {
+      "id": "nurse_sarah",
+      "name": "Sarah RN (ICU, Triage)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 65.0,
+      "skills": ["icu", "triage", "general"]
+    },
+    {
+      "id": "nurse_david",
+      "name": "David RN (ICU, Emergency)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 60.0,
+      "skills": ["icu", "emergency", "general"]
+    },
+    {
+      "id": "nurse_elena",
+      "name": "Elena RN (Triage, Pediatric)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 55.0,
+      "skills": ["triage", "pediatric", "general"]
+    },
+    {
+      "id": "nurse_marcus",
+      "name": "Marcus RN (Emergency, ICU)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 58.0,
+      "skills": ["emergency", "icu", "general"]
+    },
+    {
+      "id": "nurse_priya",
+      "name": "Priya RN (Pediatric, Triage)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 52.0,
+      "skills": ["pediatric", "triage", "general"]
+    },
+    {
+      "id": "nurse_james",
+      "name": "James RN (General, Emergency)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 48.0,
+      "skills": ["emergency", "general"]
+    },
+    {
+      "id": "nurse_anita",
+      "name": "Anita RN (ICU, Pediatric)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 62.0,
+      "skills": ["icu", "pediatric", "general"]
+    },
+    {
+      "id": "nurse_carlos",
+      "name": "Carlos RN (Triage, Emergency)",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 50.0,
+      "skills": ["triage", "emergency", "general"]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "shift_d1_morn_icu",
+      "name": "Day 1 Morning ICU Specialist",
+      "duration": 480,
+      "fixed_start": 0,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_david", "nurse_marcus", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d1_morn_triage",
+      "name": "Day 1 Morning Triage Desk",
+      "duration": 480,
+      "fixed_start": 0,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_elena", "nurse_priya", "nurse_carlos"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d1_morn_peds",
+      "name": "Day 1 Morning Pediatric Wing",
+      "duration": 480,
+      "fixed_start": 0,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_elena", "nurse_priya", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d1_eve_icu",
+      "name": "Day 1 Evening ICU Specialist",
+      "duration": 480,
+      "fixed_start": 480,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_david", "nurse_marcus", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d1_eve_triage",
+      "name": "Day 1 Evening Triage Desk",
+      "duration": 480,
+      "fixed_start": 480,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_elena", "nurse_priya", "nurse_carlos"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d1_night_emrg",
+      "name": "Day 1 Night Emergency Lead",
+      "duration": 480,
+      "fixed_start": 960,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_david", "nurse_marcus", "nurse_james", "nurse_carlos"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d1_night_icu",
+      "name": "Day 1 Night ICU Coverage",
+      "duration": 480,
+      "fixed_start": 960,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_david", "nurse_marcus", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d2_morn_icu",
+      "name": "Day 2 Morning ICU Specialist",
+      "duration": 480,
+      "fixed_start": 1440,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_david", "nurse_marcus", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d2_morn_triage",
+      "name": "Day 2 Morning Triage Desk",
+      "duration": 480,
+      "fixed_start": 1440,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_elena", "nurse_priya", "nurse_carlos"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d2_morn_peds",
+      "name": "Day 2 Morning Pediatric Wing",
+      "duration": 480,
+      "fixed_start": 1440,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_elena", "nurse_priya", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d2_eve_icu",
+      "name": "Day 2 Evening ICU Specialist",
+      "duration": 480,
+      "fixed_start": 1920,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_david", "nurse_marcus", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d2_eve_emrg",
+      "name": "Day 2 Evening Emergency Lead",
+      "duration": 480,
+      "fixed_start": 1920,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_david", "nurse_marcus", "nurse_james", "nurse_carlos"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d2_night_icu",
+      "name": "Day 2 Night ICU Coverage",
+      "duration": 480,
+      "fixed_start": 2400,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_sarah", "nurse_david", "nurse_marcus", "nurse_anita"], "capacity": 1 }
+      ]
+    },
+    {
+      "id": "shift_d2_night_emrg",
+      "name": "Day 2 Night Emergency Lead",
+      "duration": 480,
+      "fixed_start": 2400,
+      "candidate_pools": [
+        { "candidate_pool": ["nurse_david", "nurse_marcus", "nurse_james", "nurse_carlos"], "capacity": 1 }
+      ]
+    }
+  ],
+  "workloads": [
+    { "resource_id": "nurse_sarah", "max_duration": 960, "min_rest": 480 },
+    { "resource_id": "nurse_david", "max_duration": 960, "min_rest": 480 },
+    { "resource_id": "nurse_elena", "max_duration": 960, "min_rest": 480 },
+    { "resource_id": "nurse_marcus", "max_duration": 960, "min_rest": 480 },
+    { "resource_id": "nurse_priya", "max_duration": 960, "min_rest": 480 },
+    { "resource_id": "nurse_james", "max_duration": 960, "min_rest": 480 },
+    { "resource_id": "nurse_anita", "max_duration": 960, "min_rest": 480 },
+    { "resource_id": "nurse_carlos", "max_duration": 960, "min_rest": 480 }
+  ],
+  "objective": {
+    "type": "cost",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "expected_task_count": 14,
+    "min_makespan": 2880,
+    "max_makespan": 2880
+  }
+}

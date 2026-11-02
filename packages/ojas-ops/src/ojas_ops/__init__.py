@@ -61,6 +61,21 @@ from ojas_ops.objectives import (
     ScheduleStabilityObjective,
     WeightedCompositeObjective,
 )
+from ojas_ops.scenarios import (
+    ExpectedResult,
+    ResourceSpec,
+    ScenarioDefinition,
+    ScenarioMetadata,
+    ScenarioRunResult,
+    TaskSpec,
+    TransitionSpec,
+    WorkloadSpec,
+    build_scheduler,
+    load_scenario,
+    run_scenario,
+    save_scenario,
+    verify_expected,
+)
 from ojas_ops.scheduling import Scheduler
 from ojas_ops.simulation import (
     Disruption,
@@ -71,12 +86,7 @@ from ojas_ops.simulation import (
     calculate_stability_metrics,
 )
 from ojas_ops.solvers import CpSatSolver, SolverConfig
-from ojas_ops.validation import (
-    ConstraintViolation,
-    ScheduleValidator,
-    Severity,
-    ValidationReport,
-)
+from ojas_ops.validation import ConstraintViolation, ScheduleValidator, Severity, ValidationReport
 
 __version__ = "0.1.0"
 
@@ -96,6 +106,7 @@ __all__ = [
     "DisruptionType",
     "DomainAdapter",
     "EventRunSheetScheduler",
+    "ExpectedResult",
     "FilmProductionScheduler",
     "FixedTimeConstraint",
     "Horizon",
@@ -114,12 +125,16 @@ __all__ = [
     "Resource",
     "ResourceAssignment",
     "ResourceRequirement",
+    "ResourceSpec",
     "ResourceType",
+    "ScenarioDefinition",
+    "ScenarioMetadata",
+    "ScenarioRunResult",
     "ScenarioSimulator",
     "ScheduleResult",
     "ScheduleStabilityMetrics",
-    "ScheduleStatus",
     "ScheduleStabilityObjective",
+    "ScheduleStatus",
     "ScheduleValidator",
     "ScheduledTask",
     "Scheduler",
@@ -131,14 +146,22 @@ __all__ = [
     "Task",
     "TaskDependency",
     "TaskPriority",
+    "TaskSpec",
     "TimeWindow",
     "TimeWindowConstraint",
     "TransitionConstraint",
+    "TransitionSpec",
     "ValidationReport",
     "WeightedCompositeObjective",
     "WorkforceScheduler",
+    "WorkloadSpec",
     "__author__",
     "__email__",
     "__version__",
+    "build_scheduler",
     "calculate_stability_metrics",
+    "load_scenario",
+    "run_scenario",
+    "save_scenario",
+    "verify_expected",
 ]

@@ -1,0 +1,98 @@
+{
+  "metadata": {
+    "name": "Small Commercial Shoot (5 Scenes, 2 Actors, 2 Locations)",
+    "description": "Quick commercial shooting schedule with minimal setup transitions.",
+    "domain": "film_production",
+    "scale": "small",
+    "version": "1.0",
+    "tags": ["film", "commercial", "quick"]
+  },
+  "resources": [
+    {
+      "id": "cast:actor_a",
+      "name": "Actor A",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 50.0
+    },
+    {
+      "id": "cast:actor_b",
+      "name": "Actor B",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 40.0
+    },
+    {
+      "id": "loc:studio",
+      "name": "Studio Floor",
+      "capacity": 1,
+      "resource_type": "location",
+      "cost_per_time_unit": 30.0
+    },
+    {
+      "id": "loc:outdoor",
+      "name": "Outdoor Garden",
+      "capacity": 1,
+      "resource_type": "location",
+      "cost_per_time_unit": 20.0
+    }
+  ],
+  "tasks": [
+    {
+      "id": "shot_01",
+      "name": "Product Intro Shot",
+      "duration": 45,
+      "required_resources": ["loc:studio", "cast:actor_a"]
+    },
+    {
+      "id": "shot_02",
+      "name": "Dialogue Scene",
+      "duration": 60,
+      "required_resources": ["loc:studio", "cast:actor_a", "cast:actor_b"],
+      "dependencies": ["shot_01"]
+    },
+    {
+      "id": "shot_03",
+      "name": "Actor B Reaction",
+      "duration": 30,
+      "required_resources": ["loc:studio", "cast:actor_b"]
+    },
+    {
+      "id": "shot_04",
+      "name": "Garden Reveal",
+      "duration": 50,
+      "required_resources": ["loc:outdoor", "cast:actor_a"],
+      "dependencies": ["shot_02"]
+    },
+    {
+      "id": "shot_05",
+      "name": "Garden Ending",
+      "duration": 40,
+      "required_resources": ["loc:outdoor", "cast:actor_a", "cast:actor_b"],
+      "dependencies": ["shot_04"]
+    }
+  ],
+  "transitions": [
+    {
+      "resource_id": "loc:studio",
+      "default_buffer": 15
+    },
+    {
+      "resource_id": "loc:outdoor",
+      "default_buffer": 15
+    }
+  ],
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 150,
+    "max_makespan": 350,
+    "expected_task_count": 5
+  }
+}
+

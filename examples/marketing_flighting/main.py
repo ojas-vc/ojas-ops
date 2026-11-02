@@ -1,58 +1,25 @@
-"""Multi-channel marketing campaign cadence and budget flighting example."""
+"""Multi-channel marketing campaign cadence and budget flighting example with scenario loading."""
+
+from __future__ import annotations
 
 __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from ojas_ops.adapters import MarketingFlightingScheduler
+import sys
+from pathlib import Path
+
+from ojas_ops.scenarios import run_scenario
 
 
 def main() -> None:
-    print("=== Ojas Ops: Multi-Channel Marketing Campaign Flighting ===")
-    mkt = MarketingFlightingScheduler(total_campaign_days=45)
-
-    # 1. Channels
-    mkt.add_channel("meta_paid", name="Meta Social Video", max_concurrent_flights=1)
-    mkt.add_channel("google_search", name="Google Intent Search", max_concurrent_flights=2)
-
-    # 2. Sequential campaign flights
-    mkt.add_flight(
-        id="teaser_video",
-        channel_id="meta_paid",
-        duration_days=5,
-        stage="teaser",
-        daily_budget=2000.0,
-    )
-    mkt.add_flight(
-        id="launch_blitz_meta",
-        channel_id="meta_paid",
-        duration_days=10,
-        stage="launch",
-        daily_budget=5000.0,
-        dependencies=["teaser_video"],
-    )
-    mkt.add_flight(
-        id="search_capture",
-        channel_id="google_search",
-        duration_days=15,
-        stage="sustained",
-        daily_budget=3000.0,
-        dependencies=["teaser_video"],
+    data_dir = Path(__file__).parent / "data"
+    scenario_path = (
+        Path(sys.argv[1]) if len(sys.argv) > 1 else data_dir / "q4_omnichannel_campaign.json"
     )
 
-    scheduler = mkt.build_scheduler()
-    result = scheduler.solve()
-    validation = scheduler.validate(result)
-
-    print(f"Status: {result.status.value}")
-    print(f"Total Campaign Horizon: {result.makespan} days")
-
-    for _tid, st in result.tasks.items():
-        print(
-            f" - [Day {st.start:02d} to Day {st.end:02d}] {st.task_id} ({st.duration} days) on {st.assigned_resources}"
-        )
-
-    print(f"Validation: {'VALID' if validation.is_valid else 'INVALID'}")
+    print(f"=== Ojas Ops: Multi-Channel Marketing Campaign Flighting ({scenario_path.name}) ===")
+    run_scenario(scenario_path)
 
 
 if __name__ == "__main__":

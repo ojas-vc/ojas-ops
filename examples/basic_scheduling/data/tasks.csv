@@ -1,0 +1,7 @@
+id,name,duration,required_resources,dependencies,cost,fixed_start
+t01_stamp_base,Stamp Base Frame,35,press_a;tech_lead,,150.0,
+t02_stamp_cover,Stamp Enclosure Cover,25,press_b,,100.0,
+t03_weld_chassis,Robotically Weld Chassis,45,welder_1,t01_stamp_base,200.0,
+t04_mount_components,Mount Internal Subsystems,60,assembly_line,t02_stamp_cover;t03_weld_chassis,300.0,
+t05_final_calibration,Final Sensor Calibration & QA,30,assembly_line;tech_lead,t04_mount_components,120.0,
+

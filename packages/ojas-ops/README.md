@@ -79,6 +79,7 @@ print(f"Validation: {'VALID' if validation.is_valid else 'INVALID'}")
 - **`validation`**: Independent deterministic feasibility verification without solver dependencies.
 - **`simulation`**: Operational disruption injection, schedule stability metrics, and reactive rescheduling.
 - **`adapters`**: 6 domain adapters for Film, Manufacturing, Healthcare, Academic Timetabling, Events, and Marketing.
+- **`scenarios`**: Typed scenario definitions (`ScenarioDefinition`), fast `msgspec` JSON & CSV loaders, synthetic large-scale benchmark generators, golden expected assertions verification, and execution runner (`run_scenario`).
 
 ---
 

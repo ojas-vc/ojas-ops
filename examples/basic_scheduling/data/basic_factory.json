@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "name": "Basic Factory & Auditorium Production Flow",
+    "description": "Multi-resource setup with cleaning blackout windows, target windows, and sequential precedence.",
+    "domain": "general",
+    "scale": "small",
+    "version": "1.0",
+    "tags": ["basic", "blackouts", "target_window", "precedence"]
+  },
+  "resources": [
+    {
+      "id": "main-auditorium",
+      "name": "Main Auditorium",
+      "capacity": 1,
+      "resource_type": "facility",
+      "cost_per_time_unit": 50.0,
+      "blackout_windows": [
+        { "start": 40, "end": 90, "label": "cleaning_and_reset" }
+      ]
+    },
+    {
+      "id": "av-console",
+      "name": "Audio-Visual Console",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 20.0
+    }
+  ],
+  "tasks": [
+    {
+      "id": "sound-check",
+      "name": "Sound & Acoustic Calibration",
+      "duration": 30,
+      "required_resources": ["main-auditorium", "av-console"]
+    },
+    {
+      "id": "rehearsal",
+      "name": "Lighting & Rehearsal",
+      "duration": 40,
+      "required_resources": ["av-console"]
+    },
+    {
+      "id": "keynote-launch",
+      "name": "Keynote Launch Event",
+      "duration": 60,
+      "required_resources": ["main-auditorium", "av-console"],
+      "dependencies": ["sound-check", "rehearsal"],
+      "time_window": {
+        "earliest_start": 100,
+        "latest_start": 140
+      }
+    }
+  ],
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 160,
+    "max_makespan": 200,
+    "expected_task_count": 3,
+    "task_assertions": {
+      "keynote-launch": {
+        "min_start": 100,
+        "max_end": 200
+      }
+    }
+  }
+}
+

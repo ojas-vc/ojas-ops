@@ -1,68 +1,23 @@
-"""Cultural, Panchang, and festival calendar-aware scheduling example."""
+"""Cultural, Panchang, and festival calendar-aware scheduling example with scenario loading."""
+
+from __future__ import annotations
 
 __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from ojas_ops import Scheduler
-from ojas_ops.calendars import CulturalCalendarProvider
-from ojas_ops.models import ResourceType
+import sys
+from pathlib import Path
+
+from ojas_ops.scenarios import run_scenario
 
 
 def main() -> None:
-    print("=== Ojas Ops: Cultural & Astrological Calendar Scheduling ===")
-    scheduler = Scheduler()
+    data_dir = Path(__file__).parent / "data"
+    scenario_path = Path(sys.argv[1]) if len(sys.argv) > 1 else data_dir / "temple_festival.json"
 
-    # 1. Cultural calendar with Rahu Kalam and Yamagandam blackouts enabled
-    cultural_cal = CulturalCalendarProvider(
-        horizon_days=7,
-        enable_rahu_kalam=True,
-        enable_yamagandam=True,
-    )
-
-    # 2. Add an auspicious Shubh Muhurat window on Day 0 (e.g. 11:00 to 13:00 = 660 to 780 mins)
-    cultural_cal.add_muhurat(
-        start=660,
-        end=780,
-        name="Vedic Shubh Muhurat",
-        task_id="inauguration_ceremony",
-    )
-
-    scheduler.add_calendar(cultural_cal)
-
-    # 3. Add resources and tasks
-    scheduler.add_resource("grand_hall", capacity=1, resource_type=ResourceType.FACILITY)
-
-    scheduler.add_task(
-        id="inauguration_ceremony",
-        duration=60,
-        name="Grand Inauguration & Foundation Stone Laying",
-        required_resources=["grand_hall"],
-    )
-
-    scheduler.add_task(
-        id="public_reception",
-        duration=90,
-        name="Public Reception & Cultural Performance",
-        required_resources=["grand_hall"],
-        dependencies=["inauguration_ceremony"],
-    )
-
-    scheduler.minimize("makespan")
-
-    result = scheduler.solve()
-    validation = scheduler.validate(result)
-
-    print(f"Status: {result.status.value}")
-    for tid, st in result.tasks.items():
-        print(f" - [{st.start:04d}m - {st.end:04d}m] {tid}: {st.duration} mins")
-
-    # Confirm inauguration falls inside the Muhurat window [660, 780]
-    inaug = result.tasks["inauguration_ceremony"]
-    print(f"Inauguration executed during: {inaug.start}m - {inaug.end}m (Target: 660m - 780m)")
-    assert 660 <= inaug.start and inaug.end <= 780
-
-    print(f"Independent Validation: {'VALID' if validation.is_valid else 'INVALID'}")
+    print(f"=== Ojas Ops: Cultural & Astrological Calendar Scheduling ({scenario_path.name}) ===")
+    run_scenario(scenario_path)
 
 
 if __name__ == "__main__":

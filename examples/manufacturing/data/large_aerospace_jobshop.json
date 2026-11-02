@@ -1,0 +1,1066 @@
+{
+  "metadata": {
+    "name": "Large Aerospace Machine Shop (10 Jobs x 4 Operations on 5 Machines)",
+    "description": "Synthetic sequence-dependent job shop scheduling benchmark.",
+    "domain": "manufacturing",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": [
+      "jobshop",
+      "manufacturing",
+      "transitions",
+      "benchmark"
+    ]
+  },
+  "horizon": null,
+  "resources": [
+    {
+      "id": "machine_01",
+      "name": "Workstation 01",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 23.14,
+      "regular_capacity_limit": null,
+      "skills": [],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "machine_02",
+      "name": "Workstation 02",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 25.23,
+      "regular_capacity_limit": null,
+      "skills": [],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "machine_03",
+      "name": "Workstation 03",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 44.43,
+      "regular_capacity_limit": null,
+      "skills": [],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "machine_04",
+      "name": "Workstation 04",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 26.46,
+      "regular_capacity_limit": null,
+      "skills": [],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "machine_05",
+      "name": "Workstation 05",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 74.07,
+      "regular_capacity_limit": null,
+      "skills": [],
+      "blackout_windows": [],
+      "metadata": {}
+    }
+  ],
+  "tasks": [
+    {
+      "id": "job_001_op_01",
+      "duration": 36,
+      "name": "Job 001 Step 1 (M05)",
+      "required_resources": [
+        "machine_05"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_001_op_02",
+      "duration": 18,
+      "name": "Job 001 Step 2 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_001_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_001_op_03",
+      "duration": 25,
+      "name": "Job 001 Step 3 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_001_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_001_op_04",
+      "duration": 23,
+      "name": "Job 001 Step 4 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_001_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_002_op_01",
+      "duration": 25,
+      "name": "Job 002 Step 1 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_002_op_02",
+      "duration": 15,
+      "name": "Job 002 Step 2 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_002_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_002_op_03",
+      "duration": 42,
+      "name": "Job 002 Step 3 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_002_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_002_op_04",
+      "duration": 20,
+      "name": "Job 002 Step 4 (M05)",
+      "required_resources": [
+        "machine_05"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_002_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_003_op_01",
+      "duration": 35,
+      "name": "Job 003 Step 1 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_003_op_02",
+      "duration": 43,
+      "name": "Job 003 Step 2 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_003_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_003_op_03",
+      "duration": 21,
+      "name": "Job 003 Step 3 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_003_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_003_op_04",
+      "duration": 17,
+      "name": "Job 003 Step 4 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_003_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_004_op_01",
+      "duration": 33,
+      "name": "Job 004 Step 1 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_004_op_02",
+      "duration": 42,
+      "name": "Job 004 Step 2 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_004_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_004_op_03",
+      "duration": 51,
+      "name": "Job 004 Step 3 (M05)",
+      "required_resources": [
+        "machine_05"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_004_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_004_op_04",
+      "duration": 45,
+      "name": "Job 004 Step 4 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_004_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_005_op_01",
+      "duration": 36,
+      "name": "Job 005 Step 1 (M05)",
+      "required_resources": [
+        "machine_05"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_005_op_02",
+      "duration": 48,
+      "name": "Job 005 Step 2 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_005_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_005_op_03",
+      "duration": 45,
+      "name": "Job 005 Step 3 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_005_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_005_op_04",
+      "duration": 28,
+      "name": "Job 005 Step 4 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_005_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_006_op_01",
+      "duration": 56,
+      "name": "Job 006 Step 1 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_006_op_02",
+      "duration": 47,
+      "name": "Job 006 Step 2 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_006_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_006_op_03",
+      "duration": 42,
+      "name": "Job 006 Step 3 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_006_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_006_op_04",
+      "duration": 58,
+      "name": "Job 006 Step 4 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_006_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_007_op_01",
+      "duration": 38,
+      "name": "Job 007 Step 1 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_007_op_02",
+      "duration": 47,
+      "name": "Job 007 Step 2 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_007_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_007_op_03",
+      "duration": 17,
+      "name": "Job 007 Step 3 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_007_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_007_op_04",
+      "duration": 56,
+      "name": "Job 007 Step 4 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_007_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_008_op_01",
+      "duration": 25,
+      "name": "Job 008 Step 1 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_008_op_02",
+      "duration": 36,
+      "name": "Job 008 Step 2 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_008_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_008_op_03",
+      "duration": 36,
+      "name": "Job 008 Step 3 (M05)",
+      "required_resources": [
+        "machine_05"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_008_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_008_op_04",
+      "duration": 50,
+      "name": "Job 008 Step 4 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_008_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_009_op_01",
+      "duration": 39,
+      "name": "Job 009 Step 1 (M05)",
+      "required_resources": [
+        "machine_05"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_009_op_02",
+      "duration": 51,
+      "name": "Job 009 Step 2 (M02)",
+      "required_resources": [
+        "machine_02"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_009_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_009_op_03",
+      "duration": 36,
+      "name": "Job 009 Step 3 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_009_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_009_op_04",
+      "duration": 16,
+      "name": "Job 009 Step 4 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_009_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_010_op_01",
+      "duration": 15,
+      "name": "Job 010 Step 1 (M04)",
+      "required_resources": [
+        "machine_04"
+      ],
+      "candidate_pools": [],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_010_op_02",
+      "duration": 37,
+      "name": "Job 010 Step 2 (M05)",
+      "required_resources": [
+        "machine_05"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_010_op_01"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_010_op_03",
+      "duration": 29,
+      "name": "Job 010 Step 3 (M03)",
+      "required_resources": [
+        "machine_03"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_010_op_02"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "job_010_op_04",
+      "duration": 40,
+      "name": "Job 010 Step 4 (M01)",
+      "required_resources": [
+        "machine_01"
+      ],
+      "candidate_pools": [],
+      "dependencies": [
+        "job_010_op_03"
+      ],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": null,
+      "cost": 0.0,
+      "metadata": {}
+    }
+  ],
+  "transitions": [
+    {
+      "resource_id": "machine_01",
+      "default_buffer": 10,
+      "matrix": {
+        "job_002_op_02,job_003_op_03": 5,
+        "job_002_op_02,job_005_op_03": 15,
+        "job_002_op_02,job_006_op_03": 20,
+        "job_002_op_02,job_007_op_01": 10,
+        "job_002_op_02,job_008_op_04": 20,
+        "job_002_op_02,job_009_op_04": 10,
+        "job_002_op_02,job_010_op_04": 10,
+        "job_003_op_03,job_002_op_02": 20,
+        "job_003_op_03,job_005_op_03": 20,
+        "job_003_op_03,job_006_op_03": 20,
+        "job_003_op_03,job_007_op_01": 5,
+        "job_003_op_03,job_008_op_04": 5,
+        "job_003_op_03,job_009_op_04": 10,
+        "job_003_op_03,job_010_op_04": 20,
+        "job_005_op_03,job_002_op_02": 10,
+        "job_005_op_03,job_003_op_03": 5,
+        "job_005_op_03,job_006_op_03": 15,
+        "job_005_op_03,job_007_op_01": 15,
+        "job_005_op_03,job_008_op_04": 15,
+        "job_005_op_03,job_009_op_04": 20,
+        "job_005_op_03,job_010_op_04": 20,
+        "job_006_op_03,job_002_op_02": 5,
+        "job_006_op_03,job_003_op_03": 5,
+        "job_006_op_03,job_005_op_03": 5,
+        "job_006_op_03,job_007_op_01": 15,
+        "job_006_op_03,job_008_op_04": 5,
+        "job_006_op_03,job_009_op_04": 5,
+        "job_006_op_03,job_010_op_04": 20,
+        "job_007_op_01,job_002_op_02": 5,
+        "job_007_op_01,job_003_op_03": 20,
+        "job_007_op_01,job_005_op_03": 5,
+        "job_007_op_01,job_006_op_03": 20,
+        "job_007_op_01,job_008_op_04": 5,
+        "job_007_op_01,job_009_op_04": 15,
+        "job_007_op_01,job_010_op_04": 15,
+        "job_008_op_04,job_002_op_02": 20,
+        "job_008_op_04,job_003_op_03": 5,
+        "job_008_op_04,job_005_op_03": 15,
+        "job_008_op_04,job_006_op_03": 20,
+        "job_008_op_04,job_007_op_01": 15,
+        "job_008_op_04,job_009_op_04": 5,
+        "job_008_op_04,job_010_op_04": 10,
+        "job_009_op_04,job_002_op_02": 20,
+        "job_009_op_04,job_003_op_03": 5,
+        "job_009_op_04,job_005_op_03": 10,
+        "job_009_op_04,job_006_op_03": 15,
+        "job_009_op_04,job_007_op_01": 10,
+        "job_009_op_04,job_008_op_04": 5,
+        "job_009_op_04,job_010_op_04": 5,
+        "job_010_op_04,job_002_op_02": 20,
+        "job_010_op_04,job_003_op_03": 15,
+        "job_010_op_04,job_005_op_03": 10,
+        "job_010_op_04,job_006_op_03": 15,
+        "job_010_op_04,job_007_op_01": 20,
+        "job_010_op_04,job_008_op_04": 15,
+        "job_010_op_04,job_009_op_04": 10
+      }
+    },
+    {
+      "resource_id": "machine_02",
+      "default_buffer": 10,
+      "matrix": {
+        "job_001_op_02,job_002_op_01": 15,
+        "job_001_op_02,job_003_op_01": 5,
+        "job_001_op_02,job_004_op_04": 10,
+        "job_001_op_02,job_005_op_02": 20,
+        "job_001_op_02,job_006_op_02": 20,
+        "job_001_op_02,job_007_op_02": 5,
+        "job_001_op_02,job_009_op_02": 10,
+        "job_002_op_01,job_001_op_02": 20,
+        "job_002_op_01,job_003_op_01": 5,
+        "job_002_op_01,job_004_op_04": 15,
+        "job_002_op_01,job_005_op_02": 20,
+        "job_002_op_01,job_006_op_02": 20,
+        "job_002_op_01,job_007_op_02": 15,
+        "job_002_op_01,job_009_op_02": 20,
+        "job_003_op_01,job_001_op_02": 5,
+        "job_003_op_01,job_002_op_01": 10,
+        "job_003_op_01,job_004_op_04": 15,
+        "job_003_op_01,job_005_op_02": 10,
+        "job_003_op_01,job_006_op_02": 15,
+        "job_003_op_01,job_007_op_02": 5,
+        "job_003_op_01,job_009_op_02": 15,
+        "job_004_op_04,job_001_op_02": 10,
+        "job_004_op_04,job_002_op_01": 15,
+        "job_004_op_04,job_003_op_01": 5,
+        "job_004_op_04,job_005_op_02": 15,
+        "job_004_op_04,job_006_op_02": 10,
+        "job_004_op_04,job_007_op_02": 10,
+        "job_004_op_04,job_009_op_02": 15,
+        "job_005_op_02,job_001_op_02": 15,
+        "job_005_op_02,job_002_op_01": 20,
+        "job_005_op_02,job_003_op_01": 5,
+        "job_005_op_02,job_004_op_04": 5,
+        "job_005_op_02,job_006_op_02": 10,
+        "job_005_op_02,job_007_op_02": 10,
+        "job_005_op_02,job_009_op_02": 5,
+        "job_006_op_02,job_001_op_02": 10,
+        "job_006_op_02,job_002_op_01": 15,
+        "job_006_op_02,job_003_op_01": 10,
+        "job_006_op_02,job_004_op_04": 5,
+        "job_006_op_02,job_005_op_02": 15,
+        "job_006_op_02,job_007_op_02": 5,
+        "job_006_op_02,job_009_op_02": 15,
+        "job_007_op_02,job_001_op_02": 10,
+        "job_007_op_02,job_002_op_01": 10,
+        "job_007_op_02,job_003_op_01": 20,
+        "job_007_op_02,job_004_op_04": 20,
+        "job_007_op_02,job_005_op_02": 20,
+        "job_007_op_02,job_006_op_02": 5,
+        "job_007_op_02,job_009_op_02": 15,
+        "job_009_op_02,job_001_op_02": 20,
+        "job_009_op_02,job_002_op_01": 15,
+        "job_009_op_02,job_003_op_01": 20,
+        "job_009_op_02,job_004_op_04": 10,
+        "job_009_op_02,job_005_op_02": 10,
+        "job_009_op_02,job_006_op_02": 5,
+        "job_009_op_02,job_007_op_02": 20
+      }
+    },
+    {
+      "resource_id": "machine_03",
+      "default_buffer": 10,
+      "matrix": {
+        "job_001_op_03,job_003_op_02": 15,
+        "job_001_op_03,job_004_op_02": 5,
+        "job_001_op_03,job_006_op_04": 5,
+        "job_001_op_03,job_007_op_03": 15,
+        "job_001_op_03,job_008_op_02": 20,
+        "job_001_op_03,job_009_op_03": 15,
+        "job_001_op_03,job_010_op_03": 20,
+        "job_003_op_02,job_001_op_03": 15,
+        "job_003_op_02,job_004_op_02": 15,
+        "job_003_op_02,job_006_op_04": 10,
+        "job_003_op_02,job_007_op_03": 20,
+        "job_003_op_02,job_008_op_02": 15,
+        "job_003_op_02,job_009_op_03": 10,
+        "job_003_op_02,job_010_op_03": 10,
+        "job_004_op_02,job_001_op_03": 20,
+        "job_004_op_02,job_003_op_02": 5,
+        "job_004_op_02,job_006_op_04": 20,
+        "job_004_op_02,job_007_op_03": 20,
+        "job_004_op_02,job_008_op_02": 15,
+        "job_004_op_02,job_009_op_03": 10,
+        "job_004_op_02,job_010_op_03": 20,
+        "job_006_op_04,job_001_op_03": 15,
+        "job_006_op_04,job_003_op_02": 5,
+        "job_006_op_04,job_004_op_02": 15,
+        "job_006_op_04,job_007_op_03": 5,
+        "job_006_op_04,job_008_op_02": 15,
+        "job_006_op_04,job_009_op_03": 15,
+        "job_006_op_04,job_010_op_03": 5,
+        "job_007_op_03,job_001_op_03": 20,
+        "job_007_op_03,job_003_op_02": 5,
+        "job_007_op_03,job_004_op_02": 20,
+        "job_007_op_03,job_006_op_04": 15,
+        "job_007_op_03,job_008_op_02": 5,
+        "job_007_op_03,job_009_op_03": 20,
+        "job_007_op_03,job_010_op_03": 15,
+        "job_008_op_02,job_001_op_03": 10,
+        "job_008_op_02,job_003_op_02": 20,
+        "job_008_op_02,job_004_op_02": 15,
+        "job_008_op_02,job_006_op_04": 20,
+        "job_008_op_02,job_007_op_03": 15,
+        "job_008_op_02,job_009_op_03": 10,
+        "job_008_op_02,job_010_op_03": 20,
+        "job_009_op_03,job_001_op_03": 15,
+        "job_009_op_03,job_003_op_02": 15,
+        "job_009_op_03,job_004_op_02": 5,
+        "job_009_op_03,job_006_op_04": 10,
+        "job_009_op_03,job_007_op_03": 5,
+        "job_009_op_03,job_008_op_02": 5,
+        "job_009_op_03,job_010_op_03": 20,
+        "job_010_op_03,job_001_op_03": 20,
+        "job_010_op_03,job_003_op_02": 10,
+        "job_010_op_03,job_004_op_02": 20,
+        "job_010_op_03,job_006_op_04": 5,
+        "job_010_op_03,job_007_op_03": 20,
+        "job_010_op_03,job_008_op_02": 10,
+        "job_010_op_03,job_009_op_03": 15
+      }
+    },
+    {
+      "resource_id": "machine_04",
+      "default_buffer": 10,
+      "matrix": {
+        "job_001_op_04,job_002_op_03": 15,
+        "job_001_op_04,job_003_op_04": 10,
+        "job_001_op_04,job_004_op_01": 5,
+        "job_001_op_04,job_005_op_04": 20,
+        "job_001_op_04,job_006_op_01": 15,
+        "job_001_op_04,job_007_op_04": 5,
+        "job_001_op_04,job_008_op_01": 15,
+        "job_001_op_04,job_010_op_01": 20,
+        "job_002_op_03,job_001_op_04": 10,
+        "job_002_op_03,job_003_op_04": 5,
+        "job_002_op_03,job_004_op_01": 15,
+        "job_002_op_03,job_005_op_04": 15,
+        "job_002_op_03,job_006_op_01": 10,
+        "job_002_op_03,job_007_op_04": 20,
+        "job_002_op_03,job_008_op_01": 15,
+        "job_002_op_03,job_010_op_01": 20,
+        "job_003_op_04,job_001_op_04": 5,
+        "job_003_op_04,job_002_op_03": 5,
+        "job_003_op_04,job_004_op_01": 20,
+        "job_003_op_04,job_005_op_04": 10,
+        "job_003_op_04,job_006_op_01": 10,
+        "job_003_op_04,job_007_op_04": 5,
+        "job_003_op_04,job_008_op_01": 15,
+        "job_003_op_04,job_010_op_01": 10,
+        "job_004_op_01,job_001_op_04": 10,
+        "job_004_op_01,job_002_op_03": 15,
+        "job_004_op_01,job_003_op_04": 20,
+        "job_004_op_01,job_005_op_04": 20,
+        "job_004_op_01,job_006_op_01": 10,
+        "job_004_op_01,job_007_op_04": 15,
+        "job_004_op_01,job_008_op_01": 5,
+        "job_004_op_01,job_010_op_01": 5,
+        "job_005_op_04,job_001_op_04": 20,
+        "job_005_op_04,job_002_op_03": 15,
+        "job_005_op_04,job_003_op_04": 10,
+        "job_005_op_04,job_004_op_01": 5,
+        "job_005_op_04,job_006_op_01": 20,
+        "job_005_op_04,job_007_op_04": 20,
+        "job_005_op_04,job_008_op_01": 20,
+        "job_005_op_04,job_010_op_01": 5,
+        "job_006_op_01,job_001_op_04": 5,
+        "job_006_op_01,job_002_op_03": 20,
+        "job_006_op_01,job_003_op_04": 20,
+        "job_006_op_01,job_004_op_01": 15,
+        "job_006_op_01,job_005_op_04": 10,
+        "job_006_op_01,job_007_op_04": 20,
+        "job_006_op_01,job_008_op_01": 10,
+        "job_006_op_01,job_010_op_01": 10,
+        "job_007_op_04,job_001_op_04": 10,
+        "job_007_op_04,job_002_op_03": 10,
+        "job_007_op_04,job_003_op_04": 5,
+        "job_007_op_04,job_004_op_01": 10,
+        "job_007_op_04,job_005_op_04": 10,
+        "job_007_op_04,job_006_op_01": 5,
+        "job_007_op_04,job_008_op_01": 20,
+        "job_007_op_04,job_010_op_01": 5,
+        "job_008_op_01,job_001_op_04": 5,
+        "job_008_op_01,job_002_op_03": 20,
+        "job_008_op_01,job_003_op_04": 15,
+        "job_008_op_01,job_004_op_01": 5,
+        "job_008_op_01,job_005_op_04": 5,
+        "job_008_op_01,job_006_op_01": 10,
+        "job_008_op_01,job_007_op_04": 20,
+        "job_008_op_01,job_010_op_01": 15,
+        "job_010_op_01,job_001_op_04": 10,
+        "job_010_op_01,job_002_op_03": 15,
+        "job_010_op_01,job_003_op_04": 5,
+        "job_010_op_01,job_004_op_01": 15,
+        "job_010_op_01,job_005_op_04": 15,
+        "job_010_op_01,job_006_op_01": 10,
+        "job_010_op_01,job_007_op_04": 5,
+        "job_010_op_01,job_008_op_01": 15
+      }
+    },
+    {
+      "resource_id": "machine_05",
+      "default_buffer": 10,
+      "matrix": {
+        "job_001_op_01,job_002_op_04": 10,
+        "job_001_op_01,job_004_op_03": 20,
+        "job_001_op_01,job_005_op_01": 10,
+        "job_001_op_01,job_008_op_03": 20,
+        "job_001_op_01,job_009_op_01": 10,
+        "job_001_op_01,job_010_op_02": 20,
+        "job_002_op_04,job_001_op_01": 20,
+        "job_002_op_04,job_004_op_03": 10,
+        "job_002_op_04,job_005_op_01": 20,
+        "job_002_op_04,job_008_op_03": 5,
+        "job_002_op_04,job_009_op_01": 20,
+        "job_002_op_04,job_010_op_02": 5,
+        "job_004_op_03,job_001_op_01": 15,
+        "job_004_op_03,job_002_op_04": 10,
+        "job_004_op_03,job_005_op_01": 20,
+        "job_004_op_03,job_008_op_03": 5,
+        "job_004_op_03,job_009_op_01": 10,
+        "job_004_op_03,job_010_op_02": 5,
+        "job_005_op_01,job_001_op_01": 20,
+        "job_005_op_01,job_002_op_04": 15,
+        "job_005_op_01,job_004_op_03": 5,
+        "job_005_op_01,job_008_op_03": 20,
+        "job_005_op_01,job_009_op_01": 15,
+        "job_005_op_01,job_010_op_02": 15,
+        "job_008_op_03,job_001_op_01": 15,
+        "job_008_op_03,job_002_op_04": 10,
+        "job_008_op_03,job_004_op_03": 20,
+        "job_008_op_03,job_005_op_01": 5,
+        "job_008_op_03,job_009_op_01": 5,
+        "job_008_op_03,job_010_op_02": 5,
+        "job_009_op_01,job_001_op_01": 15,
+        "job_009_op_01,job_002_op_04": 5,
+        "job_009_op_01,job_004_op_03": 10,
+        "job_009_op_01,job_005_op_01": 20,
+        "job_009_op_01,job_008_op_03": 10,
+        "job_009_op_01,job_010_op_02": 20,
+        "job_010_op_02,job_001_op_01": 10,
+        "job_010_op_02,job_002_op_04": 20,
+        "job_010_op_02,job_004_op_03": 10,
+        "job_010_op_02,job_005_op_01": 5,
+        "job_010_op_02,job_008_op_03": 10,
+        "job_010_op_02,job_009_op_01": 5
+      }
+    }
+  ],
+  "workloads": [],
+  "calendar": null,
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0,
+    "sub_objectives": []
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "max_makespan": 1200,
+    "min_makespan": null,
+    "max_objective_value": null,
+    "expected_task_count": 40,
+    "task_assertions": {}
+  }
+}

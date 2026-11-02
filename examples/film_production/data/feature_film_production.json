@@ -1,0 +1,200 @@
+{
+  "metadata": {
+    "name": "Feature Film Production (15 Scenes, 4 Cast, 3 Locations)",
+    "description": "Multi-location narrative film shoot with actor availability, turnaround buffers, and precedence constraints.",
+    "domain": "film_production",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": ["film", "production", "turnaround", "cast", "locations"]
+  },
+  "resources": [
+    {
+      "id": "cast:lead_actor",
+      "name": "Lead Star",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 100.0,
+      "blackout_windows": [
+        { "start": 400, "end": 500, "label": "mandatory_press_briefing" }
+      ]
+    },
+    {
+      "id": "cast:supporting_actor",
+      "name": "Supporting Artist",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 40.0
+    },
+    {
+      "id": "cast:villain_actor",
+      "name": "Antagonist",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 60.0
+    },
+    {
+      "id": "cast:cameo_star",
+      "name": "Celebrity Cameo",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 200.0
+    },
+    {
+      "id": "loc:palace_courtyard",
+      "name": "Palace Courtyard",
+      "capacity": 1,
+      "resource_type": "location",
+      "cost_per_time_unit": 50.0
+    },
+    {
+      "id": "loc:studio_stage_b",
+      "name": "Soundstage B",
+      "capacity": 1,
+      "resource_type": "location",
+      "cost_per_time_unit": 35.0
+    },
+    {
+      "id": "loc:exterior_forest",
+      "name": "Forest Clearing",
+      "capacity": 1,
+      "resource_type": "location",
+      "cost_per_time_unit": 25.0
+    }
+  ],
+  "tasks": [
+    {
+      "id": "scene_01",
+      "name": "Scene 1 (Arrival at Palace)",
+      "duration": 90,
+      "required_resources": ["loc:palace_courtyard", "cast:lead_actor"]
+    },
+    {
+      "id": "scene_02",
+      "name": "Scene 2 (Courtyard Dialogue)",
+      "duration": 120,
+      "required_resources": ["loc:palace_courtyard", "cast:lead_actor", "cast:supporting_actor"],
+      "dependencies": ["scene_01"]
+    },
+    {
+      "id": "scene_03",
+      "name": "Scene 3 (Palace Confrontation)",
+      "duration": 80,
+      "required_resources": ["loc:palace_courtyard", "cast:lead_actor", "cast:villain_actor"],
+      "dependencies": ["scene_02"]
+    },
+    {
+      "id": "scene_04",
+      "name": "Scene 4 (Secret Alliance)",
+      "duration": 60,
+      "required_resources": ["loc:palace_courtyard", "cast:supporting_actor", "cast:villain_actor"]
+    },
+    {
+      "id": "scene_05",
+      "name": "Scene 5 (Studio Fight Choreography)",
+      "duration": 150,
+      "required_resources": ["loc:studio_stage_b", "cast:villain_actor"]
+    },
+    {
+      "id": "scene_06",
+      "name": "Scene 6 (Lead Introspection)",
+      "duration": 90,
+      "required_resources": ["loc:studio_stage_b", "cast:lead_actor"],
+      "dependencies": ["scene_03"]
+    },
+    {
+      "id": "scene_07",
+      "name": "Scene 7 (Supporting Subplot)",
+      "duration": 75,
+      "required_resources": ["loc:studio_stage_b", "cast:supporting_actor"]
+    },
+    {
+      "id": "scene_08",
+      "name": "Scene 8 (Cameo Revelation)",
+      "duration": 60,
+      "required_resources": ["loc:studio_stage_b", "cast:cameo_star", "cast:lead_actor"],
+      "dependencies": ["scene_06"]
+    },
+    {
+      "id": "scene_09",
+      "name": "Scene 9 (Forest Chase)",
+      "duration": 110,
+      "required_resources": ["loc:exterior_forest", "cast:lead_actor", "cast:villain_actor"],
+      "dependencies": ["scene_05"]
+    },
+    {
+      "id": "scene_10",
+      "name": "Scene 10 (Campfire Strategy)",
+      "duration": 70,
+      "required_resources": ["loc:exterior_forest", "cast:lead_actor", "cast:supporting_actor"]
+    },
+    {
+      "id": "scene_11",
+      "name": "Scene 11 (Ambush Encounter)",
+      "duration": 85,
+      "required_resources": ["loc:exterior_forest", "cast:villain_actor"]
+    },
+    {
+      "id": "scene_12",
+      "name": "Scene 12 (Climactic Battle)",
+      "duration": 140,
+      "required_resources": ["loc:exterior_forest", "cast:lead_actor", "cast:villain_actor", "cast:supporting_actor"],
+      "dependencies": ["scene_08", "scene_09"]
+    },
+    {
+      "id": "scene_13",
+      "name": "Scene 13 (Forest Aftermath)",
+      "duration": 50,
+      "required_resources": ["loc:exterior_forest", "cast:lead_actor", "cast:supporting_actor"],
+      "dependencies": ["scene_12"]
+    },
+    {
+      "id": "scene_14",
+      "name": "Scene 14 (Courtyard Epilogue)",
+      "duration": 60,
+      "required_resources": ["loc:palace_courtyard", "cast:lead_actor", "cast:supporting_actor"],
+      "dependencies": ["scene_13"]
+    },
+    {
+      "id": "scene_15",
+      "name": "Scene 15 (Post-Credits Cameo Teaser)",
+      "duration": 40,
+      "required_resources": ["loc:studio_stage_b", "cast:cameo_star"],
+      "dependencies": ["scene_14"]
+    }
+  ],
+  "transitions": [
+    {
+      "resource_id": "loc:palace_courtyard",
+      "default_buffer": 30
+    },
+    {
+      "resource_id": "loc:studio_stage_b",
+      "default_buffer": 20
+    },
+    {
+      "resource_id": "loc:exterior_forest",
+      "default_buffer": 25
+    }
+  ],
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 600,
+    "max_makespan": 1500,
+    "expected_task_count": 15,
+    "task_assertions": {
+      "scene_01": {
+        "assigned_resource": "cast:lead_actor"
+      },
+      "scene_15": {
+        "min_start": 600
+      }
+    }
+  }
+}
+

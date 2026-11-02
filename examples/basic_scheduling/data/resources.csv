@@ -1,0 +1,7 @@
+id,name,capacity,resource_type,cost_per_time_unit,skills
+press_a,Hydraulic Press A,1,machine,45.0,stamping;forming
+press_b,Hydraulic Press B,1,machine,50.0,stamping;high_precision
+welder_1,Robotic Welder 1,1,machine,60.0,welding;tig
+assembly_line,Main Assembly Conveyor,2,facility,80.0,assembly
+tech_lead,Senior Manufacturing Tech,1,person,65.0,inspection;calibration
+

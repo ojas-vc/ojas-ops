@@ -1,0 +1,128 @@
+{
+  "metadata": {
+    "name": "Q4 Omni-Channel Marketing Campaign Flighting",
+    "description": "Multi-phase campaign cadence across Meta, Google Search, CTV, and LinkedIn with channel saturation limits and precedence stages.",
+    "domain": "marketing",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": ["marketing", "flighting", "channels", "cadence", "campaign"]
+  },
+  "horizon": {
+    "start": 0,
+    "end": 60,
+    "granularity": 1
+  },
+  "resources": [
+    {
+      "id": "channel_meta_video",
+      "name": "Meta Reels & Video",
+      "capacity": 1,
+      "resource_type": "channel",
+      "cost_per_time_unit": 2500.0
+    },
+    {
+      "id": "channel_google_search",
+      "name": "Google High-Intent Search",
+      "capacity": 2,
+      "resource_type": "channel",
+      "cost_per_time_unit": 4000.0
+    },
+    {
+      "id": "channel_ctv_streaming",
+      "name": "Connected TV OTT Video",
+      "capacity": 1,
+      "resource_type": "channel",
+      "cost_per_time_unit": 6000.0
+    },
+    {
+      "id": "channel_linkedin_b2b",
+      "name": "LinkedIn Sponsored InFeed",
+      "capacity": 1,
+      "resource_type": "channel",
+      "cost_per_time_unit": 3500.0
+    }
+  ],
+  "tasks": [
+    {
+      "id": "teaser_meta_reels",
+      "name": "Teaser: Short-Form Mystery Reels",
+      "duration": 5,
+      "required_resources": ["channel_meta_video"],
+      "cost": 12500.0
+    },
+    {
+      "id": "ctv_brand_anthem",
+      "name": "Launch: 30s Brand Anthem OTT",
+      "duration": 14,
+      "required_resources": ["channel_ctv_streaming"],
+      "dependencies": ["teaser_meta_reels"],
+      "cost": 84000.0
+    },
+    {
+      "id": "google_search_brand",
+      "name": "Launch: Brand & Core Keyword Capture",
+      "duration": 28,
+      "required_resources": ["channel_google_search"],
+      "dependencies": ["teaser_meta_reels"],
+      "cost": 112000.0
+    },
+    {
+      "id": "meta_creator_testimonials",
+      "name": "Consideration: Creator Social Proof",
+      "duration": 10,
+      "required_resources": ["channel_meta_video"],
+      "dependencies": ["teaser_meta_reels"],
+      "cost": 25000.0
+    },
+    {
+      "id": "linkedin_exec_thought_leadership",
+      "name": "Consideration: B2B Whitepaper & Case Studies",
+      "duration": 15,
+      "required_resources": ["channel_linkedin_b2b"],
+      "dependencies": ["meta_creator_testimonials"],
+      "cost": 52500.0
+    },
+    {
+      "id": "google_search_competitor",
+      "name": "Conversion: High-Intent Competitor Terms",
+      "duration": 14,
+      "required_resources": ["channel_google_search"],
+      "dependencies": ["google_search_brand"],
+      "cost": 56000.0
+    },
+    {
+      "id": "meta_retargeting_offer",
+      "name": "Conversion: Limited-Time Promotion Push",
+      "duration": 7,
+      "required_resources": ["channel_meta_video"],
+      "dependencies": ["meta_creator_testimonials"],
+      "cost": 17500.0
+    },
+    {
+      "id": "q4_campaign_wrap",
+      "name": "Holiday Retention & Year-End Wrap-Up",
+      "duration": 5,
+      "required_resources": ["channel_meta_video", "channel_linkedin_b2b"],
+      "dependencies": ["meta_retargeting_offer", "linkedin_exec_thought_leadership"],
+      "cost": 30000.0
+    }
+  ],
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 30,
+    "max_makespan": 60,
+    "expected_task_count": 8,
+    "task_assertions": {
+      "q4_campaign_wrap": {
+        "min_start": 27
+      }
+    }
+  }
+}
+

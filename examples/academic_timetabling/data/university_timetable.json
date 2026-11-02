@@ -1,0 +1,150 @@
+{
+  "metadata": {
+    "name": "University Department Timetabling (4 Faculty, 3 Rooms, 2 Cohorts, 10 Classes)",
+    "description": "Academic course scheduling preventing faculty, student cohort, and room collisions with specialized lab requirements.",
+    "domain": "academic",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": ["academic", "timetabling", "faculty", "cohorts", "classrooms"]
+  },
+  "horizon": {
+    "start": 0,
+    "end": 600,
+    "granularity": 1
+  },
+  "resources": [
+    {
+      "id": "prof_shannon",
+      "name": "Prof. Claude Shannon",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "prof_hopper",
+      "name": "Prof. Grace Hopper",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "prof_knuth",
+      "name": "Prof. Donald Knuth",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "prof_lovelace",
+      "name": "Prof. Ada Lovelace",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "lecture_hall_a",
+      "name": "Lecture Hall A (120 cap)",
+      "capacity": 1,
+      "resource_type": "facility"
+    },
+    {
+      "id": "lecture_hall_b",
+      "name": "Lecture Hall B (80 cap)",
+      "capacity": 1,
+      "resource_type": "facility"
+    },
+    {
+      "id": "computer_lab_1",
+      "name": "Computing Systems Lab 1",
+      "capacity": 1,
+      "resource_type": "facility"
+    },
+    {
+      "id": "cohort_cs_seniors",
+      "name": "CS Seniors Cohort",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "cohort_ds_juniors",
+      "name": "Data Science Juniors Cohort",
+      "capacity": 1,
+      "resource_type": "person"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "cs401_info_theory_lec",
+      "name": "CS401: Information Theory Lecture",
+      "duration": 90,
+      "required_resources": ["prof_shannon", "lecture_hall_a", "cohort_cs_seniors"]
+    },
+    {
+      "id": "cs401_info_theory_lab",
+      "name": "CS401: Coding Theory Lab",
+      "duration": 60,
+      "required_resources": ["prof_shannon", "computer_lab_1", "cohort_cs_seniors"],
+      "dependencies": ["cs401_info_theory_lec"]
+    },
+    {
+      "id": "cs302_compilers_lec",
+      "name": "CS302: Compiler Architecture Lecture",
+      "duration": 90,
+      "required_resources": ["prof_hopper", "lecture_hall_b", "cohort_cs_seniors"]
+    },
+    {
+      "id": "cs302_compilers_lab",
+      "name": "CS302: Compiler Parser Lab",
+      "duration": 90,
+      "required_resources": ["prof_hopper", "computer_lab_1", "cohort_cs_seniors"],
+      "dependencies": ["cs302_compilers_lec"]
+    },
+    {
+      "id": "ds201_stats_lec",
+      "name": "DS201: Probability & Stats Lecture",
+      "duration": 90,
+      "required_resources": ["prof_knuth", "lecture_hall_a", "cohort_ds_juniors"]
+    },
+    {
+      "id": "ds201_stats_recitation",
+      "name": "DS201: Stats Problem Recitation",
+      "duration": 60,
+      "required_resources": ["prof_knuth", "lecture_hall_b", "cohort_ds_juniors"],
+      "dependencies": ["ds201_stats_lec"]
+    },
+    {
+      "id": "ds305_ml_algorithms_lec",
+      "name": "DS305: Machine Learning Algorithms",
+      "duration": 90,
+      "required_resources": ["prof_lovelace", "lecture_hall_a", "cohort_ds_juniors"]
+    },
+    {
+      "id": "ds305_ml_lab",
+      "name": "DS305: GPU Modeling Lab",
+      "duration": 90,
+      "required_resources": ["prof_lovelace", "computer_lab_1", "cohort_ds_juniors"],
+      "dependencies": ["ds305_ml_algorithms_lec"]
+    },
+    {
+      "id": "cs499_senior_capstone",
+      "name": "CS499: Senior Capstone Presentations",
+      "duration": 120,
+      "required_resources": ["prof_hopper", "prof_shannon", "lecture_hall_a", "cohort_cs_seniors"],
+      "dependencies": ["cs401_info_theory_lab", "cs302_compilers_lab"]
+    },
+    {
+      "id": "faculty_senate_meeting",
+      "name": "Faculty Departmental Meeting",
+      "duration": 60,
+      "required_resources": ["prof_shannon", "prof_hopper", "prof_knuth", "prof_lovelace", "lecture_hall_b"]
+    }
+  ],
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 350,
+    "max_makespan": 600,
+    "expected_task_count": 10
+  }
+}

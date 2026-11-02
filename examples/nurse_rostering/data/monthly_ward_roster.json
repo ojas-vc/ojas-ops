@@ -1,0 +1,1792 @@
+{
+  "metadata": {
+    "name": "Large Hospital Multi-Ward Roster (20 Staff across 45 Shifts, 5 Days)",
+    "description": "Synthetic workforce qualification and minimum rest rest-rostering scenario.",
+    "domain": "healthcare",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": [
+      "workforce",
+      "rostering",
+      "candidate_pools",
+      "rest_constraint"
+    ]
+  },
+  "horizon": {
+    "start": 0,
+    "end": 7200,
+    "granularity": 1
+  },
+  "resources": [
+    {
+      "id": "staff_001",
+      "name": "Nurse 001",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 40.28,
+      "regular_capacity_limit": null,
+      "skills": [
+        "icu",
+        "pediatric",
+        "triage",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_002",
+      "name": "Nurse 002",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 74.78,
+      "regular_capacity_limit": null,
+      "skills": [
+        "emergency",
+        "icu",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_003",
+      "name": "Nurse 003",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 45.58,
+      "regular_capacity_limit": null,
+      "skills": [
+        "triage",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_004",
+      "name": "Nurse 004",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 70.22,
+      "regular_capacity_limit": null,
+      "skills": [
+        "icu",
+        "emergency",
+        "triage",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_005",
+      "name": "Nurse 005",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 37.99,
+      "regular_capacity_limit": null,
+      "skills": [
+        "pediatric",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_006",
+      "name": "Nurse 006",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 60.69,
+      "regular_capacity_limit": null,
+      "skills": [
+        "triage",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_007",
+      "name": "Nurse 007",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 48.23,
+      "regular_capacity_limit": null,
+      "skills": [
+        "triage",
+        "general",
+        "emergency"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_008",
+      "name": "Nurse 008",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 70.34,
+      "regular_capacity_limit": null,
+      "skills": [
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_009",
+      "name": "Nurse 009",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 61.45,
+      "regular_capacity_limit": null,
+      "skills": [
+        "pediatric",
+        "emergency",
+        "icu",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_010",
+      "name": "Nurse 010",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 64.95,
+      "regular_capacity_limit": null,
+      "skills": [
+        "pediatric",
+        "icu",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_011",
+      "name": "Nurse 011",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 63.9,
+      "regular_capacity_limit": null,
+      "skills": [
+        "icu",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_012",
+      "name": "Nurse 012",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 69.0,
+      "regular_capacity_limit": null,
+      "skills": [
+        "triage",
+        "pediatric",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_013",
+      "name": "Nurse 013",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 53.14,
+      "regular_capacity_limit": null,
+      "skills": [
+        "icu",
+        "triage",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_014",
+      "name": "Nurse 014",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 71.55,
+      "regular_capacity_limit": null,
+      "skills": [
+        "pediatric",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_015",
+      "name": "Nurse 015",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 39.08,
+      "regular_capacity_limit": null,
+      "skills": [
+        "triage",
+        "general",
+        "icu"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_016",
+      "name": "Nurse 016",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 35.65,
+      "regular_capacity_limit": null,
+      "skills": [
+        "triage",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_017",
+      "name": "Nurse 017",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 53.77,
+      "regular_capacity_limit": null,
+      "skills": [
+        "emergency",
+        "triage",
+        "icu",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_018",
+      "name": "Nurse 018",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 74.78,
+      "regular_capacity_limit": null,
+      "skills": [
+        "pediatric",
+        "icu",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_019",
+      "name": "Nurse 019",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 55.95,
+      "regular_capacity_limit": null,
+      "skills": [
+        "pediatric",
+        "general"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    },
+    {
+      "id": "staff_020",
+      "name": "Nurse 020",
+      "capacity": 1,
+      "resource_type": "person",
+      "cost_per_time_unit": 69.28,
+      "regular_capacity_limit": null,
+      "skills": [
+        "general",
+        "icu"
+      ],
+      "blackout_windows": [],
+      "metadata": {}
+    }
+  ],
+  "tasks": [
+    {
+      "id": "shift_001",
+      "duration": 480,
+      "name": "Shift 001 (ICU - Day 1 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 0,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_002",
+      "duration": 480,
+      "name": "Shift 002 (EMERGENCY - Day 1 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 480,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_003",
+      "duration": 480,
+      "name": "Shift 003 (PEDIATRIC - Day 1 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 960,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_004",
+      "duration": 480,
+      "name": "Shift 004 (GENERAL - Day 2 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 1440,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_005",
+      "duration": 480,
+      "name": "Shift 005 (EMERGENCY - Day 2 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 1920,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_006",
+      "duration": 480,
+      "name": "Shift 006 (PEDIATRIC - Day 2 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 2400,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_007",
+      "duration": 480,
+      "name": "Shift 007 (ICU - Day 3 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 2880,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_008",
+      "duration": 480,
+      "name": "Shift 008 (GENERAL - Day 3 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 3360,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_009",
+      "duration": 480,
+      "name": "Shift 009 (PEDIATRIC - Day 3 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 3840,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_010",
+      "duration": 480,
+      "name": "Shift 010 (ICU - Day 4 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 4320,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_011",
+      "duration": 480,
+      "name": "Shift 011 (ICU - Day 4 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 4800,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_012",
+      "duration": 480,
+      "name": "Shift 012 (PEDIATRIC - Day 4 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 5280,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_013",
+      "duration": 480,
+      "name": "Shift 013 (ICU - Day 5 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 5760,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_014",
+      "duration": 480,
+      "name": "Shift 014 (ICU - Day 5 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 6240,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_015",
+      "duration": 480,
+      "name": "Shift 015 (EMERGENCY - Day 5 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 6720,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_016",
+      "duration": 480,
+      "name": "Shift 016 (ICU - Day 1 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 0,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_017",
+      "duration": 480,
+      "name": "Shift 017 (ICU - Day 1 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 480,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_018",
+      "duration": 480,
+      "name": "Shift 018 (GENERAL - Day 1 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 960,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_019",
+      "duration": 480,
+      "name": "Shift 019 (PEDIATRIC - Day 2 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 1440,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_020",
+      "duration": 480,
+      "name": "Shift 020 (EMERGENCY - Day 2 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 1920,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_021",
+      "duration": 480,
+      "name": "Shift 021 (TRIAGE - Day 2 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_003",
+            "staff_004",
+            "staff_006",
+            "staff_007",
+            "staff_012",
+            "staff_013",
+            "staff_015",
+            "staff_016",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 2400,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_022",
+      "duration": 480,
+      "name": "Shift 022 (PEDIATRIC - Day 3 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 2880,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_023",
+      "duration": 480,
+      "name": "Shift 023 (PEDIATRIC - Day 3 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 3360,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_024",
+      "duration": 480,
+      "name": "Shift 024 (TRIAGE - Day 3 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_003",
+            "staff_004",
+            "staff_006",
+            "staff_007",
+            "staff_012",
+            "staff_013",
+            "staff_015",
+            "staff_016",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 3840,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_025",
+      "duration": 480,
+      "name": "Shift 025 (PEDIATRIC - Day 4 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 4320,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_026",
+      "duration": 480,
+      "name": "Shift 026 (GENERAL - Day 4 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 4800,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_027",
+      "duration": 480,
+      "name": "Shift 027 (ICU - Day 4 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 5280,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_028",
+      "duration": 480,
+      "name": "Shift 028 (GENERAL - Day 5 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 5760,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_029",
+      "duration": 480,
+      "name": "Shift 029 (EMERGENCY - Day 5 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 6240,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_030",
+      "duration": 480,
+      "name": "Shift 030 (GENERAL - Day 5 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 6720,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_031",
+      "duration": 480,
+      "name": "Shift 031 (GENERAL - Day 1 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 0,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_032",
+      "duration": 480,
+      "name": "Shift 032 (ICU - Day 1 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 480,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_033",
+      "duration": 480,
+      "name": "Shift 033 (EMERGENCY - Day 1 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 960,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_034",
+      "duration": 480,
+      "name": "Shift 034 (PEDIATRIC - Day 2 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 1440,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_035",
+      "duration": 480,
+      "name": "Shift 035 (ICU - Day 2 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 1920,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_036",
+      "duration": 480,
+      "name": "Shift 036 (TRIAGE - Day 2 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_003",
+            "staff_004",
+            "staff_006",
+            "staff_007",
+            "staff_012",
+            "staff_013",
+            "staff_015",
+            "staff_016",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 2400,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_037",
+      "duration": 480,
+      "name": "Shift 037 (PEDIATRIC - Day 3 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 2880,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_038",
+      "duration": 480,
+      "name": "Shift 038 (GENERAL - Day 3 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 3360,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_039",
+      "duration": 480,
+      "name": "Shift 039 (EMERGENCY - Day 3 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 3840,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_040",
+      "duration": 480,
+      "name": "Shift 040 (GENERAL - Day 4 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 4320,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_041",
+      "duration": 480,
+      "name": "Shift 041 (TRIAGE - Day 4 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_003",
+            "staff_004",
+            "staff_006",
+            "staff_007",
+            "staff_012",
+            "staff_013",
+            "staff_015",
+            "staff_016",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 4800,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_042",
+      "duration": 480,
+      "name": "Shift 042 (EMERGENCY - Day 4 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_002",
+            "staff_004",
+            "staff_007",
+            "staff_009",
+            "staff_017"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 5280,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_043",
+      "duration": 480,
+      "name": "Shift 043 (ICU - Day 5 Slot 1)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_004",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_013",
+            "staff_015",
+            "staff_017",
+            "staff_018",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 5760,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_044",
+      "duration": 480,
+      "name": "Shift 044 (GENERAL - Day 5 Slot 2)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_002",
+            "staff_003",
+            "staff_004",
+            "staff_005",
+            "staff_006",
+            "staff_007",
+            "staff_008",
+            "staff_009",
+            "staff_010",
+            "staff_011",
+            "staff_012",
+            "staff_013",
+            "staff_014",
+            "staff_015",
+            "staff_016",
+            "staff_017",
+            "staff_018",
+            "staff_019",
+            "staff_020"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 6240,
+      "cost": 0.0,
+      "metadata": {}
+    },
+    {
+      "id": "shift_045",
+      "duration": 480,
+      "name": "Shift 045 (PEDIATRIC - Day 5 Slot 3)",
+      "required_resources": [],
+      "candidate_pools": [
+        {
+          "candidate_pool": [
+            "staff_001",
+            "staff_005",
+            "staff_009",
+            "staff_010",
+            "staff_012",
+            "staff_014",
+            "staff_018",
+            "staff_019"
+          ],
+          "capacity": 1
+        }
+      ],
+      "dependencies": [],
+      "priority": "normal",
+      "time_window": null,
+      "fixed_start": 6720,
+      "cost": 0.0,
+      "metadata": {}
+    }
+  ],
+  "transitions": [],
+  "workloads": [
+    {
+      "resource_id": "staff_001",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_002",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_003",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_004",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_005",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_006",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_007",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_008",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_009",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_010",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_011",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_012",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_013",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_014",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_015",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_016",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_017",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_018",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_019",
+      "max_duration": 3600,
+      "min_rest": 480
+    },
+    {
+      "resource_id": "staff_020",
+      "max_duration": 3600,
+      "min_rest": 480
+    }
+  ],
+  "calendar": null,
+  "objective": {
+    "type": "cost",
+    "is_maximize": false,
+    "weight": 1.0,
+    "sub_objectives": []
+  },
+  "expected": {
+    "status": "feasible",
+    "is_valid": true,
+    "max_makespan": null,
+    "min_makespan": null,
+    "max_objective_value": null,
+    "expected_task_count": 45,
+    "task_assertions": {}
+  }
+}

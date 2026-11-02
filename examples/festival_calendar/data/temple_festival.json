@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "name": "Vedic Temple Festival & Muhurat Scheduling",
+    "description": "Cultural calendar-aware ceremonial schedule honoring Shubh Muhurat windows while avoiding Rahu Kalam and Yamagandam blackouts.",
+    "domain": "cultural",
+    "scale": "small",
+    "version": "1.0",
+    "tags": ["cultural", "panchang", "muhurat", "rahu_kalam", "blackouts"]
+  },
+  "horizon": {
+    "start": 0,
+    "end": 1440,
+    "granularity": 1
+  },
+  "resources": [
+    {
+      "id": "inner_sanctum",
+      "name": "Temple Garbhagriha (Sanctum)",
+      "capacity": 1,
+      "resource_type": "facility"
+    },
+    {
+      "id": "temple_courtyard",
+      "name": "Outer Festival Mandapam",
+      "capacity": 1,
+      "resource_type": "facility"
+    },
+    {
+      "id": "head_priest",
+      "name": "Pradhana Archaka (Head Priest)",
+      "capacity": 1,
+      "resource_type": "person"
+    },
+    {
+      "id": "volunteer_corps",
+      "name": "Temple Seva Volunteer Corps",
+      "capacity": 2,
+      "resource_type": "person"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "suprabhatam_invocation",
+      "name": "Suprabhatam & Morning Invocation",
+      "duration": 60,
+      "fixed_start": 300,
+      "required_resources": ["inner_sanctum", "head_priest"]
+    },
+    {
+      "id": "inauguration_ceremony",
+      "name": "Dhwajarohanam (Sacred Flag Hoisting in Muhurat)",
+      "duration": 45,
+      "required_resources": ["temple_courtyard", "head_priest"]
+    },
+    {
+      "id": "maha_abhishekam",
+      "name": "Maha Abhishekam Consecration",
+      "duration": 90,
+      "required_resources": ["inner_sanctum", "head_priest"],
+      "dependencies": ["inauguration_ceremony"]
+    },
+    {
+      "id": "annadanam_distribution",
+      "name": "Annadanam (Community Prasadam Feast)",
+      "duration": 120,
+      "required_resources": ["temple_courtyard", "volunteer_corps"],
+      "dependencies": ["inauguration_ceremony"]
+    },
+    {
+      "id": "utsava_procession",
+      "name": "Evening Ratha Utsava Procession",
+      "duration": 150,
+      "required_resources": ["temple_courtyard", "head_priest", "volunteer_corps"],
+      "dependencies": ["maha_abhishekam", "annadanam_distribution"]
+    }
+  ],
+  "calendar": {
+    "type": "cultural",
+    "enable_rahu_kalam": true,
+    "enable_yamagandam": true,
+    "muhurats": [
+      {
+        "start": 720,
+        "end": 840,
+        "task_id": "inauguration_ceremony",
+        "label": "Vedic Shubh Muhurat Window",
+        "hard": true
+      }
+    ]
+  },
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 1000,
+    "max_makespan": 1400,
+    "expected_task_count": 5,
+    "task_assertions": {
+      "inauguration_ceremony": {
+        "min_start": 720,
+        "max_end": 840
+      }
+    }
+  }
+}

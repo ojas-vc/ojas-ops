@@ -1,0 +1,151 @@
+{
+  "metadata": {
+    "name": "Industrial Job Shop (4 Jobs, 12 Operations, 3 Work Centers)",
+    "description": "Job shop scheduling with sequence-dependent family setup times across CNC mill, laser cutter, and lathe.",
+    "domain": "manufacturing",
+    "scale": "medium",
+    "version": "1.0",
+    "tags": ["manufacturing", "jobshop", "setups", "changeover"]
+  },
+  "resources": [
+    {
+      "id": "cutting_station",
+      "name": "Laser Cutting Station",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 45.0
+    },
+    {
+      "id": "cnc_mill",
+      "name": "5-Axis CNC Mill",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 70.0
+    },
+    {
+      "id": "precision_lathe",
+      "name": "CNC Turning Lathe",
+      "capacity": 1,
+      "resource_type": "machine",
+      "cost_per_time_unit": 55.0
+    }
+  ],
+  "tasks": [
+    {
+      "id": "gears_cut",
+      "name": "Gears - Laser Profiling",
+      "duration": 40,
+      "required_resources": ["cutting_station"]
+    },
+    {
+      "id": "gears_mill",
+      "name": "Gears - 5-Axis Milling (Steel)",
+      "duration": 60,
+      "required_resources": ["cnc_mill"],
+      "dependencies": ["gears_cut"]
+    },
+    {
+      "id": "gears_turn",
+      "name": "Gears - Finish Turning",
+      "duration": 30,
+      "required_resources": ["precision_lathe"],
+      "dependencies": ["gears_mill"]
+    },
+    {
+      "id": "brackets_cut",
+      "name": "Brackets - Laser Profiling",
+      "duration": 30,
+      "required_resources": ["cutting_station"]
+    },
+    {
+      "id": "brackets_mill",
+      "name": "Brackets - 5-Axis Milling (Aluminum)",
+      "duration": 50,
+      "required_resources": ["cnc_mill"],
+      "dependencies": ["brackets_cut"]
+    },
+    {
+      "id": "shafts_cut",
+      "name": "Shafts - Saw & Profile",
+      "duration": 35,
+      "required_resources": ["cutting_station"]
+    },
+    {
+      "id": "shafts_turn",
+      "name": "Shafts - High Precision Turning",
+      "duration": 55,
+      "required_resources": ["precision_lathe"],
+      "dependencies": ["shafts_cut"]
+    },
+    {
+      "id": "shafts_mill",
+      "name": "Shafts - Keyway Milling (Steel)",
+      "duration": 45,
+      "required_resources": ["cnc_mill"],
+      "dependencies": ["shafts_turn"]
+    },
+    {
+      "id": "housings_cut",
+      "name": "Housings - Laser Cut Blanks",
+      "duration": 25,
+      "required_resources": ["cutting_station"]
+    },
+    {
+      "id": "housings_mill",
+      "name": "Housings - Pocket Milling (Aluminum)",
+      "duration": 70,
+      "required_resources": ["cnc_mill"],
+      "dependencies": ["housings_cut"]
+    },
+    {
+      "id": "housings_turn",
+      "name": "Housings - Bore Turning",
+      "duration": 40,
+      "required_resources": ["precision_lathe"],
+      "dependencies": ["housings_mill"]
+    },
+    {
+      "id": "final_qa_pack",
+      "name": "Batch QA Inspection & Boxing",
+      "duration": 30,
+      "required_resources": ["cutting_station"],
+      "dependencies": ["gears_turn", "shafts_mill", "housings_turn", "brackets_mill"]
+    }
+  ],
+  "transitions": [
+    {
+      "resource_id": "cnc_mill",
+      "default_buffer": 10,
+      "matrix": {
+        "gears_mill,brackets_mill": 25,
+        "shafts_mill,brackets_mill": 25,
+        "brackets_mill,gears_mill": 30,
+        "brackets_mill,shafts_mill": 30,
+        "housings_mill,gears_mill": 30,
+        "gears_mill,housings_mill": 25
+      }
+    },
+    {
+      "resource_id": "precision_lathe",
+      "default_buffer": 15
+    }
+  ],
+  "objective": {
+    "type": "makespan",
+    "is_maximize": false,
+    "weight": 1.0
+  },
+  "expected": {
+    "status": "optimal",
+    "is_valid": true,
+    "min_makespan": 220,
+    "max_makespan": 450,
+    "expected_task_count": 12,
+    "task_assertions": {
+      "final_qa_pack": {
+        "min_start": 180
+      }
+    }
+  }
+}
+
