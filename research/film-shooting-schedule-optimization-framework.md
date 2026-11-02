@@ -175,14 +175,19 @@ Cross-boarding complicates cosmetic continuity, including hair, makeup, wardrobe
 
 ## 4. Comprehensive Data Modeling via msgspec Contracts
 
-To make film production data structures computationally accessible to high-performance solvers, every element must be formalized into typed data contracts38. msgspec delivers C-speed validation and JSON encoding/decoding, enforcing structural integrity across complex relational hierarchies38.
+To make film production data structures computationally accessible to high-performance solvers, every element must be formalized into typed data contracts38. In accordance with Ojas Ops engineering standards (`docs/guidelines.md`), all data models derive from `msgspec.Struct` with `kw_only=True` and `gc=False`. msgspec delivers C-speed validation and JSON encoding/decoding, enforcing structural integrity across complex relational hierarchies with zero per-instance garbage collection overhead38.
+
+> [!IMPORTANT]
+> **Pure-Integer Solver Invariant & Unit Scaling:**
+> Google OR-Tools CP-SAT is a strictly pure-integer combinatorial solver. In accordance with the Ojas Ops Pure-Integer Solver Invariant (`docs/guidelines.md` §3.1), decision variables and constraint coefficients cannot use floating-point types. While public interfaces accept decimal durations (e.g., fractional hours) and monetary rates for authoring convenience, the scheduling compiler strictly scales durations to integer time units (minutes or deciminutes) and costs to integer minor currency units (cents or paise) prior to solver compilation.
+
 Below is the complete, production-grade taxonomy of `msgspec.Struct` contracts covering every production facet:
 
 ```python
-from typing import List, Optional, Literal
+from typing import Literal
 import msgspec
 
-class Prop(msgspec.Struct, gc=False):
+class Prop(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     category: Literal["HERO", "SET_DRESSING", "BREAKAWAY", "WEAPON", "VEHICLE"]
@@ -191,7 +196,7 @@ class Prop(msgspec.Struct, gc=False):
     requires_armorer: bool = False
     reset_duration_minutes: int = 0
 
-class Costume(msgspec.Struct, gc=False):
+class Costume(msgspec.Struct, kw_only=True, gc=False):
     id: int
     character_id: int
     costume_code: str
@@ -199,7 +204,7 @@ class Costume(msgspec.Struct, gc=False):
     available_duplicates: int = 1
     requires_specialist_dresser: bool = False
 
-class SpecialtyEquipment(msgspec.Struct, gc=False):
+class SpecialtyEquipment(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     equipment_type: Literal["TECHNOCRANE", "PHANTOM_HIGH_SPEED", "MOTION_CONTROL", "UNDERWATER_HOUSING", "RUSSIAN_ARM", "DRONE"]
@@ -208,7 +213,7 @@ class SpecialtyEquipment(msgspec.Struct, gc=False):
     rental_end_day: int
     requires_certified_technician: bool = True
 
-class StuntSFXPackage(msgspec.Struct, gc=False):
+class StuntSFXPackage(msgspec.Struct, kw_only=True, gc=False):
     id: int
     has_wirework: bool = False
     has_pyrotechnics: bool = False
@@ -216,7 +221,7 @@ class StuntSFXPackage(msgspec.Struct, gc=False):
     pre_rigging_hours_required: float = 0.0
     mandatory_medic_count: int = 1
 
-class Talent(msgspec.Struct, gc=False):
+class Talent(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     character_name: str
@@ -226,20 +231,20 @@ class Talent(msgspec.Struct, gc=False):
     hmu_duration_minutes: int = 60
     wardrobe_duration_minutes: int = 30
     travel_duration_minutes: int = 30
-    blackout_days: List[int] = []
+    blackout_days: list[int] = []
 
-class Location(msgspec.Struct, gc=False):
+class Location(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     location_type: Literal["SOUNDSTAGE", "PRACTICAL_INT", "PRACTICAL_EXT"]
-    permitted_days: List[int]
-    noise_curfew_hour: Optional[int] = None
+    permitted_days: list[int]
+    noise_curfew_hour: int | None = None
     allows_sync_sound: bool = True
     daily_rental_cost: float = 0.0
     prep_days_required: int = 0
     strike_days_required: int = 0
 
-class CalendarDay(msgspec.Struct, gc=False):
+class CalendarDay(msgspec.Struct, kw_only=True, gc=False):
     day_number: int
     calendar_date: str
     is_statutory_holiday: bool = False
@@ -249,7 +254,7 @@ class CalendarDay(msgspec.Struct, gc=False):
     sunset_time: str = "18:30"
     is_weekend: bool = False
 
-class Scene(msgspec.Struct, gc=False):
+class Scene(msgspec.Struct, kw_only=True, gc=False):
     id: int
     scene_number: str
     part: int
@@ -258,30 +263,30 @@ class Scene(msgspec.Struct, gc=False):
     time_of_day: Literal["DAY", "NIGHT", "MAGIC_HOUR"]
     page_eighths: int
     duration_hours: float
-    required_cast: List[int]
-    required_prop_ids: List[int] = []
-    required_costume_ids: List[int] = []
-    required_equipment_ids: List[int] = []
-    stunt_sfx_package_id: Optional[int] = None
+    required_cast: list[int]
+    required_prop_ids: list[int] = []
+    required_costume_ids: list[int] = []
+    required_equipment_ids: list[int] = []
+    stunt_sfx_package_id: int | None = None
     weather_requirement: Literal["ANY", "CLEAR_ONLY", "OVERCAST_ONLY", "RAIN_MANDATORY", "NO_RAIN"] = "ANY"
     sound_recording: Literal["SYNC_SOUND", "MOS", "WILD_TRACK"] = "SYNC_SOUND"
     holiday_compatibility: Literal["NORMAL", "HOLIDAY_ONLY", "FORBID_HOLIDAY"] = "NORMAL"
-    earliest_allowed_day: Optional[int] = None
-    latest_allowed_day: Optional[int] = None
+    earliest_allowed_day: int | None = None
+    latest_allowed_day: int | None = None
     is_cover_set: bool = False
-    cover_for_scene_id: Optional[int] = None
-    requires_precedence_over: Optional[int] = None
+    cover_for_scene_id: int | None = None
+    requires_precedence_over: int | None = None
 
-class ProductionDataset(msgspec.Struct, gc=False):
+class ProductionDataset(msgspec.Struct, kw_only=True, gc=False):
     project_title: str
-    talents: List[Talent]
-    locations: List[Location]
-    props: List[Prop]
-    costumes: List[Costume]
-    equipment: List[SpecialtyEquipment]
-    stunts: List[StuntSFXPackage]
-    calendar: List[CalendarDay]
-    scenes: List[Scene]
+    talents: list[Talent]
+    locations: list[Location]
+    props: list[Prop]
+    costumes: list[Costume]
+    equipment: list[SpecialtyEquipment]
+    stunts: list[StuntSFXPackage]
+    calendar: list[CalendarDay]
+    scenes: list[Scene]
     max_shooting_days: int
     max_hours_per_day: float
 ```
@@ -402,7 +407,7 @@ from ortools.sat.python import cp_model
 # 1. HIGH-PERFORMANCE MSGSPEC DATA SCHEMAS
 # ==============================================================================
 
-class Prop(msgspec.Struct, gc=False):
+class Prop(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     category: Literal["HERO", "SET_DRESSING", "BREAKAWAY", "WEAPON", "VEHICLE"]
@@ -411,7 +416,7 @@ class Prop(msgspec.Struct, gc=False):
     requires_armorer: bool = False
     reset_duration_minutes: int = 0
 
-class Costume(msgspec.Struct, gc=False):
+class Costume(msgspec.Struct, kw_only=True, gc=False):
     id: int
     character_id: int
     costume_code: str
@@ -419,7 +424,7 @@ class Costume(msgspec.Struct, gc=False):
     available_duplicates: int = 1
     requires_specialist_dresser: bool = False
 
-class SpecialtyEquipment(msgspec.Struct, gc=False):
+class SpecialtyEquipment(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     equipment_type: Literal["TECHNOCRANE", "PHANTOM_HIGH_SPEED", "MOTION_CONTROL", "UNDERWATER_HOUSING", "RUSSIAN_ARM", "DRONE"]
@@ -428,7 +433,7 @@ class SpecialtyEquipment(msgspec.Struct, gc=False):
     rental_end_day: int
     requires_certified_technician: bool = True
 
-class StuntSFXPackage(msgspec.Struct, gc=False):
+class StuntSFXPackage(msgspec.Struct, kw_only=True, gc=False):
     id: int
     has_wirework: bool = False
     has_pyrotechnics: bool = False
@@ -436,7 +441,7 @@ class StuntSFXPackage(msgspec.Struct, gc=False):
     pre_rigging_hours_required: float = 0.0
     mandatory_medic_count: int = 1
 
-class Talent(msgspec.Struct, gc=False):
+class Talent(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     character_name: str
@@ -446,20 +451,20 @@ class Talent(msgspec.Struct, gc=False):
     hmu_duration_minutes: int = 60
     wardrobe_duration_minutes: int = 30
     travel_duration_minutes: int = 30
-    blackout_days: List[int] = []
+    blackout_days: list[int] = []
 
-class Location(msgspec.Struct, gc=False):
+class Location(msgspec.Struct, kw_only=True, gc=False):
     id: int
     name: str
     location_type: Literal["SOUNDSTAGE", "PRACTICAL_INT", "PRACTICAL_EXT"]
-    permitted_days: List[int]
-    noise_curfew_hour: Optional[int] = None
+    permitted_days: list[int]
+    noise_curfew_hour: int | None = None
     allows_sync_sound: bool = True
     daily_rental_cost: float = 0.0
     prep_days_required: int = 0
     strike_days_required: int = 0
 
-class CalendarDay(msgspec.Struct, gc=False):
+class CalendarDay(msgspec.Struct, kw_only=True, gc=False):
     day_number: int
     calendar_date: str
     is_statutory_holiday: bool = False
@@ -469,7 +474,7 @@ class CalendarDay(msgspec.Struct, gc=False):
     sunset_time: str = "18:30"
     is_weekend: bool = False
 
-class Scene(msgspec.Struct, gc=False):
+class Scene(msgspec.Struct, kw_only=True, gc=False):
     id: int
     scene_number: str
     part: int
@@ -478,30 +483,30 @@ class Scene(msgspec.Struct, gc=False):
     time_of_day: Literal["DAY", "NIGHT", "MAGIC_HOUR"]
     page_eighths: int
     duration_hours: float
-    required_cast: List[int]
-    required_prop_ids: List[int] = []
-    required_costume_ids: List[int] = []
-    required_equipment_ids: List[int] = []
-    stunt_sfx_package_id: Optional[int] = None
+    required_cast: list[int]
+    required_prop_ids: list[int] = []
+    required_costume_ids: list[int] = []
+    required_equipment_ids: list[int] = []
+    stunt_sfx_package_id: int | None = None
     weather_requirement: Literal["ANY", "CLEAR_ONLY", "OVERCAST_ONLY", "RAIN_MANDATORY", "NO_RAIN"] = "ANY"
     sound_recording: Literal["SYNC_SOUND", "MOS", "WILD_TRACK"] = "SYNC_SOUND"
     holiday_compatibility: Literal["NORMAL", "HOLIDAY_ONLY", "FORBID_HOLIDAY"] = "NORMAL"
-    earliest_allowed_day: Optional[int] = None
-    latest_allowed_day: Optional[int] = None
+    earliest_allowed_day: int | None = None
+    latest_allowed_day: int | None = None
     is_cover_set: bool = False
-    cover_for_scene_id: Optional[int] = None
-    requires_precedence_over: Optional[int] = None
+    cover_for_scene_id: int | None = None
+    requires_precedence_over: int | None = None
 
-class ProductionDataset(msgspec.Struct, gc=False):
+class ProductionDataset(msgspec.Struct, kw_only=True, gc=False):
     project_title: str
-    talents: List[Talent]
-    locations: List[Location]
-    props: List[Prop]
-    costumes: List[Costume]
-    equipment: List[SpecialtyEquipment]
-    stunts: List[StuntSFXPackage]
-    calendar: List[CalendarDay]
-    scenes: List[Scene]
+    talents: list[Talent]
+    locations: list[Location]
+    props: list[Prop]
+    costumes: list[Costume]
+    equipment: list[SpecialtyEquipment]
+    stunts: list[StuntSFXPackage]
+    calendar: list[CalendarDay]
+    scenes: list[Scene]
     max_shooting_days: int
     max_hours_per_day: float
 
