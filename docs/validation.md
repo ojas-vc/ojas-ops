@@ -73,6 +73,7 @@ else:
 ## 4. Reporting Models
 
 ### `ValidationReport`
+
 ```python
 class ValidationReport(msgspec.Struct, kw_only=True):
     is_valid: bool
@@ -89,6 +90,7 @@ class ValidationReport(msgspec.Struct, kw_only=True):
 ```
 
 ### `ConstraintViolation`
+
 ```python
 class ConstraintViolation(msgspec.Struct, kw_only=True):
     constraint_name: str
@@ -98,4 +100,3 @@ class ConstraintViolation(msgspec.Struct, kw_only=True):
     severity: Severity = Severity.ERROR
     details: dict[str, str] = {}
 ```
-

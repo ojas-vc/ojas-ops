@@ -120,11 +120,12 @@ TransitionConstraint(
 
 **Formulation via CP-SAT Circuit:**
 To eliminate sub-tours and enforce a strict single chronological sequence across all tasks assigned to resource $r$, Ojas Ops compiles transitions using CP-SAT's specialized Hamiltonian circuit constraint:
+
 - A dummy root node is added to anchor the start and end of the resource's schedule.
 - Directed literal arcs $l_{i, j}$ are created between every pair of assigned tasks $(i, j)$ and the root node.
 - `model.add_circuit(arcs)` guarantees a single continuous Hamiltonian tour passing through each active task exactly once.
 - For every active arc $l_{i, j} = 1$, the linear transition spacing is enforced:
-$$s_j \ge e_i + \text{setup}(i, j)$$
+  $$s_j \ge e_i + \text{setup}(i, j)$$
 
 **Example:**
 

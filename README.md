@@ -396,19 +396,19 @@ Production-critical schedule changes should support explicit review and approval
 
 ## 6. Technology Stack
 
-| Layer                 | Technology                            |
-| --------------------- | ------------------------------------- |
-| Programming language  | Python (3.11–3.14, 3.14 recommended)  |
-| Package management    | uv                                    |
-| Workspace management  | uv workspaces                         |
-| Optimization          | Google OR-Tools                       |
-| Constraint solver     | CP-SAT                                |
-| Typed data structures | msgspec                               |
-| Testing               | pytest                                |
-| Linting               | Ruff                                  |
-| Type checking         | mypy / pyright                        |
-| Documentation         | MkDocs                                |
-| CI/CD                 | GitHub Actions                        |
+| Layer                 | Technology                           |
+| --------------------- | ------------------------------------ |
+| Programming language  | Python (3.11–3.14, 3.14 recommended) |
+| Package management    | uv                                   |
+| Workspace management  | uv workspaces                        |
+| Optimization          | Google OR-Tools                      |
+| Constraint solver     | CP-SAT                               |
+| Typed data structures | msgspec                              |
+| Testing               | pytest                               |
+| Linting               | Ruff                                 |
+| Type checking         | mypy / pyright                       |
+| Documentation         | MkDocs                               |
+| CI/CD                 | GitHub Actions                       |
 
 The core library should remain lightweight and independent of application frameworks.
 
@@ -437,27 +437,32 @@ The package distribution name is provisional until its availability on PyPI is v
 ### 7.2 Setting Up the Development Environment
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/ojas-vc/ojas-ops.git
    cd ojas-ops
    ```
 
 2. **Pin the compatible Python version:**
+
    ```bash
    uv python pin 3.14
    ```
 
 3. **Create the virtual environment and synchronize dependencies:**
+
    ```bash
    uv sync
    ```
 
 4. **Verify the environment:**
+
    ```bash
    uv run python -c "import ortools, msgspec; from ortools.sat.python import cp_model; print('OR-Tools:', ortools.__version__); print('msgspec:', msgspec.__version__)"
    ```
 
 5. **Run tests and quality checks:**
+
    ```bash
    # Run the test suite
    uv run pytest
@@ -597,6 +602,7 @@ The project should progressively incorporate:
 ### Scenarios & Golden Datasets Implementation
 
 The `ojas_ops.scenarios` package implements Section 10's reliability and reproducibility requirements:
+
 - **Typed Schemas:** `ScenarioDefinition` with embedded `ExpectedResult` assertions.
 - **Microsecond Encoding/Decoding:** Built on `msgspec.Struct`.
 - **Golden Benchmark Assertions:** Automated verification of solver status, makespan bounds, objective bounds, and task timing bounds (`verify_expected()`).
@@ -717,23 +723,23 @@ Rescheduling should preserve unaffected portions of an existing schedule wheneve
 
 A comprehensive `Makefile` automates local development, testing, packaging, and release operations:
 
-| Command | Purpose |
-| :--- | :--- |
-| `make help` | Display available targets and documentation |
-| `make install` | Sync workspace dependencies and virtualenv with `uv` |
-| `make check` | Run format check, Ruff linter, and Mypy static type checker |
-| `make fmt` | Format codebase with Ruff |
-| `make lint-fix` | Auto-fix autofixable Ruff lint violations |
-| `make test` | Run full pytest test suite (28+ tests) |
-| `make test-fast` | Run tests in quiet, fail-fast mode |
-| `make examples` | Execute all 8 domain examples and verify end-to-end solutions |
-| `make clean` | Clean build artifacts (`dist/`, `build/`), cache directories, and `.pytest_cache` |
-| `make build` | Build source distribution (`.tar.gz`) and wheel (`.whl`) into `dist/` |
-| `make build-check` | Verify integrity and inspect contents of built distribution packages |
-| `make bump-patch` | Increment patch version (`0.1.0` -> `0.1.1`) across `pyproject.toml` files |
-| `make tag` | Create annotated git release tag `v$(VERSION)` |
-| `make publish-dry-run`| Test PyPI package publishing in dry-run mode |
-| `make release` | Complete end-to-end release pipeline (checks, tests, build, dry-run publish) |
+| Command                | Purpose                                                                           |
+| :--------------------- | :-------------------------------------------------------------------------------- |
+| `make help`            | Display available targets and documentation                                       |
+| `make install`         | Sync workspace dependencies and virtualenv with `uv`                              |
+| `make check`           | Run format check, Ruff linter, and Mypy static type checker                       |
+| `make fmt`             | Format codebase with Ruff                                                         |
+| `make lint-fix`        | Auto-fix autofixable Ruff lint violations                                         |
+| `make test`            | Run full pytest test suite (28+ tests)                                            |
+| `make test-fast`       | Run tests in quiet, fail-fast mode                                                |
+| `make examples`        | Execute all 8 domain examples and verify end-to-end solutions                     |
+| `make clean`           | Clean build artifacts (`dist/`, `build/`), cache directories, and `.pytest_cache` |
+| `make build`           | Build source distribution (`.tar.gz`) and wheel (`.whl`) into `dist/`             |
+| `make build-check`     | Verify integrity and inspect contents of built distribution packages              |
+| `make bump-patch`      | Increment patch version (`0.1.0` -> `0.1.1`) across `pyproject.toml` files        |
+| `make tag`             | Create annotated git release tag `v$(VERSION)`                                    |
+| `make publish-dry-run` | Test PyPI package publishing in dry-run mode                                      |
+| `make release`         | Complete end-to-end release pipeline (checks, tests, build, dry-run publish)      |
 
 ## 14. Contributing
 

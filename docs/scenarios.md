@@ -40,19 +40,19 @@ All scenario models are defined as typed `msgspec.Struct` records in `ojas_ops.s
 
 ### 1.1 Model Reference
 
-| Model | Description | Key Fields |
-| :--- | :--- | :--- |
-| `ScenarioDefinition` | Root specification of a complete operational problem instance. | `metadata`, `resources`, `tasks`, `transitions`, `workloads`, `calendar`, `objective`, `expected` |
-| `ScenarioMetadata` | Problem categorization, domain, and scale tagging. | `name`, `description`, `domain`, `scale` (`small`/`medium`/`large`/`benchmark`), `version`, `tags` |
-| `ResourceSpec` | Operational resource declaration. | `id`, `name`, `capacity`, `resource_type`, `cost_per_time_unit`, `skills`, `blackout_windows` |
-| `TaskSpec` | Activity to be scheduled. | `id`, `duration`, `required_resources`, `candidate_pools`, `dependencies`, `time_window`, `fixed_start` |
-| `TransitionSpec` | Sequence-dependent changeover / turnaround buffer matrix. | `resource_id`, `default_buffer`, `matrix` (keyed by `"task_a,task_b"`) |
-| `WorkloadSpec` | Maximum active workload duration and minimum rest recovery. | `resource_id`, `max_duration`, `min_rest` |
-| `CalendarSpec` | Operational or cultural non-Gregorian calendar rules. | `type` (`cultural`/`standard`), `enable_rahu_kalam`, `enable_yamagandam`, `muhurats` |
-| `MuhuratSpec` | Auspicious target window with optional task attachment. | `start`, `end`, `task_id`, `label`, `hard` |
-| `ObjectiveSpec` | Solver optimization goal. | `type` (`makespan`/`cost`/`idle_time`/`tardiness`/`composite`), `is_maximize`, `weight`, `sub_objectives` |
-| `ExpectedResult` | Golden benchmark assertions defined directly in the dataset. | `status`, `is_valid`, `min_makespan`, `max_makespan`, `max_objective_value`, `expected_task_count`, `task_assertions` |
-| `ScenarioRunResult` | Unified outcome of a scenario execution. | `scenario`, `result`, `report`, `verification_failures`, `is_success` |
+| Model                | Description                                                    | Key Fields                                                                                                            |
+| :------------------- | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| `ScenarioDefinition` | Root specification of a complete operational problem instance. | `metadata`, `resources`, `tasks`, `transitions`, `workloads`, `calendar`, `objective`, `expected`                     |
+| `ScenarioMetadata`   | Problem categorization, domain, and scale tagging.             | `name`, `description`, `domain`, `scale` (`small`/`medium`/`large`/`benchmark`), `version`, `tags`                    |
+| `ResourceSpec`       | Operational resource declaration.                              | `id`, `name`, `capacity`, `resource_type`, `cost_per_time_unit`, `skills`, `blackout_windows`                         |
+| `TaskSpec`           | Activity to be scheduled.                                      | `id`, `duration`, `required_resources`, `candidate_pools`, `dependencies`, `time_window`, `fixed_start`               |
+| `TransitionSpec`     | Sequence-dependent changeover / turnaround buffer matrix.      | `resource_id`, `default_buffer`, `matrix` (keyed by `"task_a,task_b"`)                                                |
+| `WorkloadSpec`       | Maximum active workload duration and minimum rest recovery.    | `resource_id`, `max_duration`, `min_rest`                                                                             |
+| `CalendarSpec`       | Operational or cultural non-Gregorian calendar rules.          | `type` (`cultural`/`standard`), `enable_rahu_kalam`, `enable_yamagandam`, `muhurats`                                  |
+| `MuhuratSpec`        | Auspicious target window with optional task attachment.        | `start`, `end`, `task_id`, `label`, `hard`                                                                            |
+| `ObjectiveSpec`      | Solver optimization goal.                                      | `type` (`makespan`/`cost`/`idle_time`/`tardiness`/`composite`), `is_maximize`, `weight`, `sub_objectives`             |
+| `ExpectedResult`     | Golden benchmark assertions defined directly in the dataset.   | `status`, `is_valid`, `min_makespan`, `max_makespan`, `max_objective_value`, `expected_task_count`, `task_assertions` |
+| `ScenarioRunResult`  | Unified outcome of a scenario execution.                       | `scenario`, `result`, `report`, `verification_failures`, `is_success`                                                 |
 
 ---
 
@@ -159,6 +159,7 @@ else:
 ```
 
 ### Verification Checks Performed:
+
 1. **Status Verification**: Confirms solver achieved `optimal` (or `feasible` if requested).
 2. **Feasibility / Constraint Compliance**: Confirms `report.is_valid == expected.is_valid` with 0 constraint violations.
 3. **Makespan Bounds**: Confirms `result.makespan <= expected.max_makespan` and `result.makespan >= expected.min_makespan`.
@@ -298,18 +299,17 @@ paths = generate_benchmark_suite("benchmarks/generated", scales=["small", "mediu
 
 The repository ships with ready-to-solve datasets in `examples/**/data/`:
 
-| Dataset Path | Domain | Tasks | Resources | Special Characteristics |
-| :--- | :--- | :--- | :--- | :--- |
-| `examples/film_production/data/feature_film_production.json` | Film | 15 | 7 | Actor blackout windows, location turnarounds, precedence chains |
-| `examples/film_production/data/small_shoot.json` | Film | 5 | 4 | Compact commercial shoot |
-| `examples/manufacturing/data/industrial_jobshop.json` | Manufacturing | 12 | 3 | CNC/Laser/Lathe sequence-dependent family setup matrices |
-| `examples/manufacturing/data/large_aerospace_jobshop.json` | Manufacturing | 40 | 5 | Multi-machine Job Shop benchmark solved to optimality in <2s |
-| `examples/nurse_rostering/data/hospital_shifts.json` | Healthcare | 14 | 8 | ICU/triage qualification pools, max workload, min 8h rest |
-| `examples/nurse_rostering/data/monthly_ward_roster.json` | Healthcare | 45 | 20 | 5-day round-the-clock ward coverage |
-| `examples/basic_scheduling/data/basic_factory.json` | General | 3 | 2 | Cleaning blackout windows, auspicious launch window |
-| `examples/basic_scheduling/data/tasks.csv` & `resources.csv` | General | 5 | 5 | Flat CSV tabular benchmark |
-| `examples/academic_timetabling/data/university_timetable.json` | Academic | 10 | 9 | Room collision avoidance, computer lab restrictions, faculty meetings |
-| `examples/event_run_sheets/data/tech_conference.json` | Events | 9 | 6 | Multi-track conference sessions, fixed plenary keynotes, hall turnarounds |
-| `examples/festival_calendar/data/temple_festival.json` | Cultural | 5 | 4 | Rahu Kalam & Yamagandam blackouts, Vedic Shubh Muhurat window |
-| `examples/marketing_flighting/data/q4_omnichannel_campaign.json` | Marketing | 8 | 4 | Multi-channel advertising cadence, budget flighting |
-
+| Dataset Path                                                     | Domain        | Tasks | Resources | Special Characteristics                                                   |
+| :--------------------------------------------------------------- | :------------ | :---- | :-------- | :------------------------------------------------------------------------ |
+| `examples/film_production/data/feature_film_production.json`     | Film          | 15    | 7         | Actor blackout windows, location turnarounds, precedence chains           |
+| `examples/film_production/data/small_shoot.json`                 | Film          | 5     | 4         | Compact commercial shoot                                                  |
+| `examples/manufacturing/data/industrial_jobshop.json`            | Manufacturing | 12    | 3         | CNC/Laser/Lathe sequence-dependent family setup matrices                  |
+| `examples/manufacturing/data/large_aerospace_jobshop.json`       | Manufacturing | 40    | 5         | Multi-machine Job Shop benchmark solved to optimality in <2s              |
+| `examples/nurse_rostering/data/hospital_shifts.json`             | Healthcare    | 14    | 8         | ICU/triage qualification pools, max workload, min 8h rest                 |
+| `examples/nurse_rostering/data/monthly_ward_roster.json`         | Healthcare    | 45    | 20        | 5-day round-the-clock ward coverage                                       |
+| `examples/basic_scheduling/data/basic_factory.json`              | General       | 3     | 2         | Cleaning blackout windows, auspicious launch window                       |
+| `examples/basic_scheduling/data/tasks.csv` & `resources.csv`     | General       | 5     | 5         | Flat CSV tabular benchmark                                                |
+| `examples/academic_timetabling/data/university_timetable.json`   | Academic      | 10    | 9         | Room collision avoidance, computer lab restrictions, faculty meetings     |
+| `examples/event_run_sheets/data/tech_conference.json`            | Events        | 9     | 6         | Multi-track conference sessions, fixed plenary keynotes, hall turnarounds |
+| `examples/festival_calendar/data/temple_festival.json`           | Cultural      | 5     | 4         | Rahu Kalam & Yamagandam blackouts, Vedic Shubh Muhurat window             |
+| `examples/marketing_flighting/data/q4_omnichannel_campaign.json` | Marketing     | 8     | 4         | Multi-channel advertising cadence, budget flighting                       |

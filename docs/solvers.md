@@ -48,14 +48,14 @@ The CP-SAT solver tests these hints before starting search heuristics, drastical
 
 Upon completion, `ScheduleResult.metadata` captures granular solver search statistics:
 
-| Key | Description | Example |
-| :--- | :--- | :--- |
-| `solver_status_name` | Raw CP-SAT completion status string. | `"OPTIMAL"` |
-| `num_branches` | Total search decision branches explored. | `"66"` |
-| `num_conflicts` | Number of conflict learning clauses generated. | `"0"` |
-| `user_time` | Total CPU compute time consumed. | `"0.0193s"` |
-| `deterministic_time` | Deterministic ticks elapsed (hardware independent). | `"0.0023"` |
-| `best_objective_bound` | Best mathematical dual bound proven by solver. | `"330.0000"` |
+| Key                    | Description                                         | Example      |
+| :--------------------- | :-------------------------------------------------- | :----------- |
+| `solver_status_name`   | Raw CP-SAT completion status string.                | `"OPTIMAL"`  |
+| `num_branches`         | Total search decision branches explored.            | `"66"`       |
+| `num_conflicts`        | Number of conflict learning clauses generated.      | `"0"`        |
+| `user_time`            | Total CPU compute time consumed.                    | `"0.0193s"`  |
+| `deterministic_time`   | Deterministic ticks elapsed (hardware independent). | `"0.0023"`   |
+| `best_objective_bound` | Best mathematical dual bound proven by solver.      | `"330.0000"` |
 
 ---
 

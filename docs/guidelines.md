@@ -57,18 +57,18 @@ The contract architecture ensures that Ojas Ops can run as an embedded Python li
 
 ## 1.2 Core Design Principles
 
-| Principle | Engineering Requirement |
-|---|---|
-| **Contract-first** | Define msgspec schemas and Protocols before implementing algorithms or endpoints |
-| **Strict typing** | Ban untyped dictionaries (`dict[str, Any]`), raw `Any`, and implicit type coercion |
-| **Pure-integer solver invariant** | Scale all costs, weights, and durations to integer minor units for Google OR-Tools CP-SAT |
-| **Explicit boundary validation** | Validate external inputs strictly at trust boundaries with `msgspec.json.Decoder(strict=True)` |
-| **Single source of truth** | Maintain canonical data definitions in `msgspec.Struct` models; generate external schemas |
-| **Transport independence** | Keep core optimization logic decoupled from HTTP, gRPC, Celery, and Temporal transports |
-| **Independent auditability** | Every schedule result must be verifiable by the independent validator without the solver |
-| **Versioning & stability** | Make breaking schema changes explicit using semantic versioning and deprecation windows |
-| **Deterministic repeatability** | Parameterize random seeds and solver configurations to ensure reproducible solutions |
-| **Observability & traceability** | Include correlation IDs, tenant IDs, and solver telemetry metrics on all responses |
+| Principle                         | Engineering Requirement                                                                        |
+| --------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Contract-first**                | Define msgspec schemas and Protocols before implementing algorithms or endpoints               |
+| **Strict typing**                 | Ban untyped dictionaries (`dict[str, Any]`), raw `Any`, and implicit type coercion             |
+| **Pure-integer solver invariant** | Scale all costs, weights, and durations to integer minor units for Google OR-Tools CP-SAT      |
+| **Explicit boundary validation**  | Validate external inputs strictly at trust boundaries with `msgspec.json.Decoder(strict=True)` |
+| **Single source of truth**        | Maintain canonical data definitions in `msgspec.Struct` models; generate external schemas      |
+| **Transport independence**        | Keep core optimization logic decoupled from HTTP, gRPC, Celery, and Temporal transports        |
+| **Independent auditability**      | Every schedule result must be verifiable by the independent validator without the solver       |
+| **Versioning & stability**        | Make breaking schema changes explicit using semantic versioning and deprecation windows        |
+| **Deterministic repeatability**   | Parameterize random seeds and solver configurations to ensure reproducible solutions           |
+| **Observability & traceability**  | Include correlation IDs, tenant IDs, and solver telemetry metrics on all responses             |
 
 ---
 
@@ -116,22 +116,22 @@ Define schema evolution rules, backward/forward compatibility, and golden regres
 
 Establish the following technology choices as the mandatory engineering standards for Ojas Ops:
 
-| Area | Standard | Rationale & Ecosystem Fit |
-|---|---|---|
-| **Python Version** | Python 3.11–3.14 (Ruff `py314`) | High-performance Python with modern type union syntax (`X \| Y`), `StrEnum`, and pattern matching |
-| **Data Contracts & Validation** | `msgspec>=0.22.0` | 10–50x faster serialization than Pydantic/dataclasses; microsecond JSON/MessagePack encoding |
-| **Combinatorial Solver** | Google OR-Tools CP-SAT (`>=9.15.6755`) | Industry-standard deterministic constraint programming engine; SAT-based integer solver |
-| **Static Type Checking** | Mypy (`>=1.10.0`) | Configured via `Makefile` (`make typecheck`, `make mypy`, `make check`); Pyright compatible |
-| **Formatting and Linting** | Ruff (`>=0.8.0`) | Lightning-fast linter and formatter enforcing standard Python rules (`E`, `F`, `I`, `UP`, `B`, `C4`) |
-| **Unit & Integration Testing** | pytest (`>=8.0.0`) | Standard test suite supporting fast inner-loop execution (`make test-fast`) and coverage |
-| **Property-Based Testing** | Hypothesis | Exhaustive fuzz testing of constraint invariants and mathematical schedule boundaries |
-| **Scenario Verification** | Native Ojas Ops Scenarios | Declarative JSON/CSV test datasets with embedded golden assertions (`verify_expected()`) |
-| **REST Documentation** | OpenAPI 3.1 | Machine-readable API specifications generated directly from canonical contract schemas |
-| **HTTP Framework** | django-bolt / FastAPI ASGI | Rust-powered async API within Ojas platform; lightweight ASGI for standalone ops services |
-| **RPC & Interoperability** | gRPC + Protocol Buffers v3 | High-throughput typed RPC for inter-service solver calls and non-Python clients |
-| **Event Schemas & Streaming** | msgspec + AsyncAPI | Strictly typed domain events (`ScheduleOptimizedEvent`, `DisruptionInjectedEvent`) |
-| **Workflow Orchestration** | Temporal Python SDK | Durable stateful workflows for multi-minute combinatorial optimization jobs |
-| **Serialization Formats** | JSON / MessagePack / Protobuf | Zero-overhead JSON for REST, MessagePack for caching/internal IPC, Protobuf for gRPC |
+| Area                            | Standard                               | Rationale & Ecosystem Fit                                                                            |
+| ------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Python Version**              | Python 3.11–3.14 (Ruff `py314`)        | High-performance Python with modern type union syntax (`X \| Y`), `StrEnum`, and pattern matching    |
+| **Data Contracts & Validation** | `msgspec>=0.22.0`                      | 10–50x faster serialization than Pydantic/dataclasses; microsecond JSON/MessagePack encoding         |
+| **Combinatorial Solver**        | Google OR-Tools CP-SAT (`>=9.15.6755`) | Industry-standard deterministic constraint programming engine; SAT-based integer solver              |
+| **Static Type Checking**        | Mypy (`>=1.10.0`)                      | Configured via `Makefile` (`make typecheck`, `make mypy`, `make check`); Pyright compatible          |
+| **Formatting and Linting**      | Ruff (`>=0.8.0`)                       | Lightning-fast linter and formatter enforcing standard Python rules (`E`, `F`, `I`, `UP`, `B`, `C4`) |
+| **Unit & Integration Testing**  | pytest (`>=8.0.0`)                     | Standard test suite supporting fast inner-loop execution (`make test-fast`) and coverage             |
+| **Property-Based Testing**      | Hypothesis                             | Exhaustive fuzz testing of constraint invariants and mathematical schedule boundaries                |
+| **Scenario Verification**       | Native Ojas Ops Scenarios              | Declarative JSON/CSV test datasets with embedded golden assertions (`verify_expected()`)             |
+| **REST Documentation**          | OpenAPI 3.1                            | Machine-readable API specifications generated directly from canonical contract schemas               |
+| **HTTP Framework**              | django-bolt / FastAPI ASGI             | Rust-powered async API within Ojas platform; lightweight ASGI for standalone ops services            |
+| **RPC & Interoperability**      | gRPC + Protocol Buffers v3             | High-throughput typed RPC for inter-service solver calls and non-Python clients                      |
+| **Event Schemas & Streaming**   | msgspec + AsyncAPI                     | Strictly typed domain events (`ScheduleOptimizedEvent`, `DisruptionInjectedEvent`)                   |
+| **Workflow Orchestration**      | Temporal Python SDK                    | Durable stateful workflows for multi-minute combinatorial optimization jobs                          |
+| **Serialization Formats**       | JSON / MessagePack / Protobuf          | Zero-overhead JSON for REST, MessagePack for caching/internal IPC, Protobuf for gRPC                 |
 
 ### 3.1 Critical Solver Invariant: Integer Scaling for CP-SAT
 
@@ -257,6 +257,7 @@ class DomainEventContract(Contract, frozen=True):
 ```
 
 ### Key Configuration Rules:
+
 1. `forbid_unknown_fields=True` on all request and domain contracts to reject misspelled or unexpected fields at the boundary.
 2. `kw_only=True` to eliminate argument ordering bugs when creating complex models.
 3. `frozen=True` for value objects, intervals, and event records to guarantee immutability.
@@ -282,6 +283,7 @@ except msgspec.ValidationError as exc:
 ```
 
 Never do:
+
 ```python
 # PROHIBITED: Untyped parsing without boundary validation
 data = json.loads(request_body)
@@ -343,18 +345,18 @@ Ojas Ops enforces strict, unambiguous taxonomy for all contract artifacts.
 
 ## 5.2 Naming Conventions Table
 
-| Contract Type | Naming Convention | Ojas Ops Example |
-|---|---|---|
-| **REST Request** | `[Verb][Entity]Request` | `OptimizeScheduleRequest`, `ValidateScheduleRequest` |
-| **REST Response** | `[Verb][Entity]Response` | `OptimizeScheduleResponse`, `ValidateScheduleResponse` |
-| **Application Command** | `[Verb][Entity]Command` | `SolveScheduleCommand`, `SimulateDisruptionCommand` |
-| **Application Query** | `Get[Entity]Query` / `List[Entity]Query` | `GetScheduleQuery`, `ListScenariosQuery` |
-| **Domain Result** | `[Entity]Result` / `[Entity]Report` | `ScheduleResult`, `ValidationReport` |
-| **Domain Event** | `[Entity][PastTenseVerb]Event` | `ScheduleOptimizedEvent`, `DisruptionInjectedEvent` |
-| **Scenario Spec** | `[Entity]Spec` | `TaskSpec`, `ResourceSpec`, `TransitionSpec` |
-| **Repository Protocol** | `[Entity]Repository` | `ScheduleRepository`, `ScenarioRepository` |
-| **Engine Protocol** | `[Functionality]Engine` / `Provider` | `OptimizationEngine`, `CalendarProvider` |
-| **External Client** | `[System]Client` | `TemporalWorkflowClient`, `PanchangAPIClient` |
+| Contract Type           | Naming Convention                        | Ojas Ops Example                                       |
+| ----------------------- | ---------------------------------------- | ------------------------------------------------------ |
+| **REST Request**        | `[Verb][Entity]Request`                  | `OptimizeScheduleRequest`, `ValidateScheduleRequest`   |
+| **REST Response**       | `[Verb][Entity]Response`                 | `OptimizeScheduleResponse`, `ValidateScheduleResponse` |
+| **Application Command** | `[Verb][Entity]Command`                  | `SolveScheduleCommand`, `SimulateDisruptionCommand`    |
+| **Application Query**   | `Get[Entity]Query` / `List[Entity]Query` | `GetScheduleQuery`, `ListScenariosQuery`               |
+| **Domain Result**       | `[Entity]Result` / `[Entity]Report`      | `ScheduleResult`, `ValidationReport`                   |
+| **Domain Event**        | `[Entity][PastTenseVerb]Event`           | `ScheduleOptimizedEvent`, `DisruptionInjectedEvent`    |
+| **Scenario Spec**       | `[Entity]Spec`                           | `TaskSpec`, `ResourceSpec`, `TransitionSpec`           |
+| **Repository Protocol** | `[Entity]Repository`                     | `ScheduleRepository`, `ScenarioRepository`             |
+| **Engine Protocol**     | `[Functionality]Engine` / `Provider`     | `OptimizationEngine`, `CalendarProvider`               |
+| **External Client**     | `[System]Client`                         | `TemporalWorkflowClient`, `PanchangAPIClient`          |
 
 Banned vague names: `Data`, `Payload`, `Info`, `Item`, `Object`, `Record`, `ResultDto`.
 
@@ -413,6 +415,7 @@ class ScheduleTimeContext(Contract):
 ```
 
 Rules:
+
 - Wall-clock datetimes must always be timezone-aware UTC (`datetime.timezone.utc`).
 - The reference mapping between integer tick `0` and wall-clock UTC must be explicitly declared.
 - Naive datetimes without timezone information are rejected at the boundary.
@@ -511,6 +514,7 @@ class OptimizationEngine(Protocol):
 ```
 
 Concrete implementations:
+
 - `CPSatSolver`: Google OR-Tools CP-SAT solver backend.
 - `MockOptimizationEngine`: Deterministic fixture engine for unit testing.
 - `RemoteGrpcSolverClient`: Remote RPC solver bridge for offloading heavy compute.
@@ -1060,6 +1064,7 @@ class RequestContext(Contract):
 ```
 
 ### Security Rules:
+
 1. **Never trust `tenant_id` from client payloads:** Derive and verify `tenant_id` from trusted JWT claims or platform auth middleware (`ojas_tenants.http`).
 2. **Strict Data Isolation:** Every query, schedule retrieval, and scenario run must filter strictly by `tenant_id`.
 3. **Solver CPU & Memory Quotas:** Prevent denial-of-service or solver starvation by enforcing per-tenant CPU limits (`worker_threads <= 8`) and timeout bounds (`max_time_in_seconds <= 300`).
@@ -1114,6 +1119,7 @@ Contracts are consumed by frontends, workers, and partner systems. Follow semant
 - **PATCH (v1.0.1):** Bug fixes, documentation updates, constraint metadata refinements.
 
 ### Expand-and-Contract Migration Pattern:
+
 1. **Expand:** Add new field `cost_minor: int` alongside deprecated `cost: float`.
 2. **Dual-Support:** Populate both during a transition release window.
 3. **Migrate:** Update all clients and scenarios to consume `cost_minor`.
@@ -1199,19 +1205,19 @@ make test-scenarios   # Golden benchmark assertions across all 8 example domains
 
 Every public model, constraint, solver, and adapter must be thoroughly documented in the documentation suite:
 
-| Document | Primary Focus |
-|---|---|
-| [architecture.md](architecture.md) | High-level system topology, CP-SAT translation, and deterministic verification. |
-| [api.md](api.md) | Fluent `Scheduler` orchestrator reference, scenario loaders, and runners. |
-| [models.md](models.md) | `Task`, `Resource`, `Horizon`, `IntervalWindow`, `TimeWindow`, `ScheduleResult`. |
-| [calendars.md](calendars.md) | Standard business operational shifts and Hindu Panchang cultural calendars. |
-| [constraints.md](constraints.md) | Precedence (FS/SS/FF/SF), cumulative, no-overlap, setup matrices, windows. |
-| [objectives.md](objectives.md) | Makespan, tardiness, financial cost, idle time, baseline schedule stability. |
-| [solvers.md](solvers.md) | Google OR-Tools CP-SAT compilation, candidate resource pools, and tuning. |
-| [validation.md](validation.md) | Independent feasibility and constraint verification without solver dependencies. |
-| [simulation.md](simulation.md) | Disruption modeling, what-if impact analysis, and reactive rescheduling. |
-| [scenarios.md](scenarios.md) | Data-driven scenario schemas, golden assertions, CSV loading, and generators. |
-| [adapters.md](adapters.md) | 6 ready-to-use industry adapters (film, manufacturing, health, academic, events, marketing). |
+| Document                           | Primary Focus                                                                                |
+| ---------------------------------- | -------------------------------------------------------------------------------------------- |
+| [architecture.md](architecture.md) | High-level system topology, CP-SAT translation, and deterministic verification.              |
+| [api.md](api.md)                   | Fluent `Scheduler` orchestrator reference, scenario loaders, and runners.                    |
+| [models.md](models.md)             | `Task`, `Resource`, `Horizon`, `IntervalWindow`, `TimeWindow`, `ScheduleResult`.             |
+| [calendars.md](calendars.md)       | Standard business operational shifts and Hindu Panchang cultural calendars.                  |
+| [constraints.md](constraints.md)   | Precedence (FS/SS/FF/SF), cumulative, no-overlap, setup matrices, windows.                   |
+| [objectives.md](objectives.md)     | Makespan, tardiness, financial cost, idle time, baseline schedule stability.                 |
+| [solvers.md](solvers.md)           | Google OR-Tools CP-SAT compilation, candidate resource pools, and tuning.                    |
+| [validation.md](validation.md)     | Independent feasibility and constraint verification without solver dependencies.             |
+| [simulation.md](simulation.md)     | Disruption modeling, what-if impact analysis, and reactive rescheduling.                     |
+| [scenarios.md](scenarios.md)       | Data-driven scenario schemas, golden assertions, CSV loading, and generators.                |
+| [adapters.md](adapters.md)         | 6 ready-to-use industry adapters (film, manufacturing, health, academic, events, marketing). |
 
 ---
 
@@ -1237,6 +1243,7 @@ When introducing new models, adapters, or endpoints to Ojas Ops, follow this 10-
 Use this checklist during architecture reviews and pull requests:
 
 ### Data Structure & Strict Typing
+
 - [ ] Model inherits from `msgspec.Struct` with `kw_only=True` and `forbid_unknown_fields=True`.
 - [ ] No untyped dictionaries (`dict[str, Any]`) or unconstrained `Any` types.
 - [ ] Costs, monetary rates, and penalty weights use integer minor units (no raw floats in solver models).
@@ -1245,18 +1252,21 @@ Use this checklist during architecture reviews and pull requests:
 - [ ] Unknown fields are strictly rejected at boundaries.
 
 ### Mathematical & Behavioral Correctness
+
 - [ ] Concrete engine implements the corresponding `typing.Protocol`.
 - [ ] Determinism is guaranteed via parameterized random seeds.
 - [ ] Feasibility is independently verified by `ScheduleValidator`.
 - [ ] What-if simulation does not mutate baseline schedule state in place.
 
 ### Interoperability & Transport
+
 - [ ] External inputs decode via `msgspec.json.Decoder(strict=True)`.
 - [ ] REST endpoints specify OpenAPI 3.1 request/response schemas.
 - [ ] gRPC messages mirror domain contracts with explicit conversion helpers.
 - [ ] Errors conform to the standard RFC 7807-inspired `ErrorResponse` contract.
 
 ### Testing & Verification
+
 - [ ] Golden scenario dataset created with embedded `ExpectedResult` assertions.
 - [ ] Property-based tests written with Hypothesis.
 - [ ] `make check` (Ruff formatting + linting + Mypy typecheck) passes with zero errors.
@@ -1315,14 +1325,14 @@ Use this checklist during architecture reviews and pull requests:
 
 # 21. Additional Architectural Decisions
 
-| Decision | Standard | Rationale |
-|---|---|---|
-| **Contract Ownership** | Each subsystem owns its domain contracts | Prevents bloated monolithic contract files |
-| **Shared Primitives** | Only true primitives in common (`TenantId`, `Horizon`) | Avoids the shared-model anti-pattern |
-| **Integer Scaling** | All solver costs/weights in integer minor units | Required by Google OR-Tools CP-SAT integer engine |
-| **Validation Seam** | Deterministic independent validator | Essential for audits, regulations, and golden tests |
-| **Boundary Decoding** | Strict decoding with `strict=True` | Catches malformed data before hitting solver algorithms |
-| **Cross-Module Calls** | Via declared Protocols or typed DTOs | Enables modular monolith or distributed microservices |
+| Decision               | Standard                                               | Rationale                                               |
+| ---------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| **Contract Ownership** | Each subsystem owns its domain contracts               | Prevents bloated monolithic contract files              |
+| **Shared Primitives**  | Only true primitives in common (`TenantId`, `Horizon`) | Avoids the shared-model anti-pattern                    |
+| **Integer Scaling**    | All solver costs/weights in integer minor units        | Required by Google OR-Tools CP-SAT integer engine       |
+| **Validation Seam**    | Deterministic independent validator                    | Essential for audits, regulations, and golden tests     |
+| **Boundary Decoding**  | Strict decoding with `strict=True`                     | Catches malformed data before hitting solver algorithms |
+| **Cross-Module Calls** | Via declared Protocols or typed DTOs                   | Enables modular monolith or distributed microservices   |
 
 ---
 
@@ -1330,35 +1340,35 @@ Use this checklist during architecture reviews and pull requests:
 
 To complete the strictly typed conversion across Ojas Ops, execute in phased milestones:
 
-| Phase | Deliverable | Priority | Status |
-|---|---|---|---|
-| **Phase 1** | Strictly typed `msgspec.Struct` core domain models (`models/`) | Critical | Complete |
-| **Phase 2** | Data-driven scenarios with embedded golden assertions (`scenarios/`) | Critical | Complete |
-| **Phase 3** | Independent deterministic validator engine (`validation/`) | Critical | Complete |
-| **Phase 4** | CP-SAT solver compilation with circuit transitions & blackouts (`solvers/`) | Critical | Complete |
-| **Phase 5** | Convert floating-point costs to integer minor units across models & objectives | High | Ready for code migration |
-| **Phase 6** | Tagged unions for polymorphic constraints & objectives | High | Ready for code migration |
-| **Phase 7** | Modular wire contracts (`ojas_ops.contracts`) & OpenAPI 3.1 / Protobuf schemas | High | Planned |
-| **Phase 8** | gRPC Protobuf definitions & Temporal workflow integration | Medium | Planned |
+| Phase       | Deliverable                                                                    | Priority | Status                   |
+| ----------- | ------------------------------------------------------------------------------ | -------- | ------------------------ |
+| **Phase 1** | Strictly typed `msgspec.Struct` core domain models (`models/`)                 | Critical | Complete                 |
+| **Phase 2** | Data-driven scenarios with embedded golden assertions (`scenarios/`)           | Critical | Complete                 |
+| **Phase 3** | Independent deterministic validator engine (`validation/`)                     | Critical | Complete                 |
+| **Phase 4** | CP-SAT solver compilation with circuit transitions & blackouts (`solvers/`)    | Critical | Complete                 |
+| **Phase 5** | Convert floating-point costs to integer minor units across models & objectives | High     | Ready for code migration |
+| **Phase 6** | Tagged unions for polymorphic constraints & objectives                         | High     | Ready for code migration |
+| **Phase 7** | Modular wire contracts (`ojas_ops.contracts`) & OpenAPI 3.1 / Protobuf schemas | High     | Planned                  |
+| **Phase 8** | gRPC Protobuf definitions & Temporal workflow integration                      | Medium   | Planned                  |
 
 ---
 
 # 23. Architectural Decision Records (ADRs)
 
-| ADR | Title | Decision Summary |
-|---|---|---|
-| **ADR-001** | Contract-First Development | Define strictly typed data and behavioral contracts before implementing engines or APIs |
-| **ADR-002** | msgspec as Data Contract Standard | Standardize on `msgspec.Struct` for high-performance typed models and microsecond serialization |
-| **ADR-003** | Google OR-Tools CP-SAT as Core Solver | Adopt CP-SAT for deterministic combinatorial optimization instead of probabilistic AI generation |
-| **ADR-004** | Pure-Integer Solver Invariant | Scale all monetary rates, costs, and weights to integer minor units to eliminate float rounding errors |
-| **ADR-005** | Independent Validator Seam | Implement `ScheduleValidator` to audit schedule feasibility deterministically without solver state |
-| **ADR-006** | Data-Driven Scenarios & Golden Assertions | Embed expected metrics in declarative scenario datasets for reproducible regression benchmarking |
-| **ADR-007** | typing.Protocol for Behavioral Interfaces | Decouple solver backends, calendar providers, and storage repositories behind Protocols |
-| **ADR-008** | Pluggable Operational & Cultural Calendars | Support both standard business shifts and Hindu Panchang cultural windows (Muhurats/Rahu Kalam) |
-| **ADR-009** | Tagged Unions for Polymorphism | Use `msgspec` tagged unions (`tag_field`) for polymorphic constraints, objectives, and events |
-| **ADR-010** | Strict Decoding at Untrusted Boundaries | Mandate `Decoder(strict=True)` to reject unvalidated or coerced types at API boundaries |
-| **ADR-011** | OpenAPI 3.1 & Protobuf v3 Transports | Expose REST endpoints via OpenAPI 3.1 and high-throughput RPC via Protobuf v3 |
-| **ADR-012** | Temporal for Long-Running Solves | Orchestrate multi-minute optimization jobs through stateful, durable Temporal workflows |
+| ADR         | Title                                      | Decision Summary                                                                                       |
+| ----------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **ADR-001** | Contract-First Development                 | Define strictly typed data and behavioral contracts before implementing engines or APIs                |
+| **ADR-002** | msgspec as Data Contract Standard          | Standardize on `msgspec.Struct` for high-performance typed models and microsecond serialization        |
+| **ADR-003** | Google OR-Tools CP-SAT as Core Solver      | Adopt CP-SAT for deterministic combinatorial optimization instead of probabilistic AI generation       |
+| **ADR-004** | Pure-Integer Solver Invariant              | Scale all monetary rates, costs, and weights to integer minor units to eliminate float rounding errors |
+| **ADR-005** | Independent Validator Seam                 | Implement `ScheduleValidator` to audit schedule feasibility deterministically without solver state     |
+| **ADR-006** | Data-Driven Scenarios & Golden Assertions  | Embed expected metrics in declarative scenario datasets for reproducible regression benchmarking       |
+| **ADR-007** | typing.Protocol for Behavioral Interfaces  | Decouple solver backends, calendar providers, and storage repositories behind Protocols                |
+| **ADR-008** | Pluggable Operational & Cultural Calendars | Support both standard business shifts and Hindu Panchang cultural windows (Muhurats/Rahu Kalam)        |
+| **ADR-009** | Tagged Unions for Polymorphism             | Use `msgspec` tagged unions (`tag_field`) for polymorphic constraints, objectives, and events          |
+| **ADR-010** | Strict Decoding at Untrusted Boundaries    | Mandate `Decoder(strict=True)` to reject unvalidated or coerced types at API boundaries                |
+| **ADR-011** | OpenAPI 3.1 & Protobuf v3 Transports       | Expose REST endpoints via OpenAPI 3.1 and high-throughput RPC via Protobuf v3                          |
+| **ADR-012** | Temporal for Long-Running Solves           | Orchestrate multi-minute optimization jobs through stateful, durable Temporal workflows                |
 
 ---
 
@@ -1369,18 +1379,18 @@ The Ojas Ops engineering philosophy:
 > **Everything is a contract.**
 > No implicit interfaces. No undocumented assumptions. No untyped business boundaries. No floating-point solver rounding.
 
-| Concern | Authoritative Standard |
-|---|---|
-| **Data Models** | `msgspec.Struct` (`kw_only=True`, `forbid_unknown_fields=True`) |
-| **Mathematical Solver** | Google OR-Tools CP-SAT (pure-integer constraint programming) |
-| **Behavioral Interfaces** | `typing.Protocol` |
-| **REST APIs** | OpenAPI 3.1 |
-| **RPC & Interoperability** | gRPC + Protocol Buffers v3 |
-| **Domain Events** | Strictly typed event envelopes / AsyncAPI |
-| **Long-Running Workflows** | Temporal workflow & activity definitions |
-| **Boundary Validation** | `msgspec.json.Decoder(strict=True)` |
-| **Correctness & Auditing** | Independent deterministic `ScheduleValidator` |
-| **Regression Testing** | Data-driven scenarios with embedded golden assertions |
-| **Quality Enforcement** | `make check` (Ruff formatting, Ruff linting, Mypy type analysis) |
+| Concern                    | Authoritative Standard                                           |
+| -------------------------- | ---------------------------------------------------------------- |
+| **Data Models**            | `msgspec.Struct` (`kw_only=True`, `forbid_unknown_fields=True`)  |
+| **Mathematical Solver**    | Google OR-Tools CP-SAT (pure-integer constraint programming)     |
+| **Behavioral Interfaces**  | `typing.Protocol`                                                |
+| **REST APIs**              | OpenAPI 3.1                                                      |
+| **RPC & Interoperability** | gRPC + Protocol Buffers v3                                       |
+| **Domain Events**          | Strictly typed event envelopes / AsyncAPI                        |
+| **Long-Running Workflows** | Temporal workflow & activity definitions                         |
+| **Boundary Validation**    | `msgspec.json.Decoder(strict=True)`                              |
+| **Correctness & Auditing** | Independent deterministic `ScheduleValidator`                    |
+| **Regression Testing**     | Data-driven scenarios with embedded golden assertions            |
+| **Quality Enforcement**    | `make check` (Ruff formatting, Ruff linting, Mypy type analysis) |
 
 This standard guarantees that Ojas Ops operates with mathematical precision, microsecond serialization performance, and absolute type safety.
