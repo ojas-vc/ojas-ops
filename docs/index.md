@@ -48,6 +48,7 @@ Architecture & Design    Core Scheduling   Constraints & Goals    Domain Adapter
 | [Solvers](solvers.md)           | Google OR-Tools CP-SAT compilation, optional resource pools, and tuning parameters.         |
 | [Validation](validation.md)     | Independent feasibility and constraint verification without solver dependencies.            |
 | [Simulation](simulation.md)     | Disruption modeling, impact analysis, and minimally disruptive rescheduling.                |
+| [Scenarios](scenarios.md)       | Data-driven scenario modeling, golden assertions verification, CSV loading, and generators. |
 | [Domain Adapters](adapters.md)  | Ready-to-use adapters for film, manufacturing, healthcare, academic, events, and marketing. |
 
 ---

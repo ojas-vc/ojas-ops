@@ -551,7 +551,8 @@ ojas-ops/
 │       │       ├── solvers/
 │       │       ├── validation/
 │       │       ├── simulation/
-│       │       └── adapters/
+│       │       ├── adapters/
+│       │       └── scenarios/
 │       │
 │       └── tests/
 │
@@ -592,6 +593,17 @@ The project should progressively incorporate:
 - Schedule replay.
 - Evaluation metrics.
 - Alternative solution comparisons.
+
+### Scenarios & Golden Datasets Implementation
+
+The `ojas_ops.scenarios` package implements Section 10's reliability and reproducibility requirements:
+- **Typed Schemas:** `ScenarioDefinition` with embedded `ExpectedResult` assertions.
+- **Microsecond Encoding/Decoding:** Built on `msgspec.Struct`.
+- **Golden Benchmark Assertions:** Automated verification of solver status, makespan bounds, objective bounds, and task timing bounds (`verify_expected()`).
+- **CSV Support:** Flat task and resource parsing for spreadsheet interoperability (`load_tasks_from_csv`, `load_resources_from_csv`).
+- **Synthetic Benchmark Generators:** Scalable synthetic data generation (`generate_jobshop_scenario`, `generate_workforce_scenario`, `generate_film_scenario`, `generate_benchmark_suite`).
+- **Unified Runner:** `run_scenario()` with formatted operational reporting.
+- **Benchmark Datasets:** 11 runnable datasets across all 8 industry domains in `examples/**/data/`.
 
 ### Agentic AI Integration
 

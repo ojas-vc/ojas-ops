@@ -90,8 +90,12 @@ Modeled in CP-SAT via `model.add_cumulative(intervals, demands, capacity)`.
 ### 3.1 `BlackoutWindowConstraint`
 
 Prevents tasks or resources from operating during an unavailable window $[W_{start}, W_{end})$:
-Modeled via boolean disjunction:
-$$e_i \le W_{start} \quad \lor \quad s_i \ge W_{end}$$
+
+- **Resource Blackouts:** Compiled directly into native fixed interval variables:
+  $$I_{\text{blackout}} = \text{IntervalVar}(W_{start}, W_{end} - W_{start}, W_{end})$$
+  Injected directly into `model.add_no_overlap(intervals)` or `model.add_cumulative()`, enabling CP-SAT's highest-speed interval propagation.
+- **Task Blackouts:** Enforces non-overlap disjunction between the task interval and blackout interval:
+  $$e_i \le W_{start} \quad \lor \quad s_i \ge W_{end}$$
 
 ### 3.2 `TargetWindowConstraint`
 
@@ -114,7 +118,12 @@ TransitionConstraint(
 )
 ```
 
-If task $i$ precedes task $j$ on resource $r$:
+**Formulation via CP-SAT Circuit:**
+To eliminate sub-tours and enforce a strict single chronological sequence across all tasks assigned to resource $r$, Ojas Ops compiles transitions using CP-SAT's specialized Hamiltonian circuit constraint:
+- A dummy root node is added to anchor the start and end of the resource's schedule.
+- Directed literal arcs $l_{i, j}$ are created between every pair of assigned tasks $(i, j)$ and the root node.
+- `model.add_circuit(arcs)` guarantees a single continuous Hamiltonian tour passing through each active task exactly once.
+- For every active arc $l_{i, j} = 1$, the linear transition spacing is enforced:
 $$s_j \ge e_i + \text{setup}(i, j)$$
 
 **Example:**

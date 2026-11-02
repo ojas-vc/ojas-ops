@@ -26,15 +26,44 @@ class SolverConfig(msgspec.Struct, kw_only=True):
 - **`num_workers`** _(int)_: Number of parallel search threads. Modern CP-SAT achieves near-linear speedups with parallel portfolios (LNS, sat search, linear relaxation). Default is `8`.
 - **`random_seed`** _(int)_: Ensures reproducible optimization runs across identical hardware and solver builds.
 - **`log_search_progress`** _(bool)_: When set to `True`, streams CP-SAT's internal search progression, bounds, and cut generators to stdout.
+- **`relative_gap_limit`** _(float)_: Relative optimality stopping threshold (e.g. `0.05` for 5% gap). Default is `0.0` (exact optimality).
 - **`stop_after_first_solution`** _(bool)_: Exits immediately once any valid feasible schedule is found, minimizing latency when exact optimality is not required.
 
 ---
 
-## 2. Compilation Mechanics
+## 2. Warm Start & Solution Hints
+
+When re-optimizing or solving a disrupted schedule, Ojas Ops supports warm-starting the search by injecting previous variable assignments as solution hints:
+
+```python
+# Pass known good start times to accelerate CP-SAT branch-and-bound search
+scheduler.solve(hints={"task_01": 0, "task_02": 90, "task_03": 180})
+```
+
+The CP-SAT solver tests these hints before starting search heuristics, drastically reducing time-to-first-solution and tightening initial dual bounds.
+
+---
+
+## 3. Solver Telemetry & Metadata
+
+Upon completion, `ScheduleResult.metadata` captures granular solver search statistics:
+
+| Key | Description | Example |
+| :--- | :--- | :--- |
+| `solver_status_name` | Raw CP-SAT completion status string. | `"OPTIMAL"` |
+| `num_branches` | Total search decision branches explored. | `"66"` |
+| `num_conflicts` | Number of conflict learning clauses generated. | `"0"` |
+| `user_time` | Total CPU compute time consumed. | `"0.0193s"` |
+| `deterministic_time` | Deterministic ticks elapsed (hardware independent). | `"0.0023"` |
+| `best_objective_bound` | Best mathematical dual bound proven by solver. | `"330.0000"` |
+
+---
+
+## 4. Compilation Mechanics
 
 The `CpSatSolver` compiles Ojas Ops domain models into OR-Tools primitives:
 
-### 2.1 Interval Variables
+### 4.1 Interval Variables
 
 For each task $i$, the solver creates:
 
@@ -44,7 +73,7 @@ end_var = model.new_int_var(earliest_end, latest_end, f"end_{task_id}")
 interval_var = model.new_interval_var(start_var, duration, end_var, f"interval_{task_id}")
 ```
 
-### 2.2 Alternative Resource Candidate Pools
+### 4.2 Alternative Resource Candidate Pools
 
 When a task can be performed by one of several qualified resources (e.g. any available ICU nurse):
 
@@ -60,7 +89,7 @@ When a task can be performed by one of several qualified resources (e.g. any ava
 
 ---
 
-## 3. Solver Status Mapping
+## 5. Solver Status Mapping
 
 | OR-Tools Status | Ojas Ops Status (`ScheduleStatus`) | Interpretation                                                                                |
 | :-------------- | :--------------------------------- | :-------------------------------------------------------------------------------------------- |

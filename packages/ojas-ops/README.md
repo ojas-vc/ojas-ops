@@ -97,6 +97,7 @@ Full documentation is available in the [`docs/`](../../docs/) directory:
 - [Validation Engine](../../docs/validation.md)
 - [Simulation & Rescheduling](../../docs/simulation.md)
 - [Industry Domain Adapters](../../docs/adapters.md)
+- [Scenarios & Golden Datasets](../../docs/scenarios.md)
 
 ---
 

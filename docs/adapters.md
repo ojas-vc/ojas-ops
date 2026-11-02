@@ -223,3 +223,28 @@ mkt.add_flight(
 scheduler = mkt.build_scheduler()
 result = scheduler.solve()
 ```
+
+---
+
+## 7. Data-Driven Scenario Datasets for Adapters
+
+Every industry domain adapter is accompanied by runnable, golden-assertion-verified JSON benchmark datasets located in `examples/**/data/`:
+
+| Adapter | Example Directory | Datasets |
+| :--- | :--- | :--- |
+| `FilmProductionScheduler` | [`examples/film_production/`](../examples/film_production/) | `feature_film_production.json`, `small_shoot.json` |
+| `ManufacturingScheduler` | [`examples/manufacturing/`](../examples/manufacturing/) | `industrial_jobshop.json`, `large_aerospace_jobshop.json` |
+| `WorkforceScheduler` | [`examples/nurse_rostering/`](../examples/nurse_rostering/) | `hospital_shifts.json`, `monthly_ward_roster.json` |
+| `AcademicTimetableScheduler` | [`examples/academic_timetabling/`](../examples/academic_timetabling/) | `university_timetable.json` |
+| `EventRunSheetScheduler` | [`examples/event_run_sheets/`](../examples/event_run_sheets/) | `tech_conference.json` |
+| `MarketingFlightingScheduler` | [`examples/marketing_flighting/`](../examples/marketing_flighting/) | `q4_omnichannel_campaign.json` |
+| Cultural & Panchang | [`examples/festival_calendar/`](../examples/festival_calendar/) | `temple_festival.json` |
+| General & CSV Ingestion | [`examples/basic_scheduling/`](../examples/basic_scheduling/) | `basic_factory.json`, `tasks.csv`, `resources.csv` |
+
+All examples can be executed directly:
+
+```bash
+uv run python examples/film_production/main.py
+uv run python examples/manufacturing/main.py
+uv run python examples/nurse_rostering/main.py
+```

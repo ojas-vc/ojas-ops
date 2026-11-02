@@ -250,3 +250,65 @@ Returns a `SimulationOutcome` with:
 - `validation_report`: Independent validation of the new schedule.
 - `stability_metrics`: `ScheduleStabilityMetrics` measuring displaced tasks and total time shift.
 - `affected_tasks`: List of task IDs directly impacted by the disruptions.
+
+---
+
+## 7. Scenarios & Golden Benchmarks
+
+Exported directly from `ojas_ops` and `ojas_ops.scenarios`:
+
+### `load_scenario()`
+
+Loads a typed `ScenarioDefinition` from a JSON file via `msgspec`:
+
+```python
+scenario = load_scenario("path/to/scenario.json")
+```
+
+### `build_scheduler()`
+
+Constructs and configures an operational `Scheduler` populated with all resources, tasks, candidate pools, transitions, workloads, and calendars declared in a scenario:
+
+```python
+scheduler = build_scheduler(scenario)
+```
+
+### `verify_expected()`
+
+Evaluates the solved schedule against golden expected assertions embedded in the dataset:
+
+```python
+failures = verify_expected(scenario, result, report)
+```
+
+Returns a `list[str]` of assertion failure messages (empty if all conditions passed).
+
+### `run_scenario()`
+
+Executes an end-to-end scenario run (load $\rightarrow$ solve $\rightarrow$ validate $\rightarrow$ verify golden assertions):
+
+```python
+run_result = run_scenario("path/to/scenario.json", print_summary=True)
+if run_result.is_success:
+    print(f"Optimal makespan: {run_result.result.makespan}")
+```
+
+### Tabular CSV Ingestion
+
+```python
+tasks = load_tasks_from_csv("path/to/tasks.csv")
+resources = load_resources_from_csv("path/to/resources.csv")
+```
+
+### Synthetic Benchmark Generators
+
+```python
+from ojas_ops.scenarios import (
+    generate_jobshop_scenario,
+    generate_workforce_scenario,
+    generate_film_scenario,
+    generate_benchmark_suite,
+)
+
+suite = generate_benchmark_suite("benchmarks/output", scales=["small", "medium", "large"])
+```

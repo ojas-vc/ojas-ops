@@ -85,6 +85,14 @@ This enables:
 - Independent auditing for regulated industries (healthcare, aviation, logistics).
 - Failure diagnosis when manual overrides are attempted.
 
+### 2.4 Data-Driven Scenarios & Golden Assertions
+
+Complex operational systems require reproducible regression datasets. Ojas Ops provides a dedicated `scenarios` infrastructure (`ScenarioDefinition` with embedded `ExpectedResult` assertions):
+- **Declarative Formats:** High-speed JSON schemas decoded via `msgspec`, alongside flat CSV tabular loaders.
+- **Embedded Golden Assertions:** Datasets contain their own acceptance criteria (expected status, makespan bounds, objective ceilings, task timing windows).
+- **Automated Verification:** Verified deterministically via `verify_expected()` and executed via `run_scenario()`.
+- **Synthetic Generators:** Algorithmic generators create multi-scale benchmarks (small, medium, large, stress) for performance evaluation.
+
 ---
 
 ## 3. Mathematical CP-SAT Formulation
@@ -119,18 +127,18 @@ $$\sum_{i \in T_r \mid s_i \le t < e_i} c_{i, r} \le C_r$$
 ### 3.4 Sequence-Dependent Setup and Transition Matrices
 
 When switching from task $i$ to task $j$ on resource $r$ requires setup time $\Delta_{i, j}$:
-A boolean ordering variable $b_{i, j} \in \{0, 1\}$ is created:
-$$s_j \ge e_i + \Delta_{i, j} \quad \text{if } b_{i, j} = 1$$
-$$s_i \ge e_j + \Delta_{j, i} \quad \text{if } b_{i, j} = 0$$
+Ojas Ops uses Google OR-Tools CP-SAT's specialized Hamiltonian path / circuit constraint (`model.add_circuit(arcs)`) augmented with a dummy root node:
+- For each ordered pair $(i, j)$, an arc literal $l_{i, j}$ is instantiated.
+- If $l_{i, j} = 1$, the linear transition timing relation is enforced:
+$$s_j \ge e_i + \Delta_{i, j}$$
+- `model.add_circuit` strictly prevents sub-tours and enforces a single valid chronological sequence across tasks sharing the resource.
 
 ### 3.5 Blackout Windows and Target Windows
 
 For an unavailable blackout window $[W_{start}, W_{end}]$:
-Task $i$ must satisfy:
+- When assigned to a **resource**, Ojas Ops compiles the blackout as a native fixed interval variable $I_{\text{blackout}} = \text{IntervalVar}(W_{start}, W_{end} - W_{start}, W_{end})$. This fixed interval is injected directly into `model.add_no_overlap()` (or `model.add_cumulative()`), leveraging CP-SAT's highly optimized interval propagation engine.
+- When bound to a specific **task**, the solver enforces non-overlap between the task interval and the blackout interval:
 $$e_i \le W_{start} \quad \lor \quad s_i \ge W_{end}$$
-Modeled in CP-SAT via boolean disjunction:
-$$e_i \le W_{start} \iff b_{before} = 1$$
-$$s_i \ge W_{end} \iff b_{before} = 0$$
 
 For an auspicious target window $[T_{start}, T_{end}]$ (e.g. Shubh Muhurat):
 $$s_i \ge T_{start} \quad \land \quad e_i \le T_{end}$$
