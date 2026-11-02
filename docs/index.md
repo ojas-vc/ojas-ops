@@ -40,6 +40,7 @@ Architecture & Design    Core Scheduling   Constraints & Goals    Domain Adapter
 | Section                         | Description                                                                                 |
 | :------------------------------ | :------------------------------------------------------------------------------------------ |
 | [Architecture](architecture.md) | High-level system topology, CP-SAT translation, and deterministic verification.             |
+| [Design Guidelines](guidelines.md) | Strictly typed, contract-first design guide and architectural conversion standards.       |
 | [API Reference](api.md)         | Comprehensive reference for the fluent `Scheduler` orchestrator.                            |
 | [Domain Models](models.md)      | `Task`, `Resource`, `Horizon`, `IntervalWindow`, `TimeWindow`, `ScheduleResult`.            |
 | [Calendars](calendars.md)       | Standard operational calendars and Hindu Panchang / Cultural calendar providers.            |

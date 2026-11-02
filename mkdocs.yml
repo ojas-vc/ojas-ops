@@ -50,6 +50,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Architecture: architecture.md
+  - Design Guidelines: guidelines.md
   - API Reference: api.md
   - Domain Models: models.md
   - Calendar Providers: calendars.md
@@ -58,5 +59,6 @@ nav:
   - Solvers: solvers.md
   - Validation Engine: validation.md
   - Simulation & Rescheduling: simulation.md
+  - Scenarios & Golden Datasets: scenarios.md
   - Domain Adapters: adapters.md
 
