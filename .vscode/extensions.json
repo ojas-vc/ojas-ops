@@ -3,10 +3,10 @@
     "ms-python.python",
     "ms-python.vscode-pylance",
     "meta.pyrefly",
-    "charliermarsh.ruff",
-    "biomejs.biome"
+    "charliermarsh.ruff"
   ],
   "unwantedRecommendations": [
+    "esbenp.prettier-vscode",
     "ms-python.autopep8",
     "ms-python.black-formatter",
     "ms-python.flake8",
