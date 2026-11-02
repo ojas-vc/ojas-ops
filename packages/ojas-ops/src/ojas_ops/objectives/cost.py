@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.objectives.base import Objective
 
@@ -10,6 +10,8 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.constraints.base import SolverContext
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
@@ -29,7 +31,7 @@ class MinimizeCostObjective(Objective):
         self._resource_rates = dict(resource_rates or {})
         self._task_costs = dict(task_costs or {})
 
-    def build_expression(self, context: SolverContext) -> Any:
+    def build_expression(self, context: SolverContext) -> cp_model.LinearExpr | int:
         for rid, res in context.resources.items():
             if rid not in self._resource_rates:
                 self._resource_rates[rid] = res.cost_per_time_unit
@@ -37,7 +39,7 @@ class MinimizeCostObjective(Objective):
             if tid not in self._task_costs:
                 self._task_costs[tid] = task.cost
 
-        cost_terms = []
+        cost_terms: list[cp_model.LinearExpr | int] = []
         for _tid, task in context.tasks.items():
             if task.cost > 0:
                 cost_terms.append(int(round(task.cost)))

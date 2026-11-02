@@ -7,9 +7,11 @@ __email__ = "balu@chitram.ai"
 
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.constraints.base import SolverContext
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
@@ -28,7 +30,7 @@ class Objective(ABC):
         self.is_maximize = is_maximize
 
     @abstractmethod
-    def build_expression(self, context: SolverContext) -> Any:
+    def build_expression(self, context: SolverContext) -> cp_model.LinearExpr | int:
         """Construct CP-SAT linear expression or integer variable to minimize."""
 
     @abstractmethod

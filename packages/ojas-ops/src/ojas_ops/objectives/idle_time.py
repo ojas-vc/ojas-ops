@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.objectives.base import Objective
 
@@ -10,6 +10,8 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.constraints.base import SolverContext
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
@@ -27,9 +29,9 @@ class MinimizeIdleTimeObjective(Objective):
         super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.resource_ids = resource_ids
 
-    def build_expression(self, context: SolverContext) -> Any:
+    def build_expression(self, context: SolverContext) -> cp_model.LinearExpr | int:
         target_rids = self.resource_ids or list(context.resources.keys())
-        span_terms = []
+        span_terms: list[cp_model.LinearExpr | int] = []
 
         for rid in target_rids:
             relevant_tvs = [

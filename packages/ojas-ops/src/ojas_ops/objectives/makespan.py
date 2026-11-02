@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.objectives.base import Objective
 
@@ -10,6 +10,8 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.constraints.base import SolverContext
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
@@ -25,7 +27,7 @@ class MinimizeMakespanObjective(Objective):
     ) -> None:
         super().__init__(name=name, weight=weight, is_maximize=is_maximize)
 
-    def build_expression(self, context: SolverContext) -> Any:
+    def build_expression(self, context: SolverContext) -> cp_model.LinearExpr | int:
         if not context.task_vars:
             return 0
 

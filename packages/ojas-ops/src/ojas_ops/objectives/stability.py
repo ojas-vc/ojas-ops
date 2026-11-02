@@ -6,11 +6,13 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.objectives.base import Objective
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.constraints.base import SolverContext
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
@@ -28,8 +30,8 @@ class ScheduleStabilityObjective(Objective):
         super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.baseline_starts = baseline_starts
 
-    def build_expression(self, context: SolverContext) -> Any:
-        abs_diff_terms = []
+    def build_expression(self, context: SolverContext) -> cp_model.LinearExpr | int:
+        abs_diff_terms: list[cp_model.LinearExpr | int] = []
         for tid, base_start in self.baseline_starts.items():
             if tid in context.task_vars:
                 tv = context.task_vars[tid]

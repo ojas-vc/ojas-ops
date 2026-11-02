@@ -6,8 +6,6 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from typing import Any
-
 import msgspec
 
 from ojas_ops.models.resource import ResourceType
@@ -107,7 +105,7 @@ class ObjectiveSpec(msgspec.Struct, kw_only=True):
     type: str = "makespan"  # makespan, cost, idle_time, tardiness, composite
     is_maximize: bool = False
     weight: float = 1.0
-    sub_objectives: list[dict[str, Any]] = msgspec.field(default_factory=list)
+    sub_objectives: list[dict[str, str | float | bool]] = msgspec.field(default_factory=list)
 
 
 class ExpectedResult(msgspec.Struct, kw_only=True):
@@ -119,7 +117,7 @@ class ExpectedResult(msgspec.Struct, kw_only=True):
     min_makespan: int | None = None
     max_objective_value: float | None = None
     expected_task_count: int | None = None
-    task_assertions: dict[str, dict[str, Any]] = msgspec.field(default_factory=dict)
+    task_assertions: dict[str, dict[str, int | str]] = msgspec.field(default_factory=dict)
 
 
 class ScenarioDefinition(msgspec.Struct, kw_only=True):

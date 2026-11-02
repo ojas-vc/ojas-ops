@@ -6,11 +6,13 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.objectives.base import Objective
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.constraints.base import SolverContext
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
@@ -28,8 +30,8 @@ class MinimizeTardinessObjective(Objective):
         super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.deadlines = deadlines or {}
 
-    def build_expression(self, context: SolverContext) -> Any:
-        lateness_terms = []
+    def build_expression(self, context: SolverContext) -> cp_model.LinearExpr | int:
+        lateness_terms: list[cp_model.LinearExpr | int] = []
         for tid, tv in context.task_vars.items():
             task = context.tasks.get(tid)
             # Deadline can come from objective config or task time_window

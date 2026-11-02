@@ -7,7 +7,7 @@ __email__ = "balu@chitram.ai"
 
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ortools.sat.python import cp_model
@@ -62,8 +62,8 @@ class SolverContext:
         self.resource_demands: dict[str, list[tuple[cp_model.IntervalVar, int]]] = {
             rid: [] for rid in resources
         }
-        self.custom_data: dict[str, Any] = {}
-        self.soft_penalties: list[Any] = []
+        self.custom_data: dict[str, object] = {}
+        self.soft_penalties: list[cp_model.LinearExpr | int] = []
 
 
 class Constraint(ABC):

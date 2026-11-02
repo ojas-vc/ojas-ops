@@ -6,12 +6,14 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.constraints.base import Constraint, SolverContext
 from ojas_ops.validation.report import ConstraintViolation, Severity
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
 
@@ -24,7 +26,7 @@ class MaxWorkloadConstraint(Constraint):
         self.max_duration = max_duration
 
     def apply_to_solver(self, context: SolverContext) -> None:
-        duration_terms: list[Any] = []
+        duration_terms: list[cp_model.LinearExpr | int] = []
         for tid, task in context.tasks.items():
             tv = context.task_vars.get(tid)
             if not tv:

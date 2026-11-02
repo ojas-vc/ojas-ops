@@ -17,6 +17,7 @@ from ojas_ops.calendars.cultural import CulturalCalendarProvider
 from ojas_ops.calendars.standard import StandardCalendarProvider
 from ojas_ops.models.resource import ResourceType
 from ojas_ops.models.task import ResourceRequirement
+from ojas_ops.objectives.base import Objective
 from ojas_ops.objectives.composite import WeightedCompositeObjective
 from ojas_ops.objectives.cost import MinimizeCostObjective
 from ojas_ops.objectives.idle_time import MinimizeIdleTimeObjective
@@ -144,6 +145,7 @@ def build_scheduler(scenario: ScenarioDefinition) -> Scheduler:
     # 6. Objectives
     obj_type = scenario.objective.type.lower()
     is_max = scenario.objective.is_maximize
+    obj: Objective
     if obj_type == "makespan":
         obj = MinimizeMakespanObjective(weight=scenario.objective.weight, is_maximize=is_max)
     elif obj_type == "cost":
@@ -153,9 +155,9 @@ def build_scheduler(scenario: ScenarioDefinition) -> Scheduler:
     elif obj_type == "tardiness":
         obj = MinimizeTardinessObjective(weight=scenario.objective.weight, is_maximize=is_max)
     elif obj_type == "composite":
-        sub_objs = []
+        sub_objs: list[Objective] = []
         for sub in scenario.objective.sub_objectives:
-            sub_type = sub.get("type", "makespan").lower()
+            sub_type = str(sub.get("type", "makespan")).lower()
             sub_weight = float(sub.get("weight", 1.0))
             sub_max = bool(sub.get("is_maximize", False))
             if sub_type == "makespan":
@@ -245,11 +247,11 @@ def verify_expected(
         if not st:
             failures.append(f"Task '{tid}' named in task_assertions was not scheduled")
             continue
-        if "max_end" in asserts and st.end > asserts["max_end"]:
+        if "max_end" in asserts and st.end > int(asserts["max_end"]):
             failures.append(
                 f"Task '{tid}' end {st.end} exceeded expected max_end {asserts['max_end']}"
             )
-        if "min_start" in asserts and st.start < asserts["min_start"]:
+        if "min_start" in asserts and st.start < int(asserts["min_start"]):
             failures.append(
                 f"Task '{tid}' start {st.start} below expected min_start {asserts['min_start']}"
             )

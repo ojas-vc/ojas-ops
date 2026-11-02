@@ -6,7 +6,7 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from typing import Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.calendars.base import CalendarProvider
 from ojas_ops.constraints.base import Constraint
@@ -28,6 +28,9 @@ from ojas_ops.simulation.simulator import ScenarioSimulator, SimulationOutcome
 from ojas_ops.solvers.config import SolverConfig
 from ojas_ops.solvers.cp_sat import CpSatSolver
 from ojas_ops.validation.report import ValidationReport
+
+if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
 from ojas_ops.validation.validator import ScheduleValidator
 
 
@@ -193,7 +196,17 @@ class Scheduler:
         """Define schedule planning horizon."""
         self.horizon = Horizon(start=start, end=end, granularity=granularity)
 
-    def minimize(self, objective_name: str | Objective, **kwargs: Any) -> None:
+    def minimize(
+        self,
+        objective_name: str | Objective,
+        *,
+        weight: float = 1.0,
+        resource_ids: list[str] | None = None,
+        deadlines: dict[str, int] | None = None,
+        resource_rates: dict[str, float] | None = None,
+        task_costs: dict[str, float] | None = None,
+        name: str = "",
+    ) -> None:
         """Configure the solver optimization goal to minimize."""
         if isinstance(objective_name, Objective):
             objective_name.is_maximize = False
@@ -202,34 +215,79 @@ class Scheduler:
 
         name_lower = str(objective_name).lower()
         if name_lower == "makespan":
-            self.objective = MinimizeMakespanObjective(**kwargs)
+            self.objective = MinimizeMakespanObjective(
+                name=name or "MinimizeMakespan", weight=weight, is_maximize=False
+            )
         elif name_lower == "cost":
-            self.objective = MinimizeCostObjective(**kwargs)
+            self.objective = MinimizeCostObjective(
+                name=name or "MinimizeCost",
+                weight=weight,
+                is_maximize=False,
+                resource_rates=resource_rates,
+                task_costs=task_costs,
+            )
         elif name_lower == "idle_time":
-            self.objective = MinimizeIdleTimeObjective(**kwargs)
+            self.objective = MinimizeIdleTimeObjective(
+                resource_ids=resource_ids,
+                name=name or "MinimizeIdleTime",
+                weight=weight,
+                is_maximize=False,
+            )
         elif name_lower == "tardiness":
-            self.objective = MinimizeTardinessObjective(**kwargs)
+            self.objective = MinimizeTardinessObjective(
+                deadlines=deadlines,
+                name=name or "MinimizeTardiness",
+                weight=weight,
+                is_maximize=False,
+            )
         else:
             msg = f"Unknown optimization objective: '{objective_name}'"
             raise ValueError(msg)
 
-    def maximize(self, objective_name: str | Objective, **kwargs: Any) -> None:
+    def maximize(
+        self,
+        objective_name: str | Objective,
+        *,
+        weight: float = 1.0,
+        resource_ids: list[str] | None = None,
+        deadlines: dict[str, int] | None = None,
+        resource_rates: dict[str, float] | None = None,
+        task_costs: dict[str, float] | None = None,
+        name: str = "",
+    ) -> None:
         """Configure the solver optimization goal to maximize."""
         if isinstance(objective_name, Objective):
             objective_name.is_maximize = True
             self.objective = objective_name
             return
 
-        kwargs["is_maximize"] = True
         name_lower = str(objective_name).lower()
         if name_lower == "makespan":
-            self.objective = MinimizeMakespanObjective(**kwargs)
+            self.objective = MinimizeMakespanObjective(
+                name=name or "MaximizeMakespan", weight=weight, is_maximize=True
+            )
         elif name_lower == "cost":
-            self.objective = MinimizeCostObjective(**kwargs)
+            self.objective = MinimizeCostObjective(
+                name=name or "MaximizeCost",
+                weight=weight,
+                is_maximize=True,
+                resource_rates=resource_rates,
+                task_costs=task_costs,
+            )
         elif name_lower == "idle_time":
-            self.objective = MinimizeIdleTimeObjective(**kwargs)
+            self.objective = MinimizeIdleTimeObjective(
+                resource_ids=resource_ids,
+                name=name or "MaximizeIdleTime",
+                weight=weight,
+                is_maximize=True,
+            )
         elif name_lower == "tardiness":
-            self.objective = MinimizeTardinessObjective(**kwargs)
+            self.objective = MinimizeTardinessObjective(
+                deadlines=deadlines,
+                name=name or "MaximizeTardiness",
+                weight=weight,
+                is_maximize=True,
+            )
         else:
             msg = f"Unknown optimization objective: '{objective_name}'"
             raise ValueError(msg)
@@ -239,7 +297,7 @@ class Scheduler:
         config: SolverConfig | None = None,
         *,
         solution_hints: dict[str, int] | None = None,
-        callback: Any = None,
+        callback: cp_model.CpSolverSolutionCallback | None = None,
     ) -> ScheduleResult:
         """Compile and solve the optimization model using Google OR-Tools CP-SAT."""
         solver = CpSatSolver(config or self.solver_config)

@@ -6,11 +6,13 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ojas_ops.objectives.base import Objective
 
 if TYPE_CHECKING:
+    from ortools.sat.python import cp_model
+
     from ojas_ops.constraints.base import SolverContext
     from ojas_ops.models.schedule import ResourceAssignment, ScheduledTask
 
@@ -28,8 +30,8 @@ class WeightedCompositeObjective(Objective):
         super().__init__(name=name, weight=weight, is_maximize=is_maximize)
         self.objectives = objectives
 
-    def build_expression(self, context: SolverContext) -> Any:
-        weighted_terms = []
+    def build_expression(self, context: SolverContext) -> cp_model.LinearExpr | int:
+        weighted_terms: list[cp_model.LinearExpr | int] = []
         for obj in self.objectives:
             expr = obj.build_expression(context)
             # Scale float weights into integers for CP-SAT
