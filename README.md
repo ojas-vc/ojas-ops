@@ -67,28 +67,29 @@ Ojas Ops is domain-independent. Its core abstractions can be applied to differen
 
 ### 3.1 Film & Media Production
 
-Generate optimized shooting schedules by coordinating:
+Generate optimized shooting schedules using a **Two-Level Hierarchical Decomposition** (see the formal [Film Shooting Schedule Optimization Framework](research/film-shooting-schedule-optimization-framework.md)):
 
-- Scenes, sequences, and shooting days.
-- Actors, artists, and cast availability.
-- Shooting locations and location permissions.
-- Sets, props, costumes, makeup, and equipment.
-- Interior, exterior, day, and night requirements.
-- Crew availability and working hours.
-- Travel times and location transitions.
-- Scene dependencies and continuity requirements.
-- Production budgets and deadlines.
-- Shooting duration and overtime restrictions.
+- **Level 1: Macro Combinatorial Cross-Boarding (CP-SAT MILP):**
+  - Multi-unit concurrency (`MAIN`, `SECOND`, `SPLINTER`, `VFX`) with cross-unit lead cast exclusivity.
+  - Continuous soundstage lease holding ($[\text{prep}, \text{strike}]$ span minimization) and physical facility disjunction.
+  - Contractual talent availability, daily ceilings, minor child labor laws (DLSE/NCPCR), and SAG-AFTRA 10-day Drop-and-Pickup rules.
+  - Completion bond high-hazard stunt deferral past production progress milestones (e.g., $\ge 70\%$).
+  - Background extras clustering for large crowd scenes ($B_s \ge 50$).
+  - Early VFX turnover deadlines and turnaround defense (mandatory 54h weekend turnaround).
+  - Unidirectional costume distress progression and breakaway prop exhaustion limits.
+- **Level 2: Micro Intra-Day Shot Sequencing (Disjunctive RCPSP-SDST):**
+  - Camera setup transitions and axis rotation penalties ($\Delta \theta > 45^\circ$ setup angle changeovers, relighting buffers).
+  - Natural light golden-hour dawn/dusk solar ephemeris bounds.
+  - Statutory meal break compliance ($\le 6$ hours) and backward-calculated daily call sheets.
 
 Optimization objectives:
 
-- Minimize total shooting days.
-- Minimize production costs.
-- Minimize actor and crew idle time.
-- Minimize location changes.
-- Minimize overtime.
-- Improve equipment and resource utilization.
-- Minimize disruption to an approved schedule.
+- Minimize total shooting days and multi-unit production footprint.
+- Minimize production costs and soundstage continuous lease liabilities.
+- Minimize actor and crew idle time (SAG-AFTRA hold span minimization).
+- Minimize location changes and setup changeover latency.
+- Defend crew turnaround and eliminate fatigue-inducing "Fraturday" shifts.
+- Maximize schedule robustness against weather and operational disruptions.
 
 ### 3.2 Manufacturing & Industrial Production
 
@@ -574,6 +575,9 @@ ojas-ops/
 ├── benchmarks/
 │
 ├── docs/
+│
+├── research/
+│   └── film-shooting-schedule-optimization-framework.md
 │
 └── scripts/
 ```

@@ -126,9 +126,43 @@ class DOODStatusCode(StrEnum):
     OFF = "."
 
 
+class ProductionUnitType(StrEnum):
+    """Classification of filming camera unit."""
+
+    MAIN = "MAIN"
+    SECOND = "SECOND"
+    SPLINTER = "SPLINTER"
+    VFX = "VFX"
+
+
 # ==============================================================================
 # CANONICAL MSGSPEC DATA CONTRACTS
 # ==============================================================================
+
+
+class ProductionUnit(msgspec.Struct, kw_only=True, gc=False):
+    """Operational filming unit (e.g. Main Unit, 2nd Unit)."""
+
+    id: int | str
+    name: str
+    unit_type: ProductionUnitType = ProductionUnitType.MAIN
+    daily_operating_cost_cents: int = 0
+    daily_operating_cost: float = 0.0
+
+    def __post_init__(self) -> None:
+        if self.daily_operating_cost != 0.0 and self.daily_operating_cost_cents == 0:
+            self.daily_operating_cost_cents = int(round(self.daily_operating_cost * 100))
+        elif self.daily_operating_cost_cents != 0 and self.daily_operating_cost == 0.0:
+            self.daily_operating_cost = self.daily_operating_cost_cents / 100.0
+
+
+class CameraSetup(msgspec.Struct, kw_only=True, gc=False):
+    """Lighting and camera angle configuration for a scene setup."""
+
+    id: int | str
+    name: str
+    axis_angle: str = ""
+    lighting_setup_id: str = ""
 
 
 class Prop(msgspec.Struct, kw_only=True, gc=False):
@@ -161,9 +195,16 @@ class SpecialtyEquipment(msgspec.Struct, kw_only=True, gc=False):
     name: str
     equipment_type: SpecialtyEquipmentType = SpecialtyEquipmentType.TECHNOCRANE
     daily_rental_cost: float = 0.0
+    daily_rental_cost_cents: int = 0
     rental_start_day: int = 1
     rental_end_day: int = 365
     requires_certified_technician: bool = True
+
+    def __post_init__(self) -> None:
+        if self.daily_rental_cost != 0.0 and self.daily_rental_cost_cents == 0:
+            self.daily_rental_cost_cents = int(round(self.daily_rental_cost * 100))
+        elif self.daily_rental_cost_cents != 0 and self.daily_rental_cost == 0.0:
+            self.daily_rental_cost = self.daily_rental_cost_cents / 100.0
 
 
 class StuntSFXPackage(msgspec.Struct, kw_only=True, gc=False):
@@ -174,7 +215,15 @@ class StuntSFXPackage(msgspec.Struct, kw_only=True, gc=False):
     has_pyrotechnics: bool = False
     has_squibs: bool = False
     pre_rigging_hours_required: float = 0.0
+    pre_rigging_minutes_required: int = 0
     mandatory_medic_count: int = 1
+    stunt_hazard_level: int = 1  # 1 (low) to 5 (extreme risk for principal cast)
+
+    def __post_init__(self) -> None:
+        if self.pre_rigging_hours_required != 0.0 and self.pre_rigging_minutes_required == 0:
+            self.pre_rigging_minutes_required = int(self.pre_rigging_hours_required * 60)
+        elif self.pre_rigging_minutes_required != 0 and self.pre_rigging_hours_required == 0.0:
+            self.pre_rigging_hours_required = self.pre_rigging_minutes_required / 60.0
 
 
 class Talent(msgspec.Struct, kw_only=True, gc=False):
@@ -185,19 +234,35 @@ class Talent(msgspec.Struct, kw_only=True, gc=False):
     character_name: str = ""
     daily_rate: float = 0.0
     day_rate: float = 0.0
+    daily_rate_cents: int = 0
     is_minor: bool = False
     max_daily_hours: float = 10.0
+    max_daily_minutes: int = 600
     hmu_duration_minutes: int = 60
     wardrobe_duration_minutes: int = 30
     travel_duration_minutes: int = 30
     blackout_days: list[int] = msgspec.field(default_factory=list)
     blackout_windows: list[IntervalWindow] = msgspec.field(default_factory=list)
+    requires_studio_teacher: bool = False
+    stunt_double_id: int | str | None = None
 
     def __post_init__(self) -> None:
         if self.day_rate != 0.0 and self.daily_rate == 0.0:
             self.daily_rate = self.day_rate
         elif self.daily_rate != 0.0 and self.day_rate == 0.0:
             self.day_rate = self.daily_rate
+
+        if self.daily_rate != 0.0 and self.daily_rate_cents == 0:
+            self.daily_rate_cents = int(round(self.daily_rate * 100))
+        elif self.daily_rate_cents != 0 and self.daily_rate == 0.0:
+            self.daily_rate = self.daily_rate_cents / 100.0
+            self.day_rate = self.daily_rate
+
+        if self.max_daily_hours != 10.0 and self.max_daily_minutes == 600:
+            self.max_daily_minutes = int(self.max_daily_hours * 60)
+        elif self.max_daily_minutes != 600 and self.max_daily_hours == 10.0:
+            self.max_daily_hours = self.max_daily_minutes / 60.0
+
         if not self.character_name:
             self.character_name = self.name
 
@@ -214,12 +279,26 @@ class Location(msgspec.Struct, kw_only=True, gc=False):
     location_type: LocationType = LocationType.SOUNDSTAGE
     permitted_days: list[int] = msgspec.field(default_factory=list)
     noise_curfew_hour: int | None = None
+    noise_curfew_minute: int | None = None
     allows_sync_sound: bool = True
     daily_rental_cost: float = 0.0
+    daily_rental_cost_cents: int = 0
     prep_days_required: int = 0
     strike_days_required: int = 0
     turnaround_minutes: int = 60
+    soundstage_facility_id: str | int | None = None
     blackout_windows: list[IntervalWindow] = msgspec.field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if self.daily_rental_cost != 0.0 and self.daily_rental_cost_cents == 0:
+            self.daily_rental_cost_cents = int(round(self.daily_rental_cost * 100))
+        elif self.daily_rental_cost_cents != 0 and self.daily_rental_cost == 0.0:
+            self.daily_rental_cost = self.daily_rental_cost_cents / 100.0
+
+        if self.noise_curfew_hour is not None and self.noise_curfew_minute is None:
+            self.noise_curfew_minute = self.noise_curfew_hour * 60
+        elif self.noise_curfew_minute is not None and self.noise_curfew_hour is None:
+            self.noise_curfew_hour = self.noise_curfew_minute // 60
 
 
 # Backward compatibility alias
@@ -236,7 +315,26 @@ class CalendarDay(msgspec.Struct, kw_only=True, gc=False):
     expected_weather: WeatherType = WeatherType.CLEAR
     sunrise_time: str = "06:15"
     sunset_time: str = "18:30"
+    dawn_minute: int = 345
+    sunrise_minute: int = 375
+    sunset_minute: int = 1110
+    dusk_minute: int = 1140
     is_weekend: bool = False
+
+    def __post_init__(self) -> None:
+        try:
+            if ":" in self.sunrise_time:
+                parts = self.sunrise_time.split(":")
+                h, m = int(parts[0]), int(parts[1][:2])
+                self.sunrise_minute = h * 60 + m
+                self.dawn_minute = max(0, self.sunrise_minute - 30)
+            if ":" in self.sunset_time:
+                parts = self.sunset_time.split(":")
+                h, m = int(parts[0]), int(parts[1][:2])
+                self.sunset_minute = h * 60 + m
+                self.dusk_minute = min(1440, self.sunset_minute + 30)
+        except Exception:
+            pass
 
 
 class Scene(msgspec.Struct, kw_only=True, gc=False):
@@ -268,6 +366,11 @@ class Scene(msgspec.Struct, kw_only=True, gc=False):
     min_lag_days: int = 0
     is_second_unit: bool = False
     is_vfx_heavy: bool = False
+    unit_type: ProductionUnitType = ProductionUnitType.MAIN
+    setup_id: int | str | None = None
+    background_count: int = 0
+    vfx_turnover_deadline_day: int | None = None
+    stunt_hazard_level: int = 1
     dependencies: list[str] = msgspec.field(default_factory=list)
     is_night: bool = False
     is_exterior: bool = False
@@ -293,6 +396,11 @@ class Scene(msgspec.Struct, kw_only=True, gc=False):
         elif self.setting == SettingType.EXT:
             self.is_exterior = True
 
+        if self.is_second_unit and self.unit_type == ProductionUnitType.MAIN:
+            self.unit_type = ProductionUnitType.SECOND
+        elif self.unit_type in (ProductionUnitType.SECOND, "SECOND"):
+            self.is_second_unit = True
+
 
 class ProductionDataset(msgspec.Struct, kw_only=True, gc=False):
     """Complete multi-part film production scheduling dataset."""
@@ -306,8 +414,12 @@ class ProductionDataset(msgspec.Struct, kw_only=True, gc=False):
     stunts: list[StuntSFXPackage] = msgspec.field(default_factory=list)
     calendar: list[CalendarDay] = msgspec.field(default_factory=list)
     scenes: list[Scene] = msgspec.field(default_factory=list)
+    units: list[ProductionUnit] = msgspec.field(default_factory=list)
+    setups: list[CameraSetup] = msgspec.field(default_factory=list)
     max_shooting_days: int = 30
     max_hours_per_day: float = 12.0
+    hmu_stations_capacity: int = 4
+    medic_capacity: int = 2
 
 
 # ==============================================================================
@@ -437,6 +549,9 @@ def optimize_production_schedule(
     num_workers: int | None = None,
     move_penalty: int = 500,
     enable_drop_pickup: bool = False,
+    enable_soundstage_lease_tracking: bool = False,
+    enable_hazard_deferral: bool = False,
+    enable_intraday_micro_optimization: bool = True,
     fixed_assignments: dict[int | str, int] | None = None,
 ) -> FilmScheduleResult:
     """Build and solve the extended film shooting schedule using Google OR-Tools CP-SAT."""
@@ -594,6 +709,21 @@ def optimize_production_schedule(
                 in (WeatherType.RAIN, WeatherType.MONSOON, "RAIN", "MONSOON")
             ):
                 is_valid = False
+            # VFX Early Turnover Deadline
+            elif is_valid and s.vfx_turnover_deadline_day is not None and d > s.vfx_turnover_deadline_day:
+                is_valid = False
+            # Location Noise Curfew
+            elif (
+                is_valid
+                and s.time_of_day in (TimeOfDay.NIGHT, "NIGHT")
+                and loc_opt
+                and loc_opt.noise_curfew_hour is not None
+                and loc_opt.noise_curfew_hour < 22
+                and s.stunt_sfx_package_id is not None
+            ):
+                stunt_pkg = next((p for p in data.stunts if p.id == s.stunt_sfx_package_id or str(p.id) == str(s.stunt_sfx_package_id)), None)
+                if stunt_pkg and (stunt_pkg.has_pyrotechnics or stunt_pkg.has_squibs):
+                    is_valid = False
             else:
                 # Equipment Leases
                 if is_valid:
@@ -901,9 +1031,158 @@ def optimize_production_schedule(
                 model.add(turnaround_violation == 1).only_enforce_if([has_night_d, has_day_next])
                 turnaround_penalty_terms.append(turnaround_violation * 1000)
 
-    # Objective Function: Minimize Talent Hold Spans + Location Moves + Turnaround Violations
+    # --------------------------------------------------------------------------
+    # CONSTRAINT 8: Continuous Soundstage Leases & Stage Facility Disjunction
+    # --------------------------------------------------------------------------
+    stage_lease_terms: list[cp_model.LinearExpr] = []
+    location_prep_strike_intervals: dict[int | str, tuple[cp_model.IntVar, cp_model.IntVar, cp_model.IntVar]] = {}
+
+    for loc in data.locations:
+        scenes_at_loc = scenes_by_location[loc.id]
+        if not scenes_at_loc:
+            continue
+        active_loc_days = [
+            loc_active[loc.id, d] for d in range(1, num_days + 1) if (loc.id, d) in loc_active
+        ]
+        if not active_loc_days:
+            continue
+
+        loc_is_used = model.new_bool_var(f"loc_used_{loc.id}")
+        model.add_max_equality(loc_is_used, active_loc_days)
+
+        first_shoot_loc = model.new_int_var(1, num_days, f"first_shoot_{loc.id}")
+        last_shoot_loc = model.new_int_var(1, num_days, f"last_shoot_{loc.id}")
+
+        for d in range(1, num_days + 1):
+            if (loc.id, d) in loc_active:
+                model.add(first_shoot_loc <= d).only_enforce_if(loc_active[loc.id, d])
+                model.add(last_shoot_loc >= d).only_enforce_if(loc_active[loc.id, d])
+
+        prep_days = loc.prep_days_required
+        strike_days = loc.strike_days_required
+        prep_start_day = model.new_int_var(1 - prep_days, num_days, f"prep_start_{loc.id}")
+        strike_end_day = model.new_int_var(1, num_days + strike_days, f"strike_end_{loc.id}")
+
+        model.add(prep_start_day == first_shoot_loc - prep_days).only_enforce_if(loc_is_used)
+        model.add(strike_end_day == last_shoot_loc + strike_days).only_enforce_if(loc_is_used)
+
+        lease_days = model.new_int_var(0, num_days + prep_days + strike_days, f"lease_days_{loc.id}")
+        model.add(lease_days == strike_end_day - prep_start_day + 1).only_enforce_if(loc_is_used)
+        model.add(lease_days == 0).only_enforce_if(loc_is_used.negated())
+
+        rental_rate = int(loc.daily_rental_cost) if loc.daily_rental_cost > 0 else (loc.daily_rental_cost_cents // 100)
+        if enable_soundstage_lease_tracking and rental_rate > 0:
+            stage_lease_terms.append(lease_days * rental_rate)
+
+        location_prep_strike_intervals[loc.id] = (loc_is_used, prep_start_day, strike_end_day)
+
+    # Stage Disjunction for sets sharing the same physical soundstage facility
+    facility_sets: dict[str | int, list[Location]] = defaultdict(list)
+    for loc in data.locations:
+        if loc.soundstage_facility_id:
+            facility_sets[loc.soundstage_facility_id].append(loc)
+
+    for _fac_id, set_list in facility_sets.items():
+        if len(set_list) > 1:
+            for i in range(len(set_list)):
+                for j in range(i + 1, len(set_list)):
+                    loc_a = set_list[i]
+                    loc_b = set_list[j]
+                    prep_a = loc_a.prep_days_required
+                    strike_a = loc_a.strike_days_required
+                    prep_b = loc_b.prep_days_required
+                    strike_b = loc_b.strike_days_required
+                    a_before_b = model.new_bool_var(f"a_before_b_{loc_a.id}_{loc_b.id}")
+
+                    for da in range(1, num_days + 1):
+                        if (loc_a.id, da) in loc_active:
+                            for db in range(1, num_days + 1):
+                                if (loc_b.id, db) in loc_active:
+                                    if da + strike_a >= db - prep_b:
+                                        model.add_bool_or([
+                                            loc_active[loc_a.id, da].negated(),
+                                            loc_active[loc_b.id, db].negated(),
+                                            a_before_b.negated(),
+                                        ])
+                                    if db + strike_b >= da - prep_a:
+                                        model.add_bool_or([
+                                            loc_active[loc_a.id, da].negated(),
+                                            loc_active[loc_b.id, db].negated(),
+                                            a_before_b,
+                                        ])
+
+    # --------------------------------------------------------------------------
+    # CONSTRAINT 9: Multi-Unit Concurrency & Cast Exclusivity
+    # --------------------------------------------------------------------------
+    distinct_units = {str(s.unit_type) for s in data.scenes}
+    if len(distinct_units) > 1:
+        for t in data.talents:
+            scenes_t = scenes_by_talent[t.id]
+            for d in range(1, num_days + 1):
+                unit_vars_for_d = []
+                for u_name in distinct_units:
+                    u_scenes = [
+                        scene_vars_by_day[d][s.id]
+                        for s in scenes_t
+                        if str(s.unit_type) == u_name and s.id in scene_vars_by_day[d]
+                    ]
+                    if u_scenes:
+                        u_act = model.new_bool_var(f"t_{t.id}_u_{u_name}_d{d}")
+                        model.add_max_equality(u_act, u_scenes)
+                        unit_vars_for_d.append(u_act)
+                if len(unit_vars_for_d) > 1:
+                    model.add(sum(unit_vars_for_d) <= 1)
+
+    # --------------------------------------------------------------------------
+    # CONSTRAINT 10: High-Hazard Stunt Deferral
+    # --------------------------------------------------------------------------
+    hazard_penalty_terms: list[cp_model.LinearExpr] = []
+    if enable_hazard_deferral:
+        for s in data.scenes:
+            is_high_hazard = s.stunt_hazard_level >= 4
+            if not is_high_hazard and s.stunt_sfx_package_id:
+                stunt_pkg = next((pkg for pkg in data.stunts if pkg.id == s.stunt_sfx_package_id), None)
+                if stunt_pkg and stunt_pkg.stunt_hazard_level >= 4:
+                    is_high_hazard = True
+
+            if is_high_hazard:
+                for cid in s.required_cast:
+                    if cid in earliest and cid in latest:
+                        s_day = cp_model.LinearExpr.WeightedSum(
+                            [x[s.id, d] for d in feasible_days_by_scene[s.id]],
+                            feasible_days_by_scene[s.id],
+                        )
+                        early_stunt = model.new_bool_var(f"early_stunt_s{s.id}_c{cid}")
+                        model.add(4 * s_day - 3 * earliest[cid] < latest[cid]).only_enforce_if(early_stunt)
+                        hazard_penalty_terms.append(early_stunt * 2000)
+
+    # --------------------------------------------------------------------------
+    # CONSTRAINT 11: Background Extras Clustering
+    # --------------------------------------------------------------------------
+    extras_cost_terms: list[cp_model.LinearExpr] = []
+    large_extras_scenes = [s for s in data.scenes if s.background_count >= 50]
+    if large_extras_scenes:
+        for d in range(1, num_days + 1):
+            extras_day_vars = [
+                scene_vars_by_day[d][s.id]
+                for s in large_extras_scenes
+                if s.id in scene_vars_by_day[d]
+            ]
+            if extras_day_vars:
+                has_extras_d = model.new_bool_var(f"has_extras_d{d}")
+                model.add_max_equality(has_extras_d, extras_day_vars)
+                extras_cost_terms.append(has_extras_d * 500)
+
+    # Objective Function: Minimize Talent Hold Spans + Moves + Turnarounds + Stage Leases + Stunt Hazards
     model.minimize(
-        cp_model.LinearExpr.Sum(hold_cost_terms + move_cost_terms + turnaround_penalty_terms)
+        cp_model.LinearExpr.Sum(
+            hold_cost_terms
+            + move_cost_terms
+            + turnaround_penalty_terms
+            + stage_lease_terms
+            + hazard_penalty_terms
+            + extras_cost_terms
+        )
     )
 
     # Multithreaded CP-SAT Solver Parameters
@@ -1162,8 +1441,106 @@ def optimize_production_schedule(
 
 
 # ==============================================================================
-# ALGORITHMIC DAILY CALL SHEET GENERATION
+# ALGORITHMIC DAILY CALL SHEET GENERATION & INTRA-DAY MICRO SOLVER
 # ==============================================================================
+
+
+def optimize_intraday_schedule(
+    scenes: list[Scene],
+    cal: CalendarDay,
+    locations: dict[int | str, Location],
+    talents: dict[int | str, Talent],
+    *,
+    shooting_call_minute: int = 480,  # 08:00 AM (8 * 60)
+    max_day_minutes: int = 720,
+) -> list[tuple[Scene, int, int]]:
+    """Optimizes intra-day shot order, setups, and solar windows using CP-SAT.
+
+    Returns ordered list of (Scene, start_minute_of_day, end_minute_of_day).
+    """
+    if not scenes:
+        return []
+
+    if len(scenes) == 1:
+        s = scenes[0]
+        st = shooting_call_minute
+        et = st + s.duration_minutes
+        return [(s, st, et)]
+
+    m = cp_model.CpModel()
+    n = len(scenes)
+    start_vars: list[cp_model.IntVar] = []
+    end_vars: list[cp_model.IntVar] = []
+    intervals: list[cp_model.IntervalVar] = []
+    horizon = shooting_call_minute + max_day_minutes + 180
+
+    for i, s in enumerate(scenes):
+        dur = max(15, s.duration_minutes)
+        sv = m.new_int_var(shooting_call_minute, horizon, f"micro_s_{i}")
+        ev = m.new_int_var(shooting_call_minute, horizon, f"micro_e_{i}")
+        iv = m.new_interval_var(sv, dur, ev, f"micro_iv_{i}")
+        start_vars.append(sv)
+        end_vars.append(ev)
+        intervals.append(iv)
+
+        # Golden hour solar windows
+        if s.time_of_day in (TimeOfDay.MAGIC_HOUR, "MAGIC_HOUR"):
+            in_dawn = m.new_bool_var(f"in_dawn_{i}")
+            in_dusk = m.new_bool_var(f"in_dusk_{i}")
+            m.add(sv >= cal.dawn_minute).only_enforce_if(in_dawn)
+            m.add(ev <= cal.sunrise_minute + 30).only_enforce_if(in_dawn)
+            m.add(sv >= cal.sunset_minute - 45).only_enforce_if(in_dusk)
+            m.add(ev <= cal.dusk_minute).only_enforce_if(in_dusk)
+            m.add_bool_or([in_dawn, in_dusk])
+
+    # Camera unit non-overlapping constraint
+    m.add_no_overlap(intervals)
+
+    # Transition buffers between consecutive scenes
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                i_before_j = m.new_bool_var(f"before_{i}_{j}")
+                m.add(end_vars[i] <= start_vars[j]).only_enforce_if(i_before_j)
+                buffer_mins = 0
+                if scenes[i].setup_id and scenes[j].setup_id and scenes[i].setup_id == scenes[j].setup_id:
+                    buffer_mins = 0
+                elif scenes[i].location_id != scenes[j].location_id:
+                    buffer_mins = 30
+                if buffer_mins > 0:
+                    m.add(start_vars[j] >= end_vars[i] + buffer_mins).only_enforce_if(i_before_j)
+
+    first_start = m.new_int_var(shooting_call_minute, horizon, "first_start")
+    m.add_min_equality(first_start, start_vars)
+    m.add(first_start == shooting_call_minute)
+
+    makespan = m.new_int_var(shooting_call_minute, horizon, "micro_makespan")
+    for ev in end_vars:
+        m.add(makespan >= ev)
+    m.minimize(makespan)
+
+    micro_solver = cp_model.CpSolver()
+    micro_solver.parameters.max_time_in_seconds = 1.0
+    micro_solver.parameters.num_search_workers = 2
+    status = micro_solver.solve(m)
+
+    if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        res = []
+        for i, s in enumerate(scenes):
+            st = micro_solver.value(start_vars[i])
+            et = micro_solver.value(end_vars[i])
+            res.append((s, st, et))
+        res.sort(key=lambda item: item[1])
+        return res
+    else:
+        curr = shooting_call_minute
+        res = []
+        for s in scenes:
+            st = curr
+            et = st + s.duration_minutes
+            res.append((s, st, et))
+            curr = et
+        return res
 
 
 def generate_daily_call_sheet(
@@ -1177,19 +1554,34 @@ def generate_daily_call_sheet(
     hospital_info: str = "St. Jude Medical Center, 24/7 Trauma Wing (Tel: 555-0199)",
     general_crew_call_time: str = "07:00",
     shooting_call_time: str = "08:00",
+    optimize_intraday: bool = True,
 ) -> DailyCallSheet:
     """Generate official daily call sheet with backward calculated actor call times."""
     general_crew_call = datetime.strptime(general_crew_call_time, "%H:%M")
     shooting_call = datetime.strptime(shooting_call_time, "%H:%M")
     first_meal_due = general_crew_call + timedelta(hours=6)
 
-    current_time = shooting_call
+    shooting_call_min = shooting_call.hour * 60 + shooting_call.minute
+    if optimize_intraday:
+        day_schedule = optimize_intraday_schedule(
+            scenes, cal, locations, talents, shooting_call_minute=shooting_call_min
+        )
+    else:
+        curr = shooting_call_min
+        day_schedule = []
+        for s in scenes:
+            st = curr
+            et = st + s.duration_minutes
+            day_schedule.append((s, st, et))
+            curr = et
+
+    base_midnight = shooting_call.replace(hour=0, minute=0, second=0, microsecond=0)
     scene_entries: list[CallSheetSceneEntry] = []
     cast_first_seen: dict[int | str, datetime] = {}
 
-    for s in scenes:
-        start_t = current_time
-        end_t = start_t + timedelta(hours=s.duration_hours)
+    for s, st_min, et_min in day_schedule:
+        start_t = base_midnight + timedelta(minutes=st_min)
+        end_t = base_midnight + timedelta(minutes=et_min)
         loc = locations.get(s.location_id) or locations.get(str(s.location_id))
         loc_name = loc.name if loc else str(s.location_id)
 
@@ -1208,7 +1600,6 @@ def generate_daily_call_sheet(
         for cid in s.required_cast:
             if cid not in cast_first_seen and str(cid) not in cast_first_seen:
                 cast_first_seen[cid] = start_t
-        current_time = end_t
 
     # Backward calculation of actor call matrix
     character_calls: list[CallSheetCharacterEntry] = []
@@ -1404,6 +1795,8 @@ class FilmProductionScheduler(DomainAdapter):
         self.equipment: dict[str, SpecialtyEquipment] = {}
         self.stunts: dict[str, StuntSFXPackage] = {}
         self.calendar: dict[int, CalendarDay] = {}
+        self.units: dict[str, ProductionUnit] = {}
+        self.setups: dict[str, CameraSetup] = {}
         self.location_travel_times: dict[tuple[str, str], int] = {}
 
     def add_cast_member(
@@ -1563,6 +1956,39 @@ class FilmProductionScheduler(DomainAdapter):
         self.stunts[str(id)] = stunt
         return stunt
 
+    def add_unit(
+        self,
+        id: int | str,
+        name: str,
+        unit_type: ProductionUnitType | str = ProductionUnitType.MAIN,
+        daily_operating_cost: float = 0.0,
+    ) -> ProductionUnit:
+        u_type = ProductionUnitType(unit_type) if isinstance(unit_type, str) else unit_type
+        unit = ProductionUnit(
+            id=id,
+            name=name,
+            unit_type=u_type,
+            daily_operating_cost=daily_operating_cost,
+        )
+        self.units[str(id)] = unit
+        return unit
+
+    def add_setup(
+        self,
+        id: int | str,
+        name: str,
+        axis_angle: str = "",
+        lighting_setup_id: str = "",
+    ) -> CameraSetup:
+        setup = CameraSetup(
+            id=id,
+            name=name,
+            axis_angle=axis_angle,
+            lighting_setup_id=lighting_setup_id,
+        )
+        self.setups[str(id)] = setup
+        return setup
+
     def add_calendar_day(
         self,
         day_number: int,
@@ -1619,6 +2045,11 @@ class FilmProductionScheduler(DomainAdapter):
         min_lag_days: int = 0,
         is_second_unit: bool = False,
         is_vfx_heavy: bool = False,
+        unit_type: ProductionUnitType | str = ProductionUnitType.MAIN,
+        setup_id: int | str | None = None,
+        background_count: int = 0,
+        vfx_turnover_deadline_day: int | None = None,
+        stunt_hazard_level: int = 1,
     ) -> Scene:
         cast_list: list[int | str] = list(required_cast) if required_cast is not None else [str(c) for c in (character_ids or [])]
         dur_h = duration_hours if duration_hours is not None else (duration_minutes / 60.0)
@@ -1637,6 +2068,7 @@ class FilmProductionScheduler(DomainAdapter):
             if isinstance(holiday_compatibility, str)
             else holiday_compatibility
         )
+        u_type = ProductionUnitType(unit_type) if isinstance(unit_type, str) else unit_type
 
         scene = Scene(
             id=id,
@@ -1665,6 +2097,11 @@ class FilmProductionScheduler(DomainAdapter):
             min_lag_days=min_lag_days,
             is_second_unit=is_second_unit,
             is_vfx_heavy=is_vfx_heavy,
+            unit_type=u_type,
+            setup_id=setup_id,
+            background_count=background_count,
+            vfx_turnover_deadline_day=vfx_turnover_deadline_day,
+            stunt_hazard_level=stunt_hazard_level,
             dependencies=dependencies or [],
             is_night=is_night,
             is_exterior=is_exterior,
@@ -1695,6 +2132,8 @@ class FilmProductionScheduler(DomainAdapter):
             stunts=list(self.stunts.values()),
             calendar=calendar_list,
             scenes=list(self.scenes.values()),
+            units=list(self.units.values()),
+            setups=list(self.setups.values()),
             max_shooting_days=self.max_shooting_days,
             max_hours_per_day=float(self.shoot_day_hours),
         )
@@ -1723,6 +2162,10 @@ class FilmProductionScheduler(DomainAdapter):
             adapter.calendar[cal.day_number] = cal
         for s in dataset.scenes:
             adapter.scenes[str(s.id)] = s
+        for u in dataset.units:
+            adapter.units[str(u.id)] = u
+        for stp in dataset.setups:
+            adapter.setups[str(stp.id)] = stp
         return adapter
 
     def optimize(
@@ -1733,6 +2176,9 @@ class FilmProductionScheduler(DomainAdapter):
         num_workers: int | None = None,
         move_penalty: int = 500,
         enable_drop_pickup: bool = False,
+        enable_soundstage_lease_tracking: bool = False,
+        enable_hazard_deferral: bool = False,
+        enable_intraday_micro_optimization: bool = True,
         fixed_assignments: dict[int | str, int] | None = None,
     ) -> FilmScheduleResult:
         """Run the extended combinatorial CP-SAT solver and generate stripboard and DOOD reports."""
@@ -1743,6 +2189,9 @@ class FilmProductionScheduler(DomainAdapter):
             num_workers=num_workers,
             move_penalty=move_penalty,
             enable_drop_pickup=enable_drop_pickup,
+            enable_soundstage_lease_tracking=enable_soundstage_lease_tracking,
+            enable_hazard_deferral=enable_hazard_deferral,
+            enable_intraday_micro_optimization=enable_intraday_micro_optimization,
             fixed_assignments=fixed_assignments,
         )
 

@@ -12,8 +12,10 @@ from ojas_ops.adapters.film_production import (
     FilmProductionScheduler,
     Location,
     ProductionDataset,
+    ProductionUnitType,
     Scene,
     Talent,
+    TimeOfDay,
     WeatherType,
     optimize_production_schedule,
 )
@@ -369,4 +371,211 @@ def test_call_sheet_second_meal_calculation() -> None:
     call_sheet = res.call_sheets[1]
     assert call_sheet.first_meal_due == "01:00 PM"
     assert call_sheet.second_meal_due == "07:00 PM"
+
+
+def test_soundstage_continuous_lease_holding() -> None:
+    """Test soundstage lease holding cost minimization across prep, shoot, and strike."""
+    scheduler = FilmProductionScheduler(
+        project_title="Stage Lease Test",
+        shoot_day_hours=10,
+        max_shooting_days=5,
+    )
+    scheduler.add_cast_member(1, name="Lead", daily_rate=1000.0)
+    scheduler.add_location(
+        1,
+        name="Soundstage A",
+        location_type="SOUNDSTAGE",
+        daily_rental_cost=5000.0,
+        prep_days_required=1,
+        strike_days_required=1,
+        permitted_days=[1, 2, 3, 4, 5],
+    )
+    for d in range(1, 6):
+        scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
+
+    scheduler.add_scene(id=1, scene_number="1", duration_hours=3.0, required_cast=[1], location_id=1)
+    scheduler.add_scene(id=2, scene_number="2", duration_hours=3.0, required_cast=[1], location_id=1)
+
+    res = scheduler.optimize(enable_soundstage_lease_tracking=True)
+    assert res.is_feasible
+    # With lease tracking, both scenes should be clustered on adjacent days or same day
+    d1 = res.scene_day_assignments["1"]
+    d2 = res.scene_day_assignments["2"]
+    assert abs(d2 - d1) <= 1
+
+
+def test_soundstage_facility_disjunction() -> None:
+    """Ensure two distinct set builds sharing the same physical stage do not overlap."""
+    scheduler = FilmProductionScheduler(
+        project_title="Stage Disjunction Test",
+        shoot_day_hours=10,
+        max_shooting_days=8,
+    )
+    scheduler.add_cast_member(1, name="Actor", daily_rate=1000.0)
+
+    # Set 1 on Stage 4
+    loc1 = scheduler.add_location(
+        1,
+        name="Stage 4 (Palace)",
+        daily_rental_cost=2000.0,
+        prep_days_required=1,
+        strike_days_required=1,
+        permitted_days=list(range(1, 9)),
+    )
+    loc1.soundstage_facility_id = "FACILITY_STAGE_4"
+
+    # Set 2 on Stage 4 (must be built after Set 1 is struck, or before Set 1 preps)
+    loc2 = scheduler.add_location(
+        2,
+        name="Stage 4 (Dungeon)",
+        daily_rental_cost=2000.0,
+        prep_days_required=1,
+        strike_days_required=1,
+        permitted_days=list(range(1, 9)),
+    )
+    loc2.soundstage_facility_id = "FACILITY_STAGE_4"
+
+    for d in range(1, 9):
+        scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
+
+    scheduler.add_scene(id=1, scene_number="1", duration_hours=4.0, required_cast=[1], location_id=1)
+    scheduler.add_scene(id=2, scene_number="2", duration_hours=4.0, required_cast=[1], location_id=2)
+
+    res = scheduler.optimize(enable_soundstage_lease_tracking=True)
+    assert res.is_feasible
+    d1 = res.scene_day_assignments["1"]
+    d2 = res.scene_day_assignments["2"]
+
+    # If Set 1 shoots on d1, its lease is [d1-1, d1+1]
+    # If Set 2 shoots on d2, its lease is [d2-1, d2+1]
+    # Disjunction requires (d1 + 1 < d2 - 1) or (d2 + 1 < d1 - 1) => |d1 - d2| >= 3
+    assert abs(d1 - d2) >= 3
+
+
+def test_multi_unit_concurrency_and_cast_exclusivity() -> None:
+    """Ensure lead talent is not scheduled on multiple camera units on the same shoot day."""
+    scheduler = FilmProductionScheduler(
+        project_title="Multi-Unit Production",
+        shoot_day_hours=10,
+        max_shooting_days=3,
+    )
+    scheduler.add_cast_member(1, name="Star", daily_rate=5000.0)
+    scheduler.add_unit(1, name="Main Unit", unit_type=ProductionUnitType.MAIN)
+    scheduler.add_unit(2, name="Second Unit", unit_type=ProductionUnitType.SECOND)
+
+    scheduler.add_location(1, name="Stage Main", permitted_days=[1, 2, 3])
+    scheduler.add_location(2, name="Ext Desert", permitted_days=[1, 2, 3])
+
+    for d in range(1, 4):
+        scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
+
+    # Scene 1 is Main Unit with Star
+    scheduler.add_scene(
+        id=1,
+        scene_number="10",
+        duration_hours=4.0,
+        required_cast=[1],
+        location_id=1,
+        unit_type=ProductionUnitType.MAIN,
+    )
+    # Scene 2 is Second Unit with Star (cannot shoot on same day as Scene 1)
+    scheduler.add_scene(
+        id=2,
+        scene_number="11_STUNT",
+        duration_hours=4.0,
+        required_cast=[1],
+        location_id=2,
+        unit_type=ProductionUnitType.SECOND,
+    )
+
+    res = scheduler.optimize()
+    assert res.is_feasible
+    d1 = res.scene_day_assignments["1"]
+    d2 = res.scene_day_assignments["2"]
+    assert d1 != d2
+
+
+def test_vfx_early_turnover_deadline() -> None:
+    """Ensure scenes with VFX vendor turnover deadlines are scheduled on or before deadline."""
+    scheduler = FilmProductionScheduler(
+        project_title="VFX Tentpole",
+        shoot_day_hours=10,
+        max_shooting_days=5,
+    )
+    scheduler.add_cast_member(1, name="Actor", daily_rate=1000.0)
+    scheduler.add_location(1, name="Stage Green", permitted_days=list(range(1, 6)))
+
+    for d in range(1, 6):
+        scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
+
+    # Scene 1 is VFX heavy and must turnover by Day 2
+    scheduler.add_scene(
+        id=1,
+        scene_number="VFX_01",
+        duration_hours=4.0,
+        required_cast=[1],
+        location_id=1,
+        vfx_turnover_deadline_day=2,
+        is_vfx_heavy=True,
+    )
+    scheduler.add_scene(
+        id=2,
+        scene_number="NORM_01",
+        duration_hours=4.0,
+        required_cast=[1],
+        location_id=1,
+    )
+
+    res = scheduler.optimize()
+    assert res.is_feasible
+    assert res.scene_day_assignments["1"] <= 2
+
+
+def test_intraday_micro_optimization_and_golden_hour() -> None:
+    """Ensure micro intra-day scheduling places magic hour scenes within solar dawn/dusk windows."""
+    cal = CalendarDay(
+        day_number=1,
+        calendar_date="2026-11-01",
+        sunrise_time="06:30",
+        sunset_time="18:00",
+    )
+    loc = Location(id=1, name="Hilltop Practical")
+    t = Talent(id=1, name="Hero")
+
+    scenes = [
+        Scene(id=1, scene_number="101", duration_minutes=45, time_of_day=TimeOfDay.MAGIC_HOUR, location_id=1),
+        Scene(id=2, scene_number="102", duration_minutes=120, time_of_day=TimeOfDay.DAY, location_id=1),
+    ]
+
+    from ojas_ops.adapters.film_production import optimize_intraday_schedule
+    # 08:00 AM shooting call = 480 mins
+    # Sunset is 18:00 = 1080 mins; dusk is 1110 mins; dusk magic hour window is [1035, 1110]
+    schedule = optimize_intraday_schedule(
+        scenes, cal, {1: loc}, {1: t}, shooting_call_minute=480
+    )
+
+    assert len(schedule) == 2
+    magic_item = next(item for item in schedule if item[0].id == 1)
+    _day_item = next(item for item in schedule if item[0].id == 2)
+
+    # Magic hour scene must either be in dawn (<= 420) or dusk (>= 1035)
+    st_magic = magic_item[1]
+    is_dawn = st_magic <= cal.sunrise_minute + 30
+    is_dusk = st_magic >= cal.sunset_minute - 45
+    assert is_dawn or is_dusk
+
+
+def test_pure_integer_model_attributes() -> None:
+    """Ensure pure-integer model contracts maintain integer minutes and cents."""
+    t = Talent(id=1, name="Actor", daily_rate=2500.50, max_daily_hours=8.5)
+    assert t.daily_rate_cents == 250050
+    assert t.max_daily_minutes == 510
+
+    loc = Location(id=1, name="Stage", daily_rental_cost=4000.0, noise_curfew_hour=21)
+    assert loc.daily_rental_cost_cents == 400000
+    assert loc.noise_curfew_minute == 1260
+
+    s = Scene(id=1, scene_number="1", duration_hours=2.5)
+    assert s.duration_minutes == 150
+
 

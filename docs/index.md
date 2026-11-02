@@ -17,7 +17,8 @@ Built on [Google OR-Tools](https://developers.google.com/optimization) CP-SAT an
 - **Pluggable Calendar Engine:** Native support for both standard business operational calendars (shifts, weekends, maintenance) and non-Gregorian / cultural calendars (astrological auspicious Shubh Muhurats, Rahu Kalam blackout intervals, and dynamic lunar/tithi offsets).
 - **Independent Validation Seam:** Schedules are validated by a deterministic verification engine without any dependency on the CP-SAT solver, guaranteeing auditability and correctness.
 - **Reactive Rescheduling & Simulation:** Built-in what-if scenario simulation that applies operational disruptions, freezes past execution, and solves with schedule stability objectives.
-- **6 Out-of-the-Box Industry Adapters:** Specialized domain models for Film Production, Manufacturing, Healthcare Workforce Rostering, Academic Timetabling, Conference Run-Sheets, and Marketing Campaign Flighting.
+- **6 Out-of-the-Box Industry Adapters:** Specialized domain models for Film Production (Two-Level Hierarchical Macro & Micro Optimization), Manufacturing, Healthcare Workforce Rostering, Academic Timetabling, Conference Run-Sheets, and Marketing Campaign Flighting.
+- **Formal Research Frameworks:** Mathematical specifications, complexity analyses, and exact decompositions for industrial operations, including the [Film Shooting Schedule Optimization Framework](../research/film-shooting-schedule-optimization-framework.md).
 
 ---
 
@@ -51,6 +52,7 @@ Architecture & Design    Core Scheduling   Constraints & Goals    Domain Adapter
 | [Simulation](simulation.md)        | Disruption modeling, impact analysis, and minimally disruptive rescheduling.                |
 | [Scenarios](scenarios.md)          | Data-driven scenario modeling, golden assertions verification, CSV loading, and generators. |
 | [Domain Adapters](adapters.md)     | Ready-to-use adapters for film, manufacturing, healthcare, academic, events, and marketing. |
+| [Research Frameworks](../research/film-shooting-schedule-optimization-framework.md) | Publication-grade mathematical formulations, complexity proofs, and exact decompositions. |
 
 ---
 

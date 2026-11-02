@@ -17,22 +17,29 @@ from ojas_ops.adapters import (
 
 ## 1. Film & Media Production: `FilmProductionScheduler`
 
-`FilmProductionScheduler` provides a full-lifecycle computational framework for film and episodic television scheduling. It features a dual-engine architecture:
-1. **Extended Combinatorial CP-SAT Engine (`optimize()` / `optimize_production_schedule()`):** Directly generates professional industry artifacts—including **Master Stripboards**, **Day Out of Days (DOOD)** cast reports, and backward-calculated **Daily Call Sheets**—while enforcing SAG-AFTRA drop-and-pickup, child labor laws, costume distress progressions, breakaway prop limits, and turnaround defense.
-2. **Generic Task-Graph Engine (`build_scheduler()`):** Converts film entities into general `Task`, `Resource`, and `Constraint` models for backward-compatible solving inside the unified `Scheduler` pipeline.
+`FilmProductionScheduler` provides a full-lifecycle computational framework for film and episodic television scheduling, implementing the **Two-Level Hierarchical Decomposition** formally analyzed in our [Film Shooting Schedule Optimization Research Framework](../research/film-shooting-schedule-optimization-framework.md). It features a multi-tiered solver architecture:
+
+1. **Level 1 Macro Combinatorial CP-SAT Cross-Boarding (`optimize()` / `optimize_production_schedule()`):**
+   Directly generates professional industry artifacts—including **Multi-Unit Stripboards**, **Day Out of Days (DOOD)** cast reports, and soundstage utilization schedules—while enforcing SAG-AFTRA drop-and-pickup, child labor laws, continuous soundstage lease holding, physical facility disjunction, multi-unit cast exclusivity, completion bond stunt hazard deferral, background extras clustering, early VFX turnover deadlines, and crew weekend turnaround defense.
+2. **Level 2 Micro Intra-Day Optimization Engine (`optimize_intraday_schedule()`):**
+   Solves exact intraday shot sequencing as a Disjunctive Resource-Constrained Project Scheduling Problem with Sequence-Dependent Setup Times (RCPSP-SDST). Evaluates camera setup transitions ($\Delta \theta > 45^\circ$ setup angle rotations, relighting penalties), solar golden hour dawn/dusk natural light windows, and mandatory meal interval compliance ($\le 6$ hours).
+3. **Generic Task-Graph Engine (`build_scheduler()`):**
+   Converts film entities into general `Task`, `Resource`, and `Constraint` models for unified solving inside the core `Scheduler` pipeline.
 
 ### Data Contracts & Taxonomy
 
-All domain contracts are defined as zero-overhead, strictly typed `msgspec.Struct` instances (`kw_only=True`, `gc=False`):
+All domain contracts are defined as zero-overhead, strictly typed `msgspec.Struct` instances (`kw_only=True`, `gc=False`), adhering to the **Pure-Integer Solver Invariant** (all durations in integer minutes, financial values in minor currency cents/paise):
 
-- **`Scene`:** Granular scene breakdowns specifying duration, script page eighths, required cast, hero props, costumes, specialty equipment, stunt packages, weather prerequisites (`RAIN_MANDATORY`, `NO_RAIN`, etc.), acoustic recording requirements (`SYNC_SOUND` vs. `MOS`), precedence, and grooming lags (`min_lag_days`).
-- **`Talent`:** Cast members with contractual daily rates, minor status (`is_minor`), daily hour ceilings, blackout intervals, and prep durations (Hair/Makeup, Wardrobe, Residence Transit).
-- **`Location`:** Practical and soundstage locations with permitted shooting days, noise curfews, acoustic suitability (`allows_sync_sound`), daily rental costs, and prep/strike day requirements.
+- **`Scene`:** Granular scene breakdowns specifying duration (hours and integer `duration_minutes`), script page eighths, required cast, hero props, costumes, specialty equipment, stunt packages, weather prerequisites (`RAIN_MANDATORY`, `NO_RAIN`, etc.), acoustic recording requirements (`SYNC_SOUND` vs. `MOS`), precedence, grooming lags (`min_lag_days`), hazard level (`hazard_level`), background extras count (`background_count`), VFX flag (`is_vfx_heavy`), VFX turnover deadline (`vfx_turnover_deadline_day`), and production unit assignment (`unit_type: ProductionUnitType`).
+- **`ProductionUnit` & `ProductionUnitType`:** Production units (`MAIN`, `SECOND`, `SPLINTER`, `VFX`) with dedicated unit names, daily operating budget limits, and concurrency tracking.
+- **`CameraSetup`:** Micro intraday setups specifying `axis_angle` (degrees), `lighting_setup_id`, `estimated_setup_minutes`, and `target_coverage`.
+- **`Talent`:** Cast members with contractual daily rates (`daily_rate` and integer `daily_rate_cents`), minor status (`is_minor`), daily minute ceilings (`max_daily_minutes`), blackout intervals, and prep durations (Hair/Makeup, Wardrobe, Residence Transit in minutes).
+- **`Location`:** Practical and soundstage locations with permitted shooting days, noise curfews (`noise_curfew_minute`), acoustic suitability (`allows_sync_sound`), daily rental costs (`daily_rental_cost_cents`), physical stage facility binding (`soundstage_facility_id`), prep days (`prep_days_required`), and strike days (`strike_days_required`).
 - **`Prop`:** Props categorized as `HERO`, `DRESSING`, `WEAPON`, or `BREAKAWAY` (destructible items tracking daily exhaustion limits and reset times).
 - **`Costume`:** Wardrobe assets tracking unidirectional distress stages (Stage 1 Clean $\rightarrow$ Stage 2 Weathered $\rightarrow$ Stage 3 Damaged $\rightarrow$ Stage 4 Destroyed) and available duplicate builds.
 - **`SpecialtyEquipment`:** High-cost rented gear (Technocranes, Russian Arms, Motion Control) bounded by contractual rental windows (`rental_start_day` to `rental_end_day`).
 - **`StuntSFXPackage`:** Action sequences requiring wirework, pyrotechnics, safety lockdowns, and pre-rigging intervals.
-- **`CalendarDay`:** Calendar days tracking weather forecasts, statutory holidays, and cultural/astrological parameters (`is_inauspicious` for Rahu Kaal / Pitru Paksha, `is_muhurat_day` for auspicious start dates).
+- **`CalendarDay`:** Calendar days tracking weather forecasts, statutory holidays, solar ephemeris (`dawn_minute`, `dusk_minute`), and cultural/astrological parameters (`is_inauspicious` for Rahu Kaal / Pitru Paksha, `is_muhurat_day` for auspicious start dates).
 - **`ProductionDataset`:** Top-level immutable production container serializable to and from JSON.
 
 ### Comprehensive Optimization Constraints
@@ -40,8 +47,14 @@ All domain contracts are defined as zero-overhead, strictly typed `msgspec.Struc
 The CP-SAT discrete solver enforces:
 
 - **Upfront Domain Pruning:** Sparse variable instantiation ($x_{sd}$) filtering out infeasible days prior to model compilation based on location permits, actor blackout days, equipment lease windows, statutory holidays, weather incompatibilities, and astrological taboos.
-- **Daily Workload Ceilings:** Enforces $\sum_s \text{duration}(s) \cdot x_{sd} \le \text{max\_hours}$ using scaled pure-integer knapsack constraints.
+- **Daily Workload Ceilings:** Enforces $\sum_s \text{duration}(s) \cdot x_{sd} \le \text{max\_minutes}$ using pure-integer knapsack constraints.
 - **Child Labor Regulatory Compliance:** Strictly limits minor performers to statutory daily work limits (e.g. 5.0 hours max set time) under California DLSE, UK Children Act, and Indian NCPCR rules.
+- **Continuous Soundstage Lease Holding:** Tracks set construction, shoot, and strike lifecycle continuously ($d_{l,\text{lease}} \ge \text{last\_day} - \text{first\_day} + 1$), penalizing idle stage rental days.
+- **Physical Soundstage Facility Disjunction:** Ensures that two distinct sets constructed on the same physical stage facility (`soundstage_facility_id`) cannot have overlapping lease windows $[\text{first}_a - \text{prep}_a, \text{last}_a + \text{strike}_a]$.
+- **Multi-Unit Concurrency & Cast Exclusivity:** Allows parallel Main and Second/Splinter unit shooting while enforcing that a lead cast member cannot appear on more than one unit on the same calendar day.
+- **Completion Bond High-Hazard Deferral:** Mandates that high-hazard stunts ($\ge \text{hazard\_threshold}$) are deferred past a completion milestone (e.g. $\ge 70\%$ of principal photography) to protect the production from catastrophic lead injury.
+- **Background Extras Day Clustering:** Incentivizes grouping heavy background crowd scenes ($B_s \ge 50$) into contiguous shoot days to minimize agency call fees and wardrobe fittings.
+- **Early VFX Turnover Deadlines:** Bounds high-complexity CGI plates to wrap before designated post-production handover cutoff days.
 - **Costume Distress Progression:** Enforces unidirectional forward stage chaining ($d(\text{stage } k) \le d(\text{stage } k+1)$) when duplicate wardrobe builds are not funded.
 - **Breakaway Prop Ceilings:** Limits daily scene destructions of breakaway items to total manufactured duplicates.
 - **Grooming & Narrative Precedence:** Enforces $d(s_1) + \text{min\_lag\_days} \le d(s_2)$ for narrative dependencies and physical performer transformations (e.g. shaving beard, healing bruises).
@@ -50,6 +63,7 @@ The CP-SAT discrete solver enforces:
   - Continuous consecutive employment hold span minimization: $\min \sum_t (latest_t - earliest_t + 1) \cdot \text{daily\_rate}_t$.
   - SAG-AFTRA 10-day Drop-and-Pickup: Automatically splits talent bookings into two intervals ($[e_1, l_1]$ and $[e_2, l_2]$) when the intervening hiatus is $\ge 10$ calendar days ($e_2 - l_1 \ge 11$), waiving hold costs during the drop window and outputting `DROP` status codes.
 - **Turnaround & Fraturday Mitigation:** Penalizes night-to-day transitions between consecutive production days to defend the mandatory 54-hour weekend crew turnaround.
+- **Intraday Shot Sequencing & Golden Hour Windows:** Optimizes camera setups per scene, enforcing disjunctive non-overlap, relighting setup buffers, and bounding natural-light scenes to dawn/dusk golden-hour solar intervals.
 
 ### Production Artifacts & Reporting
 
@@ -83,11 +97,14 @@ When unpredictable set disruptions strike (e.g. torrential rain on exterior prac
 ```python
 from ojas_ops.adapters.film_production import (
     CalendarDay,
+    CameraSetup,
     Costume,
     FilmProductionScheduler,
     Location,
     LocationType,
     ProductionDataset,
+    ProductionUnit,
+    ProductionUnitType,
     Prop,
     PropCategory,
     Scene,
@@ -107,12 +124,17 @@ film = FilmProductionScheduler(
     max_shooting_days=14,
 )
 
-# 2. Add cast (including minor performer and A-list star)
+# 2. Add production units (Level 1 Multi-Unit Concurrency)
+film.add_unit("MAIN", name="Main Unit", unit_type=ProductionUnitType.MAIN)
+film.add_unit("SECOND", name="Second Unit / Action", unit_type=ProductionUnitType.SECOND)
+
+# 3. Add cast (including minor performer and A-list star)
 film.add_cast_member(
     1,
     name="Marcus Stone",
     character_name="Captain Vance",
     daily_rate=10000.0,
+    daily_rate_cents=1000000,
     hmu_duration_minutes=45,
     wardrobe_duration_minutes=15,
     travel_duration_minutes=30,
@@ -122,34 +144,58 @@ film.add_cast_member(
     name="Timmy Miller",
     character_name="Billy",
     daily_rate=1500.0,
+    daily_rate_cents=150000,
     is_minor=True,
     max_daily_hours=5.0,  # California DLSE child labor ceiling
+    max_daily_minutes=300,
 )
 
-# 3. Add locations with permits
-film.add_location(1, name="Soundstage 2", location_type=LocationType.SOUNDSTAGE)
-film.add_location(2, name="Ridge Ridge (EXT)", location_type=LocationType.PRACTICAL_EXT, permitted_days=[1, 2, 3, 4, 5])
+# 4. Add locations with continuous soundstage leases & permits
+film.add_location(
+    1,
+    name="Soundstage 2",
+    location_type=LocationType.SOUNDSTAGE,
+    daily_rental_cost=5000.0,
+    daily_rental_cost_cents=500000,
+    soundstage_facility_id="PINEWOOD_STAGE_A",
+    prep_days_required=2,
+    strike_days_required=1,
+)
+film.add_location(
+    2,
+    name="Ridge Ridge (EXT)",
+    location_type=LocationType.PRACTICAL_EXT,
+    permitted_days=[1, 2, 3, 4, 5],
+)
 
-# 4. Add physical assets
+# 5. Add physical assets
 film.add_prop(1, name="Hero Blaster", category=PropCategory.HERO)
 film.add_prop(2, name="Stunt Breakaway Bottle", category=PropCategory.BREAKAWAY, total_quantity=3)
 film.add_costume(1, character_id=1, costume_code="VANCE_UNIFORM", distress_stage=1)
 film.add_costume(2, character_id=1, costume_code="VANCE_UNIFORM", distress_stage=2)
 
-# 5. Add scenes with dependencies and weather rules
+# 6. Add camera setups (Level 2 Micro Intra-Day Setup Sequencing)
+film.add_setup(1, scene_id=1, axis_angle=0.0, lighting_setup_id="LIGHT_WIDE", estimated_setup_minutes=25)
+film.add_setup(2, scene_id=1, axis_angle=45.0, lighting_setup_id="LIGHT_WIDE", estimated_setup_minutes=15)
+film.add_setup(3, scene_id=2, axis_angle=180.0, lighting_setup_id="LIGHT_REVERSE", estimated_setup_minutes=30)
+
+# 7. Add scenes with dependencies, weather rules, and unit allocation
 film.add_scene(
     id=1,
     scene_number="1A",
     duration_hours=4.0,
+    duration_minutes=240,
     page_eighths=24,
     required_cast=[1, 2],
     required_costume_ids=[1],
     location_id=1,
+    unit_type=ProductionUnitType.MAIN,
 )
 film.add_scene(
     id=2,
     scene_number="5B",
     duration_hours=5.0,
+    duration_minutes=300,
     page_eighths=32,
     required_cast=[1],
     required_costume_ids=[2],  # Stage 2 costume must shoot AFTER Stage 1
@@ -157,9 +203,11 @@ film.add_scene(
     location_id=2,
     weather_requirement=WeatherRequirement.CLEAR_ONLY,
     dependencies=["1"],
+    unit_type=ProductionUnitType.MAIN,
+    hazard_level=0,  # Completion bond safe
 )
 
-# 6. Solve with multithreaded CP-SAT engine and SAG-AFTRA drop-and-pickup enabled
+# 8. Solve Level 1 Macro Cross-Boarding with CP-SAT engine and SAG-AFTRA drop-and-pickup
 result = film.optimize(
     enable_drop_pickup=True,
     max_time_in_seconds=15.0,
@@ -168,6 +216,15 @@ result = film.optimize(
 assert result.is_feasible
 print(f"Status: {result.status.value}")
 print(f"Total Shoot Days: {result.stripboard.total_shoot_days}")
+
+# 9. Solve Level 2 Micro Intra-Day Schedule for Day 1
+day_1_scenes = [s for s in film.dataset.scenes if s.id in result.stripboard.days.get(1, [])]
+intraday_schedule = film.optimize_intraday_schedule(
+    day_scenes=day_1_scenes,
+    camera_setups=film.dataset.camera_setups,
+    call_start_minute=420,  # 07:00 AM Call
+)
+print(f"Intraday Schedule wrap time: {intraday_schedule.get('estimated_wrap_minute')} minutes")
 
 # Inspect Day Out of Days (DOOD)
 for dood in result.dood_reports:

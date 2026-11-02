@@ -78,8 +78,9 @@ print(f"Validation: {'VALID' if validation.is_valid else 'INVALID'}")
 - **`solvers`**: Google OR-Tools CP-SAT compilation, candidate pools, and execution engine.
 - **`validation`**: Independent deterministic feasibility verification without solver dependencies.
 - **`simulation`**: Operational disruption injection, schedule stability metrics, and reactive rescheduling.
-- **`adapters`**: 6 domain adapters for Film, Manufacturing, Healthcare, Academic Timetabling, Events, and Marketing.
+- **`adapters`**: 6 domain adapters for Film (Two-Level Hierarchical Decomposition: Level 1 Macro Cross-Boarding with continuous soundstage leases, multi-unit concurrency, and SAG-AFTRA DOOD; Level 2 Micro Intraday Shot Scheduling with camera transitions and golden-hour solar bounds), Manufacturing, Healthcare, Academic Timetabling, Events, and Marketing.
 - **`scenarios`**: Typed scenario definitions (`ScenarioDefinition`), fast `msgspec` JSON & CSV loaders, synthetic large-scale benchmark generators, golden expected assertions verification, and execution runner (`run_scenario`).
+- **`research`**: Mathematical optimization research frameworks and formal proofs, including the [Film Shooting Schedule Optimization Framework](../../research/film-shooting-schedule-optimization-framework.md).
 
 ---
 
