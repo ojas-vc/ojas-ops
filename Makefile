@@ -3,6 +3,7 @@
 # Backend targets delegate to python/Makefile; Frontend scripts to typescript/
 # ==============================================================================
 
+SHELL := /bin/zsh
 .DEFAULT_GOAL := help
 .PHONY: help test test-fast check lint fmt gates dev clean-caches clean
 
