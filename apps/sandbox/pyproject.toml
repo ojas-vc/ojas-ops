@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ojas-ops-sandbox"
+version = "0.1.0"
+description = "Ojas Ops Sandbox host application mounting ojas-ops Bolt API"
+requires-python = ">=3.12, <3.15"
+dependencies = [
+    "django>=5.2",
+    "django-bolt>=0.13.0",
+    "ojas-ops",
+    "temporalio>=1.8.0",
+]
+
+[tool.uv.sources]
+ojas-ops = { workspace = true }
+
