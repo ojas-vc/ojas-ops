@@ -1,36 +1,57 @@
 """LangChain and LangGraph tool bindings for Ojas Ops optimization engine."""
 
-import json
+from __future__ import annotations
+
 from typing import Any
+
+import msgspec
 
 from ojas_ops.agents.tools.film import optimize_film_shoot
 from ojas_ops.agents.tools.manufacturing import optimize_job_shop
 
+
+class FilmToolInput(msgspec.Struct, kw_only=True):
+    """Input parameters for film shooting schedule optimization."""
+
+    dataset_json: str
+    max_time_seconds: float = 30.0
+
+
+class ManufacturingToolInput(msgspec.Struct, kw_only=True):
+    """Input parameters for manufacturing job shop optimization."""
+
+    operations_json: str
+    machines_json: str
+    time_limit_seconds: float = 30.0
+
+
+def _film_tool(dataset_json: str, max_time_seconds: float = 30.0) -> str:
+    data = (
+        msgspec.json.decode(dataset_json.encode("utf-8"))
+        if isinstance(dataset_json, str)
+        else dataset_json
+    )
+    res = optimize_film_shoot(data, max_time_seconds=max_time_seconds)
+    return msgspec.json.encode(res).decode("utf-8")
+
+
+def _mfg_tool(operations_json: str, machines_json: str, time_limit_seconds: float = 30.0) -> str:
+    ops = (
+        msgspec.json.decode(operations_json.encode("utf-8"))
+        if isinstance(operations_json, str)
+        else operations_json
+    )
+    macs = (
+        msgspec.json.decode(machines_json.encode("utf-8"))
+        if isinstance(machines_json, str)
+        else machines_json
+    )
+    res = optimize_job_shop(ops, macs, time_limit_seconds=time_limit_seconds)
+    return msgspec.json.encode(res).decode("utf-8")
+
+
 try:
     from langchain_core.tools import StructuredTool
-    from pydantic import BaseModel, Field
-
-    class FilmToolInput(BaseModel):
-        dataset_json: str = Field(..., description="JSON string with scenes, cast, and locations")
-        max_time_seconds: float = Field(30.0, description="Max search time in seconds")
-
-    class ManufacturingToolInput(BaseModel):
-        operations_json: str = Field(..., description="JSON string with operations")
-        machines_json: str = Field(..., description="JSON string with machines")
-        time_limit_seconds: float = Field(30.0, description="Max search time in seconds")
-
-    def _film_tool(dataset_json: str, max_time_seconds: float = 30.0) -> str:
-        data = json.loads(dataset_json)
-        res = optimize_film_shoot(data, max_time_seconds=max_time_seconds)
-        return json.dumps(res)
-
-    def _mfg_tool(
-        operations_json: str, machines_json: str, time_limit_seconds: float = 30.0
-    ) -> str:
-        ops = json.loads(operations_json)
-        macs = json.loads(machines_json)
-        res = optimize_job_shop(ops, macs, time_limit_seconds=time_limit_seconds)
-        return json.dumps(res)
 
     _LANGCHAIN_AVAILABLE = True
 except ImportError:

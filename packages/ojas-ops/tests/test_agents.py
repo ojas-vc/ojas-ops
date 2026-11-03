@@ -158,3 +158,50 @@ def test_google_adk_activity_tool():
 def test_elicitation_prompts():
     assert "ProductionDataset" in FILM_EXTRACTION_SYSTEM_PROMPT
     assert "operations" in JOB_SHOP_EXTRACTION_SYSTEM_PROMPT
+
+
+def test_crewai_provider_msgspec_structs():
+    import pytest
+    from ojas_ops.agents.providers.crewai import (
+        FilmScheduleInput,
+        ManufacturingScheduleInput,
+        get_crewai_tools,
+    )
+
+    film_inp = FilmScheduleInput(dataset_json="{}", max_time_seconds=15.0)
+    assert film_inp.max_time_seconds == 15.0
+
+    mfg_inp = ManufacturingScheduleInput(operations_json="[]", machines_json="[]")
+    assert mfg_inp.time_limit_seconds == 30.0
+
+    with pytest.raises(ImportError, match="crewai is not installed"):
+        get_crewai_tools()
+
+
+def test_langchain_provider_msgspec_structs():
+    import msgspec
+    import pytest
+    from ojas_ops.agents.providers.langchain import (
+        FilmToolInput,
+        ManufacturingToolInput,
+        _mfg_tool,
+        get_langchain_tools,
+    )
+
+    film_inp = FilmToolInput(dataset_json="{}", max_time_seconds=20.0)
+    assert film_inp.max_time_seconds == 20.0
+
+    mfg_inp = ManufacturingToolInput(operations_json="[]", machines_json="[]")
+    assert mfg_inp.time_limit_seconds == 30.0
+
+    # Verify msgspec serialization in _mfg_tool
+    ops_json = msgspec.json.encode(
+        [{"id": "OP1", "machine_id": "M1", "duration_minutes": 30}]
+    ).decode("utf-8")
+    macs_json = msgspec.json.encode([{"id": "M1", "hourly_rate": 50.0}]).decode("utf-8")
+    res_str = _mfg_tool(ops_json, macs_json, time_limit_seconds=3.0)
+    res = msgspec.json.decode(res_str.encode("utf-8"))
+    assert res["is_feasible"] is True
+
+    with pytest.raises(ImportError, match="langchain_core is not installed"):
+        get_langchain_tools()
