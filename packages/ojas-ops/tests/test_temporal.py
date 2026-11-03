@@ -3,7 +3,7 @@
 import asyncio
 
 import msgspec
-from ojas_ops.contracts.scheduling import (
+from ojas_ops.schemas.scheduling import (
     HorizonContract,
     OptimizeScheduleRequest,
     ResourceContract,

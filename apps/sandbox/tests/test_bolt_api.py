@@ -62,7 +62,7 @@ def test_sandbox_schedules_optimize_sync(client):
         "max_time_seconds": 5.0,
     }
 
-    res = client.post("/schedules/optimize/sync", json=payload)
+    res = client.post("/schedules/optimize", json=payload)
     assert res.status_code == 200
     data = res.json()
     assert data["schedule_id"] == "sched-sandbox_proj"
@@ -95,7 +95,7 @@ def test_sandbox_scenarios_run(client):
             }
         ],
     }
-    res = client.post("/scenarios/run", json=payload)
+    res = client.post("/scenarios/execute", json=payload)
     assert res.status_code == 200
     data = res.json()
     assert data["is_success"] is True
@@ -104,7 +104,7 @@ def test_sandbox_scenarios_run(client):
 
 
 def test_sandbox_workflow_status_not_found(client):
-    res = client.get("/workflows/wf-nonexistent-000/status")
+    res = client.get("/optimization-jobs/wf-nonexistent-000/workflow-status")
     assert res.status_code == 200
     data = res.json()
     assert data["workflow_id"] == "wf-nonexistent-000"
@@ -121,7 +121,7 @@ def test_sandbox_workflow_status_existing(client):
         best_bound=40000,
         progress_basis_points=8500,
     )
-    res = client.get(f"/workflows/{wf_id}/status")
+    res = client.get(f"/optimization-jobs/{wf_id}/workflow-status")
     assert res.status_code == 200
     data = res.json()
     assert data["workflow_id"] == wf_id
@@ -185,7 +185,7 @@ def test_sandbox_simulation_endpoints(client):
             }
         ],
     }
-    resp = client.post("/simulation/simulate", json=sim_payload)
+    resp = client.post("/simulations/disruptions", json=sim_payload)
     assert resp.status_code == 200
     assert resp.json()["new_makespan"] == 140
 
@@ -196,7 +196,7 @@ def test_sandbox_visualizations(client):
         "resources": ["res1"],
         "total_makespan": 60,
     }
-    resp = client.post("/visualizations/gantt/svg", json=gantt_payload)
+    resp = client.post("/visualizations/gantt-charts", json=gantt_payload)
     assert resp.status_code == 200
     assert "<svg" in resp.json()["svg"]
 

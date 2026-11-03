@@ -160,7 +160,7 @@ def test_bolt_api_optimize_sync(client):
         "max_time_seconds": 5.0,
     }
 
-    resp = client.post("/schedules/optimize/sync", json=req_body)
+    resp = client.post("/schedules/optimize", json=req_body)
     assert resp.status_code == 200
     data = resp.json()
     assert data["schedule_id"] == "sched-proj_alpha"
@@ -180,7 +180,7 @@ def test_bolt_api_schedules_runs(client):
     )
 
     # 1. List with pagination
-    resp = client.get("/schedules/runs?tenant_id=tenant_runs_test")
+    resp = client.get("/schedule-runs?tenant_id=tenant_runs_test")
     assert resp.status_code == 200
     data = resp.json()
     assert data["total"] >= 1
@@ -189,7 +189,7 @@ def test_bolt_api_schedules_runs(client):
 
     # 2. Retrieve
     run_id = run.id
-    detail_resp = client.get(f"/schedules/runs/{run_id}")
+    detail_resp = client.get(f"/schedule-runs/{run_id}")
     assert detail_resp.status_code == 200
     detail = detail_resp.json()
     assert detail["id"] == run_id
@@ -198,7 +198,7 @@ def test_bolt_api_schedules_runs(client):
 
     # 3. Create via POST
     create_resp = client.post(
-        "/schedules/runs",
+        "/schedule-runs",
         json={
             "scenario_name": "scen_audit_created",
             "tenant_id": "tenant_runs_test",
@@ -211,14 +211,14 @@ def test_bolt_api_schedules_runs(client):
 
     # 4. Partial update via PATCH
     patch_resp = client.patch(
-        f"/schedules/runs/{created_id}",
+        f"/schedule-runs/{created_id}",
         json={"status": "ARCHIVED"},
     )
     assert patch_resp.status_code == 200
     assert patch_resp.json()["status"] == "ARCHIVED"
 
     # 5. Delete via DELETE
-    del_resp = client.delete(f"/schedules/runs/{created_id}")
+    del_resp = client.delete(f"/schedule-runs/{created_id}")
     assert del_resp.status_code == 204
 
 
@@ -233,20 +233,20 @@ def test_bolt_api_workflows_endpoints(client):
     )
 
     # 1. List jobs via ModelViewSet
-    resp = client.get("/workflows/jobs?tenant_id=tenant_wf_test")
+    resp = client.get("/optimization-jobs?tenant_id=tenant_wf_test")
     assert resp.status_code == 200
     jobs = resp.json()
     assert jobs["total"] >= 1
     assert jobs["items"][0]["temporal_workflow_id"] == "wf-test-active-01"
 
     # 2. Get status via ViewSet action
-    status_resp = client.get("/workflows/wf-test-active-01/status")
+    status_resp = client.get("/optimization-jobs/wf-test-active-01/workflow-status")
     assert status_resp.status_code == 200
     assert status_resp.json()["status"] == "RUNNING"
 
     # 3. Send approval signal via ViewSet action
     signal_resp = client.post(
-        "/workflows/wf-test-active-01/signal/approval",
+        "/optimization-jobs/wf-test-active-01/approvals",
         json={"decision": "APPROVED", "notes": "Looks optimal"},
     )
     assert signal_resp.status_code == 200
@@ -281,7 +281,7 @@ def test_bolt_api_simulation_endpoints(client):
         ],
     }
 
-    resp = client.post("/simulation/simulate", json=sim_payload)
+    resp = client.post("/simulations/disruptions", json=sim_payload)
     assert resp.status_code == 200
     data = resp.json()
     assert data["is_feasible"] is True
@@ -301,7 +301,7 @@ def test_bolt_api_simulation_endpoints(client):
         ],
         "stability_weight": 2.0,
     }
-    resched_resp = client.post("/simulation/reschedule", json=resched_payload)
+    resched_resp = client.post("/simulations/reschedule", json=resched_payload)
     assert resched_resp.status_code == 200
     assert resched_resp.json()["makespan"] == 525  # 480 + 45
 
@@ -333,14 +333,14 @@ def test_bolt_api_visualizations_endpoints(client):
         ],
     }
     resp_sb_html = client.post(
-        "/visualizations/stripboard/html", json={"stripboard_data": strip_data}
+        "/visualizations/stripboards/html", json={"stripboard_data": strip_data}
     )
     assert resp_sb_html.status_code == 200
     assert "<div" in resp_sb_html.json()["html"]
     assert "DAY 1" in resp_sb_html.json()["html"]
 
     resp_sb_svg = client.post(
-        "/visualizations/stripboard/svg", json={"stripboard_data": strip_data, "width": 750}
+        "/visualizations/stripboards/svg", json={"stripboard_data": strip_data, "width": 750}
     )
     assert resp_sb_svg.status_code == 200
     assert "<svg" in resp_sb_svg.json()["svg"]
@@ -358,7 +358,7 @@ def test_bolt_api_visualizations_endpoints(client):
         }
     ]
     resp_dood = client.post(
-        "/visualizations/dood/html", json={"reports": dood_reports, "total_days": 3}
+        "/visualizations/dood-reports", json={"reports": dood_reports, "total_days": 3}
     )
     assert resp_dood.status_code == 200
     assert "Alice" in resp_dood.json()["html"]
@@ -369,7 +369,7 @@ def test_bolt_api_visualizations_endpoints(client):
         "resources": ["M1"],
         "total_makespan": 120,
     }
-    resp_gantt = client.post("/visualizations/gantt/svg", json=gantt_payload)
+    resp_gantt = client.post("/visualizations/gantt-charts", json=gantt_payload)
     assert resp_gantt.status_code == 200
     assert "<svg" in resp_gantt.json()["svg"]
 
@@ -378,7 +378,7 @@ def test_bolt_api_visualizations_endpoints(client):
         "title": "Comprehensive Optimization Report",
         "sections": ["<h3>Section 1</h3><p>Details</p>"],
     }
-    resp_report = client.post("/visualizations/report/html", json=report_payload)
+    resp_report = client.post("/visualizations/reports", json=report_payload)
     assert resp_report.status_code == 200
     assert "<!DOCTYPE html>" in resp_report.json()["html"]
 
@@ -472,7 +472,7 @@ def test_bolt_api_adapters_film(client):
     import msgspec
 
     payload = msgspec.to_builtins(film_dataset)
-    resp = client.post("/adapters/film/optimize", json=payload)
+    resp = client.post("/adapters/film-production/optimize", json=payload)
     assert resp.status_code == 200
     data = resp.json()
     assert data["is_feasible"] is True
@@ -500,13 +500,13 @@ def test_bolt_api_scenarios_generate_and_records(client):
         domain="manufacturing",
         scale="small",
     )
-    rec_resp = client.get("/scenarios/records?tenant_id=tenant_scen_test")
+    rec_resp = client.get("/scenarios?tenant_id=tenant_scen_test")
     assert rec_resp.status_code == 200
     records = rec_resp.json()
     assert records["total"] >= 1
     assert records["items"][0]["name"] == "test_bench_scenario"
 
     # 3. Retrieve scenario record
-    detail_resp = client.get(f"/scenarios/records/{record.id}")
+    detail_resp = client.get(f"/scenarios/{record.id}")
     assert detail_resp.status_code == 200
     assert detail_resp.json()["name"] == "test_bench_scenario"
