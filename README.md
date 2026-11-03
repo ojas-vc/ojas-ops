@@ -444,34 +444,46 @@ The package distribution name is provisional until its availability on PyPI is v
    cd ojas-ops
    ```
 
-2. **Pin the compatible Python version:**
+2. **Setup the Python Backend Workspace (`python/`):**
 
    ```bash
+   cd python
    uv python pin 3.14
-   ```
-
-3. **Create the virtual environment and synchronize dependencies:**
-
-   ```bash
    uv sync
+   cd ..
    ```
 
-4. **Verify the environment:**
+3. **Setup the TypeScript Frontend Workspace (`typescript/`):**
 
    ```bash
-   uv run python -c "import ortools, msgspec; from ortools.sat.python import cp_model; print('OR-Tools:', ortools.__version__); print('msgspec:', msgspec.__version__)"
+   cd typescript
+   pnpm install
+   cd ..
    ```
 
-5. **Run tests and quality checks:**
+4. **Verify the environment across both workspaces:**
 
    ```bash
-   # Run the test suite
-   uv run pytest
-
-   # Run Ruff linter and formatter
-   uv run ruff check
-   uv run ruff format
+   # Run all quality gates (Python ruff/mypy + TypeScript check-types/biome)
+   make check
    ```
+
+5. **Start Development Services:**
+
+   - **Backend API (Django-Bolt on port 8000):**
+     ```bash
+     cd python/apps/sandbox && uv run python manage.py runserver 0.0.0.0:8000
+     ```
+
+   - **Frontend Studio (Next.js 16 on port 5900):**
+     ```bash
+     cd typescript/apps/ops-studio && pnpm dev
+     ```
+
+   - **Or orchestrate both processes simultaneously via PM2:**
+     ```bash
+     pm2 start ecosystem.config.cjs
+     ```
 
 ## 8. Quick Start
 
@@ -571,9 +583,6 @@ ojas-ops/
     │   └── ui/               # @ojas-ops/ui: Gantt, timeline, and metric primitives
     └── apps/
         └── ops-studio/       # Next.js 16 + React 19 interactive studio app
-```
-│
-└── scripts/
 ```
 
 Domain-specific packages may be split into separately installable distributions as the project matures.
@@ -841,25 +850,39 @@ Rescheduling should preserve unaffected portions of an existing schedule wheneve
 
 ## 13. Development, Build & Release Commands
 
-A comprehensive `Makefile` automates local development, testing, packaging, and release operations:
+The root monorepo `Makefile` provides unified orchestration across both `python/` and `typescript/` workspaces:
 
-| Command                | Purpose                                                                           |
-| :--------------------- | :-------------------------------------------------------------------------------- |
-| `make help`            | Display available targets and documentation                                       |
-| `make install`         | Sync workspace dependencies and virtualenv with `uv`                              |
-| `make check`           | Run format check, Ruff linter, and Mypy static type checker                       |
-| `make fmt`             | Format codebase with Ruff                                                         |
-| `make lint-fix`        | Auto-fix autofixable Ruff lint violations                                         |
-| `make test`            | Run full pytest test suite (28+ tests)                                            |
-| `make test-fast`       | Run tests in quiet, fail-fast mode                                                |
-| `make examples`        | Execute all 8 domain examples and verify end-to-end solutions                     |
-| `make clean`           | Clean build artifacts (`dist/`, `build/`), cache directories, and `.pytest_cache` |
-| `make build`           | Build source distribution (`.tar.gz`) and wheel (`.whl`) into `dist/`             |
-| `make build-check`     | Verify integrity and inspect contents of built distribution packages              |
-| `make bump-patch`      | Increment patch version (`0.1.0` -> `0.1.1`) across `pyproject.toml` files        |
-| `make tag`             | Create annotated git release tag `v$(VERSION)`                                    |
-| `make publish-dry-run` | Test PyPI package publishing in dry-run mode                                      |
-| `make release`         | Complete end-to-end release pipeline (checks, tests, build, dry-run publish)      |
+### Root Orchestration Targets
+
+| Command              | Purpose                                                                             |
+| :------------------- | :---------------------------------------------------------------------------------- |
+| `make help`          | Display available root targets and documentation                                    |
+| `make check`         | Run all static verification gates (Python ruff/mypy + TypeScript check-types/biome) |
+| `make test`          | Run backend Python test suite via pytest (`python/Makefile`)                        |
+| `make test-fast`     | Run backend tests in quiet, fail-fast mode                                          |
+| `make gates`         | Run frontend TypeScript type checking and Biome linting                             |
+| `make lint`          | Lint all codebases across both Python and TypeScript                                |
+| `make fmt`           | Format all codebases across both Python (Ruff) and TypeScript (Biome)               |
+| `make clean-caches`  | Clean build, test, and lint cache directories (`.ruff_cache`, `.turbo`, `.next`)    |
+
+### Backend Targets (`python/`)
+
+| Command                     | Purpose                                                                        |
+| :-------------------------- | :----------------------------------------------------------------------------- |
+| `make -C python check`      | Run Ruff format check, Ruff linter, and Mypy static type checker               |
+| `make -C python fmt`        | Auto-format Python codebase with Ruff                                          |
+| `make -C python test`       | Run full pytest test suite (28+ tests)                                         |
+| `make -C python build`      | Build source distribution (`.tar.gz`) and wheel (`.whl`) into `dist/`          |
+| `make -C python release`    | Complete end-to-end Python release pipeline (checks, tests, build, dry-run)    |
+
+### Frontend Targets (`typescript/`)
+
+| Command                       | Purpose                                                                      |
+| :---------------------------- | :--------------------------------------------------------------------------- |
+| `cd typescript && pnpm dev`   | Start Next.js Ops Studio development server on `http://localhost:5900`       |
+| `cd typescript && pnpm build` | Build production bundles for `@ojas-ops/sdk`, `@ojas-ops/ui`, and Studio     |
+| `cd typescript && pnpm lint`  | Lint all TypeScript packages and applications using Biome                    |
+| `cd typescript && pnpm format`| Auto-format all TypeScript files using Biome                                  |
 
 ## 14. Contributing
 
