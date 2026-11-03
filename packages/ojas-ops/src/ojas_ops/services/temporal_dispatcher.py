@@ -9,8 +9,10 @@ from ojas_ops.schemas.scheduling import OptimizeScheduleRequest
 async def dispatch_temporal_solve_service(request: OptimizeScheduleRequest) -> dict[str, Any]:
     """Dispatches a long-running schedule optimization request to a Temporal workflow."""
     temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
-    workflow_id = f"opt-{request.context.tenant_id}-{request.context.schedule_id}"
+    sched_id = request.schedule_id or request.project_id
+    workflow_id = f"opt-{request.tenant_id}-{sched_id}"
 
+    error_msg: str | None = None
     try:
         from temporalio.client import Client
 
@@ -26,14 +28,12 @@ async def dispatch_temporal_solve_service(request: OptimizeScheduleRequest) -> d
         # Fallback in local/disconnected environment
         run_id = None
         error_msg = str(e)
-    else:
-        error_msg = None
 
     try:
         from ojas_ops.models.optimization_job import OptimizationJob
 
         await OptimizationJob.objects.acreate(
-            tenant_id=request.context.tenant_id,
+            tenant_id=request.tenant_id,
             temporal_workflow_id=workflow_id,
             task_queue="ojas-ops-workflows",
             status="RUNNING" if error_msg is None else "DISPATCH_FAILED",
@@ -58,8 +58,10 @@ async def dispatch_temporal_solve_service(request: OptimizeScheduleRequest) -> d
 async def dispatch_hitl_workflow_service(request: OptimizeScheduleRequest) -> dict[str, Any]:
     """Dispatches a Human-in-the-Loop approval workflow to Temporal."""
     temporal_host = os.getenv("TEMPORAL_HOST", "localhost:7233")
-    workflow_id = f"hitl-{request.context.tenant_id}-{request.context.schedule_id}"
+    sched_id = request.schedule_id or request.project_id
+    workflow_id = f"hitl-{request.tenant_id}-{sched_id}"
 
+    error_msg: str | None = None
     try:
         from temporalio.client import Client
 
@@ -74,14 +76,12 @@ async def dispatch_hitl_workflow_service(request: OptimizeScheduleRequest) -> di
     except Exception as e:
         run_id = None
         error_msg = str(e)
-    else:
-        error_msg = None
 
     try:
         from ojas_ops.models.optimization_job import OptimizationJob
 
         await OptimizationJob.objects.acreate(
-            tenant_id=request.context.tenant_id,
+            tenant_id=request.tenant_id,
             temporal_workflow_id=workflow_id,
             task_queue="ojas-ops-workflows",
             status="AWAITING_APPROVAL" if error_msg is None else "DISPATCH_FAILED",
@@ -116,7 +116,10 @@ async def signal_workflow_service(
 
         client = await Client.connect(temporal_host)
         handle = client.get_workflow_handle(workflow_id)
-        await handle.signal("submit_review_decision", decision, notes)
+        if notes is not None:
+            await handle.signal("submit_review_decision", args=[decision, notes])
+        else:
+            await handle.signal("submit_review_decision", decision)
         signal_sent = True
         error_msg = None
     except Exception as e:

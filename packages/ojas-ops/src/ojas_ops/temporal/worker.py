@@ -45,7 +45,7 @@ async def start_worker(
             client,
             task_queue=WORKFLOW_TASK_QUEUE,
             workflows=[ScheduleOptimizationWorkflow, FilmScheduleApprovalWorkflow],
-            name=f"ojas-ops-wf-worker-{worker_id}",
+            identity=f"ojas-ops-wf-worker-{worker_id}",
         )
         workers.append(wf_worker)
 
@@ -58,7 +58,7 @@ async def start_worker(
                 validate_schedule_activity,
                 persist_schedule_run_activity,
             ],
-            name=f"ojas-ops-act-worker-{worker_id}",
+            identity=f"ojas-ops-act-worker-{worker_id}",
         )
         workers.append(act_worker)
 
@@ -84,10 +84,7 @@ def run_worker_cluster(
 ) -> None:
     """Launches dedicated workflow and multi-core activity worker pools."""
     total_workers = num_wf_workers + num_act_workers
-    try:
-        mp_ctx = multiprocessing.get_context("fork")
-    except ValueError:
-        mp_ctx = multiprocessing.get_context("spawn")
+    mp_ctx = multiprocessing.get_context("spawn")
 
     with concurrent.futures.ProcessPoolExecutor(total_workers, mp_context=mp_ctx) as executor:
         futures = [

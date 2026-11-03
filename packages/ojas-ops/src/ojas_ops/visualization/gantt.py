@@ -59,28 +59,28 @@ class GanttRenderer:
 
         # Draw task blocks
         colors = ["#2563EB", "#059669", "#D97706", "#7C3AED", "#DB2777", "#4F46E5"]
-        for t in schedule_tasks:
-            res_id = t.get("resource")
+        for task in schedule_tasks:
+            res_id = task.get("resource")
             if res_id not in res_row:
                 continue
             row_idx = res_row[res_id]
-            start = t.get("start", 0)
-            end = t.get("end", 0)
+            start = task.get("start", 0)
+            end = task.get("end", 0)
             duration = end - start
 
             block_x = left_margin + int(start * scale_x)
             block_w = max(4, int(duration * scale_x))
             block_y = header_height + row_idx * height_per_row + 4
             block_h = height_per_row - 12
-            color = colors[hash(t.get("task_id", "")) % len(colors)]
+            color = colors[hash(task.get("task_id", "")) % len(colors)]
 
             svg_parts.append(
                 f'<rect x="{block_x}" y="{block_y}" width="{block_w}" height="{block_h}" '
-                f'fill="{color}" rx="3"><title>{html.escape(t.get("task_id", ""))}: {start}-{end}m</title></rect>'
+                f'fill="{color}" rx="3"><title>{html.escape(task.get("task_id", ""))}: {start}-{end}m</title></rect>'
             )
             if block_w > 30:
                 svg_parts.append(
-                    f'<text x="{block_x + 6}" y="{block_y + 16}" class="task-text">{html.escape(t.get("task_id", ""))}</text>'
+                    f'<text x="{block_x + 6}" y="{block_y + 16}" class="task-text">{html.escape(task.get("task_id", ""))}</text>'
                 )
 
         svg_parts.append("</svg>")

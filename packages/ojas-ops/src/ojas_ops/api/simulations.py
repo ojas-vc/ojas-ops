@@ -1,5 +1,9 @@
 """Class-Based ViewSet for Simulation and reactive rescheduling."""
 
+from __future__ import annotations
+
+from typing import Any
+
 from django_bolt import ViewSet, action
 
 from ojas_ops.schemas.simulation import (
@@ -15,12 +19,12 @@ from ojas_ops.services.simulator import (
 
 
 class SimulationViewSet(ViewSet):
-    """Class-Based ViewSet managing disruption impact simulations and reactive rescheduling."""
+    """Class-Based ViewSet managing disruption impact simulations and reactive rescheduling on /simulations."""
 
-    @action(methods=["POST"], detail=False, path="simulate")
+    @action(methods=["POST"], detail=False, path="disruptions")
     async def simulate_disruptions(
         self,
-        request,
+        request: Any,
         payload: SimulateDisruptionRequest,
     ) -> SimulateDisruptionResponse:
         """Simulate operational disruptions (delays, breakdowns, blackouts) on a baseline schedule."""
@@ -29,7 +33,7 @@ class SimulationViewSet(ViewSet):
     @action(methods=["POST"], detail=False, path="reschedule")
     async def reschedule_active(
         self,
-        request,
+        request: Any,
         payload: RescheduleRequest,
     ) -> RescheduleResponse:
         """Perform reactive re-optimization balancing makespan with stability relative to baseline."""

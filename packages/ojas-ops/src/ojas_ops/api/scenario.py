@@ -1,10 +1,13 @@
-"""Class-Based ViewSet for Scenarios execution and synthetic benchmark generation."""
+"""ModelViewSet for ScenarioRecord benchmarks, synthetic generators, and execution."""
+
+from __future__ import annotations
 
 from typing import Any
 
-import msgspec
-from django_bolt import ViewSet, action
+from django_bolt import action
 
+from ojas_ops.api.base import BaseOjasModelViewSet
+from ojas_ops.models.scenario_record import ScenarioRecord
 from ojas_ops.scenarios.generator import (
     generate_film_scenario,
     generate_jobshop_scenario,
@@ -12,52 +15,43 @@ from ojas_ops.scenarios.generator import (
 )
 from ojas_ops.scenarios.models import ScenarioDefinition
 from ojas_ops.scenarios.runner import run_scenario
+from ojas_ops.schemas.scenarios import GenerateScenarioRequest, ScenarioExecutionResponse
+from ojas_ops.serializers.scenario_record import (
+    ScenarioRecordCreateSerializer,
+    ScenarioRecordSerializer,
+)
 
 
-class GenerateScenarioRequest(msgspec.Struct, kw_only=True):
-    """Parameters to generate a synthetic benchmark scenario."""
+class ScenarioModelViewSet(BaseOjasModelViewSet):
+    """Full ModelViewSet managing scenario benchmarks, synthetic generation, and execution."""
 
-    scenario_type: str = "jobshop"
-    num_jobs: int = 6
-    num_machines: int = 4
-    num_staff: int = 10
-    num_shifts: int = 24
-    horizon_hours: int = 48
-    num_scenes: int = 12
-    num_cast: int = 6
-    num_locations: int = 3
-    seed: int = 42
-    # Optional backward-compatible aliases
-    num_nurses: int | None = None
-    num_days: int | None = None
-    num_actors: int | None = None
+    queryset = ScenarioRecord.objects.all().order_by("-created_at")
+    serializer_class = ScenarioRecordSerializer
+    create_serializer_class = ScenarioRecordCreateSerializer
+    lookup_field = "id"
 
-
-class ScenarioViewSet(ViewSet):
-    """Class-Based ViewSet managing declarative scenario verification and synthetic benchmarking."""
-
-    @action(methods=["POST"], detail=False, path="run")
+    @action(methods=["POST"], detail=False, path="execute")
     async def execute_scenario(
         self,
-        request,
+        request: Any,
         scenario: ScenarioDefinition,
-    ) -> dict[str, Any]:
-        """Execute declarative scenario JSON and verify golden assertions."""
+    ) -> ScenarioExecutionResponse:
+        """Execute declarative scenario JSON and verify golden expected assertions."""
         run_result = run_scenario(scenario)
-        return {
-            "is_success": run_result.is_success,
-            "verification_failures": run_result.verification_failures,
-            "makespan": run_result.result.makespan if run_result.result else None,
-            "status": run_result.result.status.value if run_result.result else "FAILED",
-        }
+        return ScenarioExecutionResponse(
+            is_success=run_result.is_success,
+            verification_failures=run_result.verification_failures,
+            makespan=run_result.result.makespan if run_result.result else None,
+            status=run_result.result.status.value if run_result.result else "FAILED",
+        )
 
     @action(methods=["POST"], detail=False, path="generate")
     async def generate_benchmark_scenario(
         self,
-        request,
+        request: Any,
         payload: GenerateScenarioRequest,
     ) -> dict[str, Any]:
-        """Generate a synthetic benchmark scenario (jobshop, workforce, film)."""
+        """Generate synthetic benchmark scenario datasets (jobshop, workforce, film)."""
         scenario_type = payload.scenario_type.lower()
         seed = payload.seed
 

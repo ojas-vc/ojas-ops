@@ -14,7 +14,7 @@ async def verify_schedule_feasibility(
     resources: list[dict[str, Any]],
 ) -> dict[str, Any]:
     """Deterministically verifies that all task dependencies, resource capacities, and calendar windows hold."""
-    from ojas_ops.schemas.time import Horizon
+    from ojas_ops.schemas.common import HorizonContract
 
     req = ValidateScheduleRequest(
         tenant_id="agent_request",
@@ -22,7 +22,7 @@ async def verify_schedule_feasibility(
         tasks=[],
         resources=[],
         result=None,  # type: ignore
-        horizon=Horizon(start=0, end=1440),
+        horizon=HorizonContract(start=0, end=1440),
     )
     res = await validate_schedule_service(req)
     return {
