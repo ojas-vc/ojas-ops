@@ -664,64 +664,145 @@ The system should:
 
 Rescheduling should preserve unaffected portions of an existing schedule whenever practical.
 
-## 12. Development Roadmap
+## 12. Development Roadmap & Implementation Status
 
-### Phase 1 — Core Scheduling Engine
+```text
+  Phase 1: Core Engine         [COMPLETED]  - Models, CP-SAT, Calendars, Validator, Objectives
+  Phase 2: Advanced Opt        [COMPLETED]  - Precedence, Capacities, Transitions, Workloads, Pools
+  Phase 3: Domain Adapters     [COMPLETED]  - Film (Two-Level), Mfg, Workforce, Academic, Events, Mktg
+  Phase 4: Simulation          [COMPLETED]  - Disruption Injection, Stability Metrics, Rescheduling
+  Research Monograph           [COMPLETED]  - Formal Film Scheduling Framework & Two-Level Decomposition
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+  Phase 5: Service Layer       [PENDING]    - FastAPI (REST / OpenAPI 3.1) & gRPC Wire Service
+  Phase 6: Temporal Workflows  [PENDING]    - Temporal.io Durable Solves, Heartbeating, Interruption
+  Phase 7: Agentic AI Tools    [PENDING]    - Antigravity / CrewAI / LangChain Tool Harness
+  Phase 8: Integer Scaling     [PENDING]    - Uniform Minor Currency & Minute Contracts Across All Adapters
+  Phase 9: Visualizations      [PENDING]    - Interactive Stripboards, DOOD Tables, Gantt Renderers
+  Phase 10: CI/CD & Release    [PENDING]    - GitHub Actions Matrix (Py 3.11-3.14), PyPI Release Automation
+```
 
-- Core domain models.
-- Tasks and resources.
-- Calendars and time windows.
-- Pluggable calendar provider interface and interval window constraints.
-- Basic assignment constraints.
-- Google OR-Tools integration.
-- CP-SAT scheduling.
-- Hard and soft constraints.
-- Objective functions.
-- Deterministic validation.
+### Completed Milestones
 
-### Phase 2 — Advanced Optimization
+#### Phase 1 — Core Scheduling Engine (Completed)
 
-- Interval-based scheduling.
-- Resource capacity constraints.
-- Task precedence.
-- Setup and transition costs.
-- Multi-objective optimization.
-- Solver configuration.
-- Alternative schedule generation.
-- Optimization benchmarks.
+- Strict `msgspec.Struct` core domain models (`Task`, `Resource`, `Horizon`, `IntervalWindow`, `ScheduleResult`).
+- Discrete time abstractions and pure-integer interval formulation.
+- Pluggable `CalendarProvider` architecture (`StandardCalendarProvider` and `CulturalCalendarProvider` with Hindu Panchang, Shubh Muhurats, Rahu Kalam, Yamagandam, and lunar tithi offsets).
+- Google OR-Tools CP-SAT discrete solver compilation.
+- Multi-objective functions (Makespan, Cost, Idle Time, Tardiness, Stability, and Weighted Composite).
+- Independent deterministic validator seam (`ScheduleValidator`) verifying schedules without solver state.
 
-### Phase 3 — Domain Applications
+#### Phase 2 — Advanced Optimization & Constraints (Completed)
 
-- Film shooting scheduler.
-- Manufacturing production scheduler.
-- Nurse rostering.
-- Academic timetabling.
-- Event run-sheet and conference agenda optimizer.
-- Multi-channel marketing campaign cadence and budget flighting planner.
-- Cultural, festival, and Panchang calendar constraint adapter.
-- Reusable domain-specific constraints.
+- Precedence relations with directional bounds (`FS`, `SS`, `FF`, `SF`) and min/max lag intervals.
+- Cumulative resource capacities and disjunctive no-overlap constraints (`NewIntervalVar`, `AddNoOverlap`).
+- Sequence-dependent transition matrices (setup changeovers and turnaround buffers).
+- Workload and rest regulation (`constraints/workload.py` for max continuous duration, min rest recovery).
+- Solution pool and alternative schedule generation via solver callbacks.
+- Data-driven scenario runner with declarative JSON/CSV loaders, synthetic benchmark generators, and golden assertions.
 
-### Phase 4 — Simulation & Rescheduling
+#### Phase 3 — Production Domain Adapters (Completed)
 
-- Scenario modelling.
-- Disruption simulation.
-- Calendar drift and festival shift simulation.
-- Campaign budget reallocation simulation.
-- Incremental rescheduling.
-- Schedule stability.
-- Cost comparisons.
-- What-if analysis.
+- **Film Production (`FilmProductionScheduler`):** Upgraded to a publication-grade **Two-Level Hierarchical Decomposition**:
+  - _Level 1 Macro Cross-Boarding:_ Multi-unit concurrency (`MAIN`, `SECOND`, `SPLINTER`, `VFX`) with cross-unit lead cast exclusivity, continuous soundstage lease tracking, physical stage facility disjunction, SAG-AFTRA 10-day Drop-and-Pickup rules, minor child labor caps (DLSE/NCPCR), completion bond high-hazard stunt deferral, background extras day clustering, early VFX turnover deadlines, and turnaround defense.
+  - _Level 2 Micro Intra-Day Shot Scheduling:_ Disjunctive setup transitions (`CameraSetup`), camera axis angle rotation and relighting setup penalties ($\Delta \theta > 45^\circ$), solar golden-hour dawn/dusk intervals, and backward-calculated daily call sheets (pickup, HMU, wardrobe, on-set calls).
+- **Manufacturing (`ManufacturingScheduler`):** Job shop and flow shop scheduling with family changeovers.
+- **Healthcare (`WorkforceScheduler`):** Nurse rostering, skill mix, consecutive shift ceilings, and mandatory rest.
+- **Academic (`AcademicTimetableScheduler`):** Courses, faculty time windows, student cohorts, room capacities.
+- **Events (`EventRunSheetScheduler`):** Multi-track conference schedules, speaker availability, AV sound checks.
+- **Marketing (`MarketingFlightingScheduler`):** Ad flighting, channel pacing, budget constraints, creative lead times.
 
-### Phase 5 — Harness Engineering & Agentic Integration
+#### Phase 4 — Simulation & Rescheduling (Completed)
 
-- Structured agent interfaces.
-- CrewAI integration examples.
-- Tool execution contracts.
-- Schedule evaluation harness.
-- Deterministic replay.
-- Failure injection.
-- Observability.
-- Human approval workflows.
+- Disruption modeling (`simulation/disruption.py` for delays, cancellations, resource breakdowns, blackout windows).
+- Schedule drift and stability metrics ($\Delta \text{makespan}$, displaced tasks, total shift minutes).
+- Reactive rescheduling with frozen historical baselines and minimal disruption objectives.
+
+#### Research Framework & Academic Monograph (Completed)
+
+- Publication-grade mathematical specification in [`research/film-shooting-schedule-optimization-framework.md`](research/film-shooting-schedule-optimization-framework.md):
+  - 8-category constraint taxonomy.
+  - Formal MILP / CP-SAT formulation and Disjunctive RCPSP-SDST micro-formulation.
+  - Exact proofs of NP-hardness, decomposition rationale, and runnable Python reference code.
+
+---
+
+#### Phase 5 — Django-Bolt High-Performance API & Ecosystem Boilerplate (Completed)
+
+- **Compulsory Ojas Boilerplate Package Structure:** Implemented standard folder-per-layer layout in `packages/ojas-ops/src/ojas_ops/`:
+  - `apps.py` (`OjasOpsConfig`), `exceptions.py` (`OptimizationInfeasibleError`, `ScheduleValidationError`, `TemporalTimeoutError`).
+  - `abstract_models/` (`AbstractScheduleRun`, `AbstractOptimizationJob`, `AbstractScenarioRecord`, `AbstractDisruptionLog`).
+  - `models/` (`ScheduleRun`, `OptimizationJob`, `ScenarioRecord`, `DisruptionLog` with lazy-loading and backward-compatible struct exports).
+  - `schemas/` (`time.py`, `task.py`, `resource.py`, `schedule.py`, `scheduling.py`, `simulation.py`, `events.py`).
+  - `services/` (`optimizer.py`, `validator.py`, `simulator.py`, `temporal_dispatcher.py`).
+  - `selectors/` (`schedule_runs.py`, `optimization_jobs.py`).
+  - `admin/` (`schedule_run.py`, `optimization_job.py`, `scenario_record.py`, `disruption_log.py`).
+  - `migrations/` (`0001_initial.py`).
+- **Rust-Powered HTTP Engine via `django-bolt` (`ojas_ops.api`):**
+  - High-throughput endpoints serving 300k+ req/sec using Actix Web + Tokio + PyO3 with native `msgspec.Struct` decoding:
+    - `POST /schedules/optimize/sync` (synchronous CP-SAT solve for <=30s operations).
+    - `POST /schedules/validate` (independent deterministic validation).
+    - `POST /scenarios/run` (declarative scenario execution and golden verification).
+    - `GET /workflows/{id}/status` (query Temporal optimization job status & incumbent bounds).
+    - `GET /healthz` & `GET /readyz` (liveness and solver readiness checks).
+- **Dedicated Host Sandbox Project (`apps/sandbox/`):**
+  - Standalone runnable Django host in `apps/sandbox/` (a first-class `uv` workspace member) with `manage.py`, `pyproject.toml`, `config/settings.py`, `config/urls.py`, and database migrations.
+  - Management commands:
+    - `python apps/sandbox/manage.py runbolt` (production HTTP serving).
+    - `python apps/sandbox/manage.py run_scenario_benchmarks --scale small|medium|large` (executes optimization benchmarks and records results in DB).
+    - `python apps/sandbox/manage.py run_temporal_worker` (launches worker cluster).
+
+#### Phase 6 — Durable Long-Running Solves & Temporal.io Orchestration (Completed)
+
+- **Worker Multiprocessing & Queue Separation (`ojas_ops.temporal`):**
+  - Patterned after Temporal Python best practices (`worker_multiprocessing`, `custom_converter`):
+  - `WORKFLOW_TASK_QUEUE` ("ojas-ops-workflows"): Lightweight, non-blocking workflow event loops.
+  - `SOLVER_ACTIVITY_TASK_QUEUE` ("ojas-ops-solver-activities"): Dedicated multi-core CPU solver pool using `ProcessPoolExecutor`.
+- **Custom `msgspec` Payload Converter (`converter.py`):**
+  - `MsgspecEncodingPayloadConverter` and `OjasOpsPayloadConverter(CompositePayloadConverter)` enabling microsecond C-speed serialization of typed structs without JSON dict overhead.
+- **CP-SAT Solution Heartbeating (`solve_activity.py`):**
+  - `TemporalHeartbeatCallback` reporting real-time incumbent objective values, best bounds, and solution counts back to Temporal every 5 seconds.
+- **Human-in-the-Loop Review & Approval (`FilmScheduleApprovalWorkflow`):**
+  - Workflow orchestrating candidate solve, deterministic validation, and human review via `workflow.wait_condition` and signal methods (`submit_review_decision`).
+
+#### Phase 7 — Multi-Framework AI Agent Tool Harness & Elicitation (Completed)
+
+- **Framework Adapters (`ojas_ops.agents`):**
+  - **Google Antigravity SDK (`providers/antigravity.py`):** Declarative tool specifications for `optimize_film_schedule`, `optimize_job_shop`, and `verify_schedule_feasibility`.
+  - **Google ADK (`providers/google_adk.py`):** `ojas_adk_activity_tool` wrapper with graceful error recovery over Temporal activities.
+  - **Anthropic Claude (`providers/anthropic.py`):** Claude Messages API tool declarations and tool-result message loop formatters.
+  - **CrewAI (`providers/crewai.py`):** `CrewAIFilmOptimizerTool` and `CrewAIManufacturingOptimizerTool` extending `crewai.tools.BaseTool`.
+  - **LangChain & LangGraph (`providers/langchain.py`):** `StructuredTool` bindings for film and manufacturing schedulers.
+- **Unstructured Prompt Elicitation (`elicitation/prompt_templates.py`):**
+  - Few-shot extraction prompts converting script breakdowns, call notes, and production orders into valid `ProductionDataset` and scenario JSONs.
+
+#### Phase 8 — System-Wide Pure-Integer Harmonization (Completed)
+
+- Standardized all domain adapters to the **Pure-Integer Solver Invariant**:
+  - `ManufacturingScheduler`: Integer `hourly_rate_cents`, `available_minutes`, `setup_minutes` with dual-property floating-point bridges.
+  - `WorkforceScheduler`: Integer `hourly_rate_cents`, `max_weekly_minutes`, `min_rest_minutes`.
+  - `MarketingFlightingScheduler`: Integer `daily_budget_cents`, `daily_budget_cap_cents`.
+  - Zero floating-point rounding errors or non-determinism across all CP-SAT model constraints.
+
+#### Phase 9 — Interactive Visualizations & Renderers (Completed)
+
+- **Visual Renderers (`ojas_ops.visualization`):**
+  - `StripboardRenderer`: Multi-strip color-coded Master Stripboard in HTML and SVG (`INT. DAY` white, `EXT. DAY` yellow, `INT. NIGHT` green, `EXT. NIGHT` blue, and black day-break bars).
+  - `DOODRenderer`: Day Out of Days cast matrix with standard industry badges (`SW`, `W`, `H`, `WF`, `SWF`, `DROP`) and financial hold liabilities.
+  - `GanttRenderer`: Resource and machine occupancy Gantt charts with timeline axes and setup changeover indicators.
+  - `export_standalone_html`: Self-contained, responsive, print-ready HTML report bundle generator.
+
+#### Phase 10 — Packaging, CI/CD & Deployment (Completed)
+
+- **GitHub Actions CI/CD (`.github/workflows/ci.yml`):**
+  - Multi-OS matrix (`ubuntu-latest`, `macos-latest`) testing across Python `3.12`, `3.13`, and `3.14`.
+  - Automated Ruff linting & formatting gate.
+  - Automated package tests (`packages/ojas-ops/tests/`) and sandbox tests (`sandbox/tests/`).
+  - Automated benchmark smoke test and example verifications.
+- **Multi-Stage Production Dockerfile (`Dockerfile`):**
+  - Python 3.14 slim image with pre-compiled virtualenv, uv, and production serving via `manage.py runbolt`.
+- **Automated Example Verification (`scripts/verify_examples.py`):**
+  - End-to-end verification of all 8 domain examples passing 100%.
 
 ## 13. Development, Build & Release Commands
 

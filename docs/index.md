@@ -38,21 +38,21 @@ Architecture & Design    Core Scheduling   Constraints & Goals    Domain Adapter
                                                                   - Campaign Flighting
 ```
 
-| Section                            | Description                                                                                 |
-| :--------------------------------- | :------------------------------------------------------------------------------------------ |
-| [Architecture](architecture.md)    | High-level system topology, CP-SAT translation, and deterministic verification.             |
-| [Design Guidelines](guidelines.md) | Strictly typed, contract-first design guide and architectural conversion standards.         |
-| [API Reference](api.md)            | Comprehensive reference for the fluent `Scheduler` orchestrator.                            |
-| [Domain Models](models.md)         | `Task`, `Resource`, `Horizon`, `IntervalWindow`, `TimeWindow`, `ScheduleResult`.            |
-| [Calendars](calendars.md)          | Standard operational calendars and Hindu Panchang / Cultural calendar providers.            |
-| [Constraints](constraints.md)      | Precedence, cumulative capacity, no-overlap, blackout/target windows, setup matrices.       |
-| [Objectives](objectives.md)        | Makespan, tardiness, idle time, financial cost, and baseline schedule stability.            |
-| [Solvers](solvers.md)              | Google OR-Tools CP-SAT compilation, optional resource pools, and tuning parameters.         |
-| [Validation](validation.md)        | Independent feasibility and constraint verification without solver dependencies.            |
-| [Simulation](simulation.md)        | Disruption modeling, impact analysis, and minimally disruptive rescheduling.                |
-| [Scenarios](scenarios.md)          | Data-driven scenario modeling, golden assertions verification, CSV loading, and generators. |
-| [Domain Adapters](adapters.md)     | Ready-to-use adapters for film, manufacturing, healthcare, academic, events, and marketing. |
-| [Research Frameworks](../research/film-shooting-schedule-optimization-framework.md) | Publication-grade mathematical formulations, complexity proofs, and exact decompositions. |
+| Section                                                                             | Description                                                                                 |
+| :---------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| [Architecture](architecture.md)                                                     | High-level system topology, CP-SAT translation, and deterministic verification.             |
+| [Design Guidelines](guidelines.md)                                                  | Strictly typed, contract-first design guide and architectural conversion standards.         |
+| [API Reference](api.md)                                                             | Comprehensive reference for the fluent `Scheduler` orchestrator.                            |
+| [Domain Models](models.md)                                                          | `Task`, `Resource`, `Horizon`, `IntervalWindow`, `TimeWindow`, `ScheduleResult`.            |
+| [Calendars](calendars.md)                                                           | Standard operational calendars and Hindu Panchang / Cultural calendar providers.            |
+| [Constraints](constraints.md)                                                       | Precedence, cumulative capacity, no-overlap, blackout/target windows, setup matrices.       |
+| [Objectives](objectives.md)                                                         | Makespan, tardiness, idle time, financial cost, and baseline schedule stability.            |
+| [Solvers](solvers.md)                                                               | Google OR-Tools CP-SAT compilation, optional resource pools, and tuning parameters.         |
+| [Validation](validation.md)                                                         | Independent feasibility and constraint verification without solver dependencies.            |
+| [Simulation](simulation.md)                                                         | Disruption modeling, impact analysis, and minimally disruptive rescheduling.                |
+| [Scenarios](scenarios.md)                                                           | Data-driven scenario modeling, golden assertions verification, CSV loading, and generators. |
+| [Domain Adapters](adapters.md)                                                      | Ready-to-use adapters for film, manufacturing, healthcare, academic, events, and marketing. |
+| [Research Frameworks](../research/film-shooting-schedule-optimization-framework.md) | Publication-grade mathematical formulations, complexity proofs, and exact decompositions.   |
 
 ---
 

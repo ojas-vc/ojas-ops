@@ -10,23 +10,23 @@ In mathematical scheduling literature, the general film scheduling problem synth
 
 A shooting schedule represents an operational compromise negotiated among stakeholders whose structural incentives directly conflict. Developing an algorithmic optimization architecture requires translating these human, operational, artistic, and legal agendas into explicit hard constraints or parameterized objective functions.
 
-| Stakeholder | Primary Objectives | Primary Constraints Imposed | Optimization Tension Points |
-| :--- | :--- | :--- | :--- |
-| **1st Assistant Director (1st AD)** | Operational safety, crew rhythm, schedule feasibility, full scene coverage. | Daily work caps, turnaround minimums, company move limits, lighting setups. | Prefers clustering scenes by lighting and camera angles; conflicts directly with talent availability windows and municipal curfews. |
-| **Unit Production Manager (UPM) / Line Producer** | Budget integrity, variance control, vendor contractual compliance. | Overtime caps, travel/per diem thresholds, meal penalties, fringe labor rates. | Minimizes paid talent hold days and crew overtime; conflicts with the director's desire for chronological or emotional sequence padding. |
-| **Director & Cinematographer (DoP)** | Narrative coherence, dramatic momentum, lighting aesthetics. | Golden hour alignments, dramatic progression, actor emotional pacing. | Prefers shooting in chronological order to support performance arcs; conflicts with cross-boarding efficiency across script parts. |
-| **2nd Unit Director & Action Unit Lead** | High-octane stunt coverage, insert plates, vehicle chases. | Concurrency with Main Unit, lead cast stunt double coordination, shared gear. | Contends with Main Unit for primary camera packages, specialty rigs, and stunt doubles. |
-| **Art Director & Prop Master** | Craft execution, physical set readiness, set continuity. | Construction lead times, set dressing intervals, hero prop duplicate counts. | Requires physical possession of locations days prior to filming for pre-dressing; conflicts with compressed soundstage leases. |
-| **Costume Designer & Wardrobe Master** | Costume distress integrity, character visual continuity. | Unidirectional distress progression, multi-stage duplicate fabrication limits. | Enforces strict forward-only shooting orders for distressed garments unless costly duplicates are funded. |
-| **Key Department Heads (SFX, Stunts, HMU)** | On-set physical safety, specialized equipment deployment. | Rigging and curing windows, prosthetic application times, stunt reset buffers. | High setup and turnaround times demand pre-lighting and rigging blocks, reducing active camera rolling time. |
-| **Cast & Talent Agents** | Remuneration, personal fatigue mitigation, external career availability. | Stop dates, blackout windows, 10-day Drop-and-Pickup rules, travel turnaround. | "Pay-or-Play" contracts demand strict start and completion dates regardless of internal production delays. |
-| **Location Manager** | Site access, neighborhood relations, municipal compliance. | Permitted operating hours, noise curfews, structural restoration requirements. | Practical commercial sites (banks, active schools) restrict access to specific days of the week. |
-| **Completion Guarantor (Bond Company)** | Mitigation of financial abandonment or delivery failure. | Mandatory cover sets, contingency buffers, locked delivery milestones. | Enforces conservative daily page counts, restricting aggressive compression models that lack contingency buffers; enforces late-schedule stunt deferral. |
-| **Sound Mixer / Audio Department** | Dialogue intelligibility, acoustic isolation, sync-sound fidelity. | Environmental quietude, non-soundproofed tin roof rain curfews, zero bleed. | Demands absolute set silence, conflicting with parallel construction, active generator placement, or rain on uninsulated stages. |
-| **Grip & Electric (G&E) / Gaffer** | Lighting setup precision, high-voltage power routing, camera rigging. | Pre-lighting blocks (3–6 hrs), condor/generator placement, night reset windows. | Pre-lighting requires set possession long before camera roll, conflicting with tight stage rental windows and early cast calls. |
-| **VFX Supervisor & Post-Production Supervisor** | Clean plate acquisition, CGI tracking alignment, post turnover pipelines. | Green/blue screen rigging, LiDAR scanning windows, locked turnover deadlines. | Demands clean background plates and early plate turnover cadences to feed 20-week external CGI vendor pipelines. |
-| **Studio Executives & Commercial Financiers** | Theatrical release windows, festival deadlines, tax credit qualification. | Hard wrap deadlines (e.g., Cannes, Diwali, Christmas), local spend thresholds. | Rigid final wrap dates restrict schedule extension flexibility, forcing costly overtime or multi-unit splits when delays occur. |
-| **Production Accountant & Tax Auditor** | Qualifying spend compliance, tax credit monetization. | Territorial spend percentages, local labor headcount ratios, audit trails. | Cross-border moves must hit strict qualifying spend thresholds (e.g. 60%+ in-state) to unlock 25–35% regional tax rebates. |
+| Stakeholder                                       | Primary Objectives                                                          | Primary Constraints Imposed                                                     | Optimization Tension Points                                                                                                                              |
+| :------------------------------------------------ | :-------------------------------------------------------------------------- | :------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1st Assistant Director (1st AD)**               | Operational safety, crew rhythm, schedule feasibility, full scene coverage. | Daily work caps, turnaround minimums, company move limits, lighting setups.     | Prefers clustering scenes by lighting and camera angles; conflicts directly with talent availability windows and municipal curfews.                      |
+| **Unit Production Manager (UPM) / Line Producer** | Budget integrity, variance control, vendor contractual compliance.          | Overtime caps, travel/per diem thresholds, meal penalties, fringe labor rates.  | Minimizes paid talent hold days and crew overtime; conflicts with the director's desire for chronological or emotional sequence padding.                 |
+| **Director & Cinematographer (DoP)**              | Narrative coherence, dramatic momentum, lighting aesthetics.                | Golden hour alignments, dramatic progression, actor emotional pacing.           | Prefers shooting in chronological order to support performance arcs; conflicts with cross-boarding efficiency across script parts.                       |
+| **2nd Unit Director & Action Unit Lead**          | High-octane stunt coverage, insert plates, vehicle chases.                  | Concurrency with Main Unit, lead cast stunt double coordination, shared gear.   | Contends with Main Unit for primary camera packages, specialty rigs, and stunt doubles.                                                                  |
+| **Art Director & Prop Master**                    | Craft execution, physical set readiness, set continuity.                    | Construction lead times, set dressing intervals, hero prop duplicate counts.    | Requires physical possession of locations days prior to filming for pre-dressing; conflicts with compressed soundstage leases.                           |
+| **Costume Designer & Wardrobe Master**            | Costume distress integrity, character visual continuity.                    | Unidirectional distress progression, multi-stage duplicate fabrication limits.  | Enforces strict forward-only shooting orders for distressed garments unless costly duplicates are funded.                                                |
+| **Key Department Heads (SFX, Stunts, HMU)**       | On-set physical safety, specialized equipment deployment.                   | Rigging and curing windows, prosthetic application times, stunt reset buffers.  | High setup and turnaround times demand pre-lighting and rigging blocks, reducing active camera rolling time.                                             |
+| **Cast & Talent Agents**                          | Remuneration, personal fatigue mitigation, external career availability.    | Stop dates, blackout windows, 10-day Drop-and-Pickup rules, travel turnaround.  | "Pay-or-Play" contracts demand strict start and completion dates regardless of internal production delays.                                               |
+| **Location Manager**                              | Site access, neighborhood relations, municipal compliance.                  | Permitted operating hours, noise curfews, structural restoration requirements.  | Practical commercial sites (banks, active schools) restrict access to specific days of the week.                                                         |
+| **Completion Guarantor (Bond Company)**           | Mitigation of financial abandonment or delivery failure.                    | Mandatory cover sets, contingency buffers, locked delivery milestones.          | Enforces conservative daily page counts, restricting aggressive compression models that lack contingency buffers; enforces late-schedule stunt deferral. |
+| **Sound Mixer / Audio Department**                | Dialogue intelligibility, acoustic isolation, sync-sound fidelity.          | Environmental quietude, non-soundproofed tin roof rain curfews, zero bleed.     | Demands absolute set silence, conflicting with parallel construction, active generator placement, or rain on uninsulated stages.                         |
+| **Grip & Electric (G&E) / Gaffer**                | Lighting setup precision, high-voltage power routing, camera rigging.       | Pre-lighting blocks (3–6 hrs), condor/generator placement, night reset windows. | Pre-lighting requires set possession long before camera roll, conflicting with tight stage rental windows and early cast calls.                          |
+| **VFX Supervisor & Post-Production Supervisor**   | Clean plate acquisition, CGI tracking alignment, post turnover pipelines.   | Green/blue screen rigging, LiDAR scanning windows, locked turnover deadlines.   | Demands clean background plates and early plate turnover cadences to feed 20-week external CGI vendor pipelines.                                         |
+| **Studio Executives & Commercial Financiers**     | Theatrical release windows, festival deadlines, tax credit qualification.   | Hard wrap deadlines (e.g., Cannes, Diwali, Christmas), local spend thresholds.  | Rigid final wrap dates restrict schedule extension flexibility, forcing costly overtime or multi-unit splits when delays occur.                          |
+| **Production Accountant & Tax Auditor**           | Qualifying spend compliance, tax credit monetization.                       | Territorial spend percentages, local labor headcount ratios, audit trails.      | Cross-border moves must hit strict qualifying spend thresholds (e.g. 60%+ in-state) to unlock 25–35% regional tax rebates.                               |
 
 The 1st AD acts as the operational orchestrator of the physical set, structuring daily stripboards to ensure crew efficiency without exceeding physiological endurance limits. In parallel, the Line Producer and UPM evaluate the schedule through financial liability, monitoring contractual exposure such as forced calls, meal penalties, and paid talent idle days. Department heads for art, wardrobe, props, sound, camera, and special effects manage their own internal preparation pipelines, requiring physical access to sets and actors long before the camera rolls. In post-production, VFX supervisors demand locked turnover cadences to feed multi-vendor CGI pipelines, while studio financiers enforce hard festival and seasonal theatrical delivery dates alongside territorial tax incentive spend ratios. Overseeing the entire financing structure, the Completion Guarantor imposes institutional risk thresholds, demanding validated "cover sets" for exterior scenes and refusing to insure schedules that leave zero margin for weather interruptions or principal cast illness.
 
@@ -57,28 +57,32 @@ graph TD
 Screen industry operations are governed by detailed collective bargaining agreements. In the United States and international union shoots, contracts from SAG-AFTRA, IATSE, and the DGA dictate operational limits. In the Indian production landscape, including Bollywood and regional film sectors, regulations set by the Federation of Western India Cine Employees (FWICE) and artist bodies such as the Cine & TV Artistes' Association (CINTAA) govern shift durations and turnaround standards.
 
 #### Daily and Weekly Turnaround Rules
+
 Turnaround defines the mandatory rest period between consecutive work shifts:
+
 - **Daily Turnaround:** SAG-AFTRA Codified Basic Agreements mandate a minimum **12-hour continuous rest period** from camera wrap to the call time on the following day for performers at studio zones, expanding to 14 or 36 hours for distant locations requiring travel. IATSE contracts similarly enforce 10- to 12-hour rest windows for technical crew. Encroaching upon these rest windows incurs "forced call" penalties, billed at punitive hourly rates per crew member.
 - **Weekly Rest Periods:** Standard agreements require **54 to 56 consecutive hours of rest** following a five-day work week, or 36 continuous hours following a six-day work week. Infringing upon weekly rest triggers double-time or golden-time penalty rates across the technical crew.
 - **The "Fraturday" Dynamic:** When a production shoots an exterior night scene on Friday evening, filming typically continues until 05:00 or 06:00 Saturday morning. Under a mandatory 54-hour weekend rest rule, the crew cannot legally be called back to set until Monday at 11:00 AM or 12:00 PM. This pushes Monday's shoot into the evening, initiating an unrecoverable shift creep that erodes daylight hours for the entire subsequent week.
 - **FWICE Regulations:** Across Indian production hubs, standard technical shifts are capped at 12 continuous hours, inclusive of designated meal breaks. Shift overruns require formal advance notification, supplementary hourly payments, and mandatory 10- to 12-hour turnaround periods before the subsequent technical call.
 
 #### Meal Intervals and Penalty Escalation
+
 Both union and non-union productions enforce regular nutrition schedules to prevent physical exhaustion on set. A compliant meal break must occur no later than **six hours after the general crew call**, and the subsequent meal must occur within **six hours of the conclusion of the first**. Failing to call a meal within these intervals triggers progressive meal penalties assessed across every eligible technician and performer on set for each 15- or 30-minute fraction until work ceases.
 
 #### Child Labor Regulations
+
 The employment of child actors introduces non-negotiable boundaries on set hours, camera performance time, and compulsory education. Violations carry civil penalties and can result in the immediate revocation of filming permits or union certification.
 
-| Legal Jurisdiction / Union Framework | Performer Age Group | Maximum Set Time | Maximum Camera / Work Time | Mandatory Educational Time | Mandatory Curfew Windows |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| California DLSE / SAG-AFTRA | Infants under 6 months | 2 hours per day | 20 minutes total | None | 9:30 AM to 11:30 AM or 2:30 PM to 4:30 PM |
-| California DLSE / SAG-AFTRA | 2 to 5 years | 3 hours per day | 3 hours total | None | 5:00 AM to 10:00 PM |
-| California DLSE / SAG-AFTRA | 6 to 8 years | 8 hours per day | 4 hours (School day) / 6 hours (Non-school) | 3 hours (School days) | 5:00 AM to 10:00 PM (12:30 AM on non-school nights) |
-| California DLSE / SAG-AFTRA | 9 to 15 years | 9 hours per day | 5 hours (School day) / 7 hours (Non-school) | 3 hours (School days) | 5:00 AM to 10:00 PM (12:30 AM on non-school nights) |
-| California DLSE / SAG-AFTRA | 16 to 17 years | 10 hours per day | 6 hours (School day) / 8 hours (Non-school) | 3 hours (School days) | 5:00 AM to 10:00 PM (12:30 AM on non-school nights) |
-| United Kingdom (The Children Act) | 5 to 8 years | 8 hours per day | 3 hours total | Flexible via licensed tutor log | 7:00 AM to 7:00 PM |
-| United Kingdom (The Children Act) | 9 to 16 years | 9.5 hours per day | 5 hours total | Flexible via licensed tutor log | 7:00 AM to 7:00 PM (Extended to 10:00 PM with notice) |
-| India (NCPCR / Child Labour Act) | Minors under 18 years | 5 hours per day | 3 hours continuous maximum | Formal schooling protected | 7:00 PM to 8:00 AM prohibited; max 27 consecutive days |
+| Legal Jurisdiction / Union Framework | Performer Age Group    | Maximum Set Time  | Maximum Camera / Work Time                  | Mandatory Educational Time      | Mandatory Curfew Windows                               |
+| :----------------------------------- | :--------------------- | :---------------- | :------------------------------------------ | :------------------------------ | :----------------------------------------------------- |
+| California DLSE / SAG-AFTRA          | Infants under 6 months | 2 hours per day   | 20 minutes total                            | None                            | 9:30 AM to 11:30 AM or 2:30 PM to 4:30 PM              |
+| California DLSE / SAG-AFTRA          | 2 to 5 years           | 3 hours per day   | 3 hours total                               | None                            | 5:00 AM to 10:00 PM                                    |
+| California DLSE / SAG-AFTRA          | 6 to 8 years           | 8 hours per day   | 4 hours (School day) / 6 hours (Non-school) | 3 hours (School days)           | 5:00 AM to 10:00 PM (12:30 AM on non-school nights)    |
+| California DLSE / SAG-AFTRA          | 9 to 15 years          | 9 hours per day   | 5 hours (School day) / 7 hours (Non-school) | 3 hours (School days)           | 5:00 AM to 10:00 PM (12:30 AM on non-school nights)    |
+| California DLSE / SAG-AFTRA          | 16 to 17 years         | 10 hours per day  | 6 hours (School day) / 8 hours (Non-school) | 3 hours (School days)           | 5:00 AM to 10:00 PM (12:30 AM on non-school nights)    |
+| United Kingdom (The Children Act)    | 5 to 8 years           | 8 hours per day   | 3 hours total                               | Flexible via licensed tutor log | 7:00 AM to 7:00 PM                                     |
+| United Kingdom (The Children Act)    | 9 to 16 years          | 9.5 hours per day | 5 hours total                               | Flexible via licensed tutor log | 7:00 AM to 7:00 PM (Extended to 10:00 PM with notice)  |
+| India (NCPCR / Child Labour Act)     | Minors under 18 years  | 5 hours per day   | 3 hours continuous maximum                  | Formal schooling protected      | 7:00 PM to 8:00 AM prohibited; max 27 consecutive days |
 
 ---
 
@@ -92,6 +96,7 @@ High-budget productions and franchise tentpoles rarely operate with a single lin
 4. **Visual Effects (VFX) Plate Unit:** Dedicated to shooting environment background plates, LiDAR structural scans, and high-dynamic-range lighting spheres (HDRI).
 
 #### Concurrency and Resource Contention Constraints:
+
 - **Lead Actor Exclusivity:** A performer cannot be actively required on both Main Unit and 2nd Unit on the same shoot day unless explicitly scheduled in non-overlapping shifts with adequate transit buffers.
 - **Stunt Double Coupling:** A stunt sequence on 2nd Unit requiring the lead actor's stunt double cannot run concurrently with Main Unit scenes that require the double for camera blocking or lighting stand-in duties.
 - **High-Value Technical Contention:** Ultra-rare equipment packages (such as 50-foot Technocranes or high-speed Phantom camera rigs) cannot be simultaneously deployed across multiple units unless separate leases are capitalized.
@@ -102,15 +107,17 @@ High-budget productions and franchise tentpoles rarely operate with a single lin
 
 Screenplay scenes are categorized into four visual strip colors representing lighting and environmental risk factors:
 
-| Strip Color Identifier | Setting & Time Designation | Environmental Risk Level | Production Setup Overhead | Operational Considerations |
-| :--- | :--- | :--- | :--- | :--- |
-| **White Strip** | Interior Day (INT. DAY) | Negligible | Baseline stage / practical rigging | Stable lighting conditions; easily scheduled across any shift time. |
-| **Yellow Strip** | Exterior Day (EXT. DAY) | Severe (Rain, cloud, solar shifts) | High (Grip diffusion, negative fill) | Requires mandatory cover sets; highly vulnerable to weather delays. |
-| **Green Strip** | Interior Night (INT. NIGHT) | Low | Moderate (Tent/blackout requirements) | Can be shot during day hours using window blackouts to prevent night calls. |
-| **Blue Strip** | Exterior Night (EXT. NIGHT) | Moderate to Severe | High (Condors, balloon lights, generators) | Strict municipal noise curfews; triggers late-call schedules and turnaround risks. |
+| Strip Color Identifier | Setting & Time Designation  | Environmental Risk Level           | Production Setup Overhead                  | Operational Considerations                                                         |
+| :--------------------- | :-------------------------- | :--------------------------------- | :----------------------------------------- | :--------------------------------------------------------------------------------- |
+| **White Strip**        | Interior Day (INT. DAY)     | Negligible                         | Baseline stage / practical rigging         | Stable lighting conditions; easily scheduled across any shift time.                |
+| **Yellow Strip**       | Exterior Day (EXT. DAY)     | Severe (Rain, cloud, solar shifts) | High (Grip diffusion, negative fill)       | Requires mandatory cover sets; highly vulnerable to weather delays.                |
+| **Green Strip**        | Interior Night (INT. NIGHT) | Low                                | Moderate (Tent/blackout requirements)      | Can be shot during day hours using window blackouts to prevent night calls.        |
+| **Blue Strip**         | Exterior Night (EXT. NIGHT) | Moderate to Severe                 | High (Condors, balloon lights, generators) | Strict municipal noise curfews; triggers late-call schedules and turnaround risks. |
 
 #### Soundstage Leases and Physical Stage Lifecycles
+
 Soundstage rental costs are not incurred solely on active camera days. Sets built on dedicated soundstages adhere to an immutable three-phase physical lifecycle:
+
 1. **Pre-Dressing & Rigging:** Art department construction, scenic painting, structural rigging, and cable distribution.
 2. **Principal Photography:** Active camera rolling.
 3. **Strike & Restoration:** Set demolition, salvage, and soundstage floor restoration.
@@ -136,6 +143,7 @@ Furthermore, **Stage Facility Disjunction** mandates that two distinct set build
 ### 2.4 Camera Setup & Lighting Angle Economics
 
 On a live film set, the primary driver of schedule duration is not the scene count, but the **camera and lighting setups**.
+
 - **180° Axis Turnarounds:** In an interior location, lighting a scene facing Wall A (with large windows and daylight HMI fixtures) takes 1 to 2 hours of pre-rigging. Turning the camera around 180 degrees to shoot reverse coverage facing Wall B requires resetting flags, moving backlights, and repositioning sound booms, consuming 60 to 90 minutes of unproductive setup time.
 - **Angle Clustering:** Professional 1st ADs organize intra-day shooting order by grouping all shots facing a specific axis or lighting key together, regardless of scene ordering in the script.
 - **Golden Hour Alignment:** Scenes tagged as `MAGIC_HOUR` have an execution window of strictly 40 to 60 minutes occurring at solar dawn ($[T_{\text{dawn}}, T_{\text{sunrise}} + 30]$) or solar dusk ($[T_{\text{sunset}} - 45, T_{\text{dusk}}]$). Stacking multiple golden hour scenes on the same day is mathematically infeasible unless split across morning dawn and evening dusk.
@@ -154,6 +162,7 @@ On a live film set, the primary driver of schedule duration is not the scene cou
 ### 2.6 Contractual Frameworks and the Day Out of Days Matrix
 
 The primary analytical document derived from the shooting schedule is the Day Out of Days (DOOD) report. The DOOD tracks the status of every cast member across every calendar day of production using standardized industry shorthand:
+
 - **SW (Start Work):** Performer's initial work day on payroll.
 - **W (Work):** Active shooting day on camera.
 - **H (Hold):** Inactive calendar day where the performer does not roll camera but is compensated at their full contractual daily rate.
@@ -162,21 +171,23 @@ The primary analytical document derived from the shooting schedule is the Day Ou
 - **DROP / PU (Drop and Pick-Up):** Contractually sanctioned unpaid release window.
 
 Under SAG-AFTRA theatrical agreements, performers are engaged on a consecutive employment basis: once a performer starts work ("SW"), every intervening calendar day must be fully compensated as a work or hold day until their final wrap ("WF"). The sole legal exception is the **10-Day Drop-and-Pickup (DPU) Rule**:
+
 1. The hiatus between the drop day and the subsequent pickup day must comprise **at least ten continuous calendar days**.
 2. The production must commit to a firm return date at the moment of release.
 3. This provision may be invoked only once per performer per theatrical project.
-If a production delay compresses this hiatus to nine days or fewer, the drop is invalidated, and the production becomes retroactively liable for all intervening days as paid holds.
+   If a production delay compresses this hiatus to nine days or fewer, the drop is invalidated, and the production becomes retroactively liable for all intervening days as paid holds.
 
 ---
 
 ### 2.7 Calendar, Astronomical, and Astrological Dependencies
 
 Filming plans intersect directly with external calendar, seasonal, and regional dynamics:
+
 - **Seasonal Macro-Windows and Monsoons:** Tropical and sub-tropical filming hubs must work around monsoons. In Mumbai or Southeast Asia, exterior schedules are compressed into dry winter bands (October through March), while the heavy monsoon window (June through September) is restricted strictly to interior soundstages or post-production.
 - **Mandatory Interior Cover Sets:** Completion guarantors will not bond a schedule that lacks validated interior cover sets. If an exterior shoot is hit by unexpected storms, the schedule must pivot to an interior set with minimal notice.
 - **Statutory and Guild Holidays:** Major calendar holidays (e.g., Thanksgiving, Christmas, Diwali, Eid) carry severe financial penalties. Scheduling work on these designated days triggers double-time or triple-time penalty rates across the technical crew.
-- **Shubh Muhurat (Auspicious Starting Moments):** In multiple filmmaking traditions, especially within the Indian film industry (Bollywood, Tollywood, Kollywood), cultural and calendar factors serve as hard scheduling constraints. The initiation of principal photography—the ceremonial *Muhurat shot*—must occur within a precise astrological window calculated via the Vedic Panchang based on planetary alignments, nakshatras, and tithis.
-- **Inauspicious Period Avoidance:** Certain lunar or solar calendar intervals (such as daily *Rahu Kaal* windows, or extended periods like *Pitru Paksha*) are considered unfavorable by traditional producers and investors for launching new ventures or filming major sequences.
+- **Shubh Muhurat (Auspicious Starting Moments):** In multiple filmmaking traditions, especially within the Indian film industry (Bollywood, Tollywood, Kollywood), cultural and calendar factors serve as hard scheduling constraints. The initiation of principal photography—the ceremonial _Muhurat shot_—must occur within a precise astrological window calculated via the Vedic Panchang based on planetary alignments, nakshatras, and tithis.
+- **Inauspicious Period Avoidance:** Certain lunar or solar calendar intervals (such as daily _Rahu Kaal_ windows, or extended periods like _Pitru Paksha_) are considered unfavorable by traditional producers and investors for launching new ventures or filming major sequences.
 
 ---
 
@@ -191,22 +202,25 @@ Filming plans intersect directly with external calendar, seasonal, and regional 
 
 Cross-boarding is the practice of combining the scene requirements of multiple feature scripts (such as Part 1 and Part 2 of a unified film saga) or multiple episodic scripts into a unified production schedule. Rather than shooting Part 1 sequentially and then entering a second pre-production phase for Part 2, cross-boarding arranges scenes based on physical location, set builds, and cast availability across both scripts simultaneously.
 
-| Scheduling Mode | Script / Location Context | Scene Execution Order | Production Lifecycle Action |
-| :--- | :--- | :--- | :--- |
-| **Chronological Continuity** | Part 1 Script | Scn 10 (Palace) -> Scn 45 (Mountain) -> Scn 80 (Dungeon) | Requires storing or striking and rebuilding sets between film installments. |
-| **Chronological Continuity** | Part 2 Script | Scn 12 (Palace) -> Scn 30 (Dungeon) -> Scn 95 (Beach) | Soundstage holding fees accrue across intervening hiatuses. |
-| **Cross-Boarded Board** | Location 1: Palace Hall | Part 1, Scn 10 -> Part 2, Scn 12 | Set permanently wrapped and struck; stage cleared immediately. |
-| **Cross-Boarded Board** | Location 2: Dungeon Set | Part 1, Scn 80 -> Part 2, Scn 30 | Set permanently wrapped and struck; stage cleared immediately. |
-| **Cross-Boarded Board** | Location 3: Mountain Pass | Part 1, Scn 45 | Unit shoots out practical mountain location completely. |
-| **Cross-Boarded Board** | Location 4: Beach Landing | Part 2, Scn 95 | Unit shoots out practical coastal location completely. |
+| Scheduling Mode              | Script / Location Context | Scene Execution Order                                    | Production Lifecycle Action                                                 |
+| :--------------------------- | :------------------------ | :------------------------------------------------------- | :-------------------------------------------------------------------------- |
+| **Chronological Continuity** | Part 1 Script             | Scn 10 (Palace) -> Scn 45 (Mountain) -> Scn 80 (Dungeon) | Requires storing or striking and rebuilding sets between film installments. |
+| **Chronological Continuity** | Part 2 Script             | Scn 12 (Palace) -> Scn 30 (Dungeon) -> Scn 95 (Beach)    | Soundstage holding fees accrue across intervening hiatuses.                 |
+| **Cross-Boarded Board**      | Location 1: Palace Hall   | Part 1, Scn 10 -> Part 2, Scn 12                         | Set permanently wrapped and struck; stage cleared immediately.              |
+| **Cross-Boarded Board**      | Location 2: Dungeon Set   | Part 1, Scn 80 -> Part 2, Scn 30                         | Set permanently wrapped and struck; stage cleared immediately.              |
+| **Cross-Boarded Board**      | Location 3: Mountain Pass | Part 1, Scn 45                                           | Unit shoots out practical mountain location completely.                     |
+| **Cross-Boarded Board**      | Location 4: Beach Landing | Part 2, Scn 95                                           | Unit shoots out practical coastal location completely.                      |
 
 ### Capital Expenditure and Physical Set Amortization
+
 Large-scale set builds on soundstages follow an inflexible, capital-intensive lifecycle. If Part 2 contains a five-minute flashback sequence utilizing an ancestral estate prominently featured throughout Part 1, producing the films sequentially creates an expensive logistical trade-off: either pay soundstage holding costs for months, strike and reconstruct the set later (doubling construction labor), or cross-board the schedule. Cross-boarding allows the set to be permanently struck once all camera coverage across both parts is complete, freeing soundstage space and eliminating duplicate construction expenses.
 
 ### Biological Continuity and the Adolescent Maturation Constraint
-In productions featuring child or adolescent performers across multi-part sagas, physical maturation introduces an irreversible time constraint. During the production of the *Avatar* sequels (*The Way of Water*, *Avatar 3*, and *Avatar 4*), director James Cameron addressed the "Stranger Things effect," wherein young actors physically outgrow their roles during multi-year production cycles. Cast members undergoing rapid adolescent growth were filmed concurrently across an 18-month cross-boarded production block covering *Avatar 2*, *Avatar 3*, and the first act of *Avatar 4*. Production on subsequent acts was intentionally deferred to align real-world maturation with planned narrative time jumps.
+
+In productions featuring child or adolescent performers across multi-part sagas, physical maturation introduces an irreversible time constraint. During the production of the _Avatar_ sequels (_The Way of Water_, _Avatar 3_, and _Avatar 4_), director James Cameron addressed the "Stranger Things effect," wherein young actors physically outgrow their roles during multi-year production cycles. Cast members undergoing rapid adolescent growth were filmed concurrently across an 18-month cross-boarded production block covering _Avatar 2_, _Avatar 3_, and the first act of _Avatar 4_. Production on subsequent acts was intentionally deferred to align real-world maturation with planned narrative time jumps.
 
 ### Transformative, Grooming, and Physical Continuity
+
 - **Facial Hair and Scalp Hair Growth:** If a lead character appears clean-shaven in Part 1 and bearded in Part 2, hair growth acts as a strict unidirectional scheduling barrier. All bearded scenes must be scheduled first, followed by a planned haircut and shave, after which clean-shaven scenes are executed. Reversing this sequence requires realistic facial hair prosthetics, increasing makeup application times from 30 minutes to over 3 hours per day.
 - **Physical Conditioning and Weight Shifts:** Drastic physical transformations (such as rapid muscle gain or weight cuts) impose hard boundaries across the shooting schedule. Scenes depicting an actor in an emaciated state cannot be alternated with peak-physique scenes on a daily basis; they must be clustered into distinct blocks separated by planned production hiatuses.
 - **Distant Geographic Shooting Blocks & International Freight:** Multi-part films shooting across distant international hubs (e.g., London soundstages, Icelandic exterior glaciers, Mumbai streets) are organized into rigid **Shooting Blocks**. Relocating between international blocks incurs mandatory sea freight buffers (4–6 weeks for heavy art department set dressing) and air freight buffers (3–5 days for camera/lens packages), alongside international visa windows and mandatory 24- to 48-hour jet-lag rest periods.
@@ -447,6 +461,7 @@ class ProductionDataset(msgspec.Struct, kw_only=True, gc=False):
 ## 5. Mathematical Formulation of the Extended Film Scheduling Problem
 
 To resolve the discrepancy between day-level cross-boarding and fine-grained call sheet execution, the optimization framework is formulated as a **Two-Level Hierarchical Decomposition**:
+
 - **Level 1 (Macro Master Cross-Boarding):** Assigns scenes to calendar days and production units, optimizing talent holding costs, continuous soundstage leases, multi-unit concurrency, and completion bond safety.
 - **Level 2 (Micro Intra-Day Stripboard Engine):** Solves minute-level interval scheduling per shoot day, optimizing camera angle setups (TSP-SDST), mandatory meal windows, and solar lighting alignments.
 
@@ -461,6 +476,7 @@ graph TD
 ### Level 1: Macro-Level Master Cross-Boarding Formulation
 
 #### Sets and Parameters:
+
 - $s \in S$: Set of all screenplay scenes across all script parts.
 - $d \in D = \{1, \dots, K\}$: Set of available production calendar days.
 - $u \in \mathcal{U} = \{\text{MAIN}, \text{SECOND}, \text{SPLINTER}, \text{VFX}\}$: Set of filming camera units.
@@ -476,6 +492,7 @@ graph TD
 - $\Omega_{sd} \in \{0, 1\}$: Upstream compatibility mask (weather, holiday, permits, noise curfews, VFX deadlines).
 
 #### Decision Variables:
+
 - $x_{sdu} \in \{0, 1\}$: 1 if scene $s$ is scheduled on day $d$ under unit $u$.
 - $w_{ad} \in \{0, 1\}$: 1 if actor $a$ is actively rolling on camera on day $d$.
 - $e_a, l_a \in D$: Earliest day (SW) and latest day (WF) for actor $a$.
@@ -485,6 +502,7 @@ graph TD
 - $v_d^{\text{turnaround}} \in \{0, 1\}$: 1 if a turnaround violation occurs between day $d$ (Night) and $d+1$ (Day).
 
 #### Macro Objective Function:
+
 $$\min Z_{\text{macro}} = \sum_{a \in A} C_a (l_a - e_a + 1) + \sum_{l \in L} R_l \cdot \text{LeaseDays}_l + \sum_{d \in D} \sum_{l \in L} C_{\text{move}} y_{ld} + \sum_{d=1}^{K-1} C_{\text{turnaround}} v_d^{\text{turnaround}} + \sum_{s \in S_{\text{hazard}}} C_{\text{hazard}} z_s^{\text{early\_stunt}}$$
 
 #### Macro Operational Constraints:
@@ -514,6 +532,7 @@ $$\min Z_{\text{macro}} = \sum_{a \in A} C_a (l_a - e_a + 1) + \sum_{l \in L} R_
 For each scheduled production day $d$, the micro solver sequences assigned scenes $S_d = \{s \in S \mid \sum_u x_{sdu} = 1\}$.
 
 #### Micro Decision Variables:
+
 - $s_i, e_i \in [T_{\text{call}}, T_{\text{horizon}}]$: Continuous integer start and end minute of scene $i \in S_d$.
 - $I_i = \text{IntervalVar}(s_i, w_i, e_i)$: CP-SAT discrete interval variable.
 - $s_{\text{meal1}} \in [T_{\text{call}}, T_{\text{horizon}}]$: Start minute of the mandatory first meal break.
@@ -541,6 +560,7 @@ For each scheduled production day $d$, the micro solver sequences assigned scene
 ## 6. Algorithmic and Computational Performance Optimizations
 
 To execute production models with hundreds of scenes in seconds, computational bottlenecks must be systematically eliminated:
+
 - **Upfront Domain Pruning:** Candidate days are filtered before instantiating decision variables. Incompatible days (weather mismatches, holiday curfews, closed location permits, expired VFX deadlines) never instantiate variables, reducing CP-SAT presolve problem size by 40% to 70%.
 - **Inverted Hash Indexing:** Hash lookups (`defaultdict(list)`) replace nested linear scans, assembling relational constraint graphs in $O(N)$ linear time.
 - **Linear Stage-Chaining for Distress Ladders:** Instead of naive $O(N^2)$ all-pairs comparisons, distress stages are chained sequentially using auxiliary boundary integer variables, preserving linear complexity.
@@ -823,12 +843,15 @@ def optimize_intraday_schedule(scenes: list[Scene], cal: CalendarDay, shooting_c
 A mathematically optimal schedule remains theoretical until deployed on a live production set. Real-world filming introduces constant volatility, requiring automated fallback plans built directly into the operational model.
 
 ### Cover Sets and Standby Asset Synchronization
+
 To satisfy completion bond requirements on exterior-heavy productions, schedules must include interior cover sets. A cover set is an interior scene—typically on a permanent soundstage or controlled practical interior—that can be activated when weather disrupts an exterior shoot.
 
 In CP-SAT, cover sets are modeled as optional interval variables sharing cast and crew requirements with scheduled exterior scenes. When a weather alert is logged, the solver deactivates the exterior interval variable and activates the corresponding cover set variable, updating subsequent daily calls while keeping talent hold days within legal limits.
 
 ### Dynamic Rolling-Horizon Rescheduling
+
 Principal photography often faces unexpected disruptions: cast illness, transit delays, damaged equipment, or sudden location permit issues. Rather than manually rebuilding the schedule from scratch, the CP-SAT solver operates in a rolling-horizon warm-restart mode:
+
 1. **State Preservation:** All elapsed production days $1, \dots, d - 1$ are marked immutable, fixing their historical scene assignments and incurred payroll.
 2. **Dynamic Unassignment:** Uncompleted scenes from day $d$ are returned to the unassigned candidate pool.
 3. **Constraint Injection:** New operational restrictions—such as a performer being unavailable for 48 hours or a soundstage flood—are added as temporary hard bounds.

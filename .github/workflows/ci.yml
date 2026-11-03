@@ -1,0 +1,71 @@
+name: Ojas Ops CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-format:
+    name: Lint & Code Style Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Run Ruff Lint Check
+        run: uv run ruff check packages/ apps/
+
+      - name: Run Ruff Formatting Check
+        run: uv run ruff format --check packages/ apps/
+
+  test-matrix:
+    name: Test Suite (Python ${{ matrix.python-version }} on ${{ matrix.os }})
+    needs: lint-and-format
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.12", "3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install workspace dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Django System Check in Sandbox
+        run: uv run python apps/sandbox/manage.py check
+
+      - name: Run Package Test Suite
+        run: uv run pytest -v packages/ojas-ops/tests/
+
+      - name: Run Sandbox Django-Bolt Test Suite
+        run: uv run pytest -v apps/sandbox/tests/
+
+      - name: Run Scenario Benchmarks Smoke Test
+        run: uv run python apps/sandbox/manage.py run_scenario_benchmarks --scale small --time-limit 5
+

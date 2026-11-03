@@ -72,7 +72,7 @@ The CP-SAT discrete solver enforces:
   - **Yellow:** Exterior Day (`EXT. DAY`)
   - **Green:** Interior Night (`INT. NIGHT`)
   - **Blue:** Exterior Night (`EXT. NIGHT`)
-  Tracks scene numbers, page eighths, cast IDs, hero props, and sound regimes.
+    Tracks scene numbers, page eighths, cast IDs, hero props, and sound regimes.
 - **`DayOutOfDaysReport` (DOOD):** Full talent matrix using standardized industry codes:
   - `SW`: Start Work (first shoot day)
   - `W`: Work (active filming day)
@@ -81,7 +81,7 @@ The CP-SAT discrete solver enforces:
   - `SWF`: Start Work Finish (single-day booking)
   - `DROP`: Dropped talent during valid $\ge 10$-day hiatus (unpaid)
   - `.`: Off contract
-  Calculates `total_work_days`, `total_hold_days`, `total_paid_days`, and financial liability.
+    Calculates `total_work_days`, `total_hold_days`, `total_paid_days`, and financial liability.
 - **`DailyCallSheet`:** Backward-calculated operational call sheet:
   $$\text{Performer Set Call} = \text{Scene Start Time} - \text{Blocking Buffer}$$
   $$\text{Performer HMU Call} = \text{Performer Set Call} - \text{HMU Duration} - \text{Wardrobe Duration}$$
