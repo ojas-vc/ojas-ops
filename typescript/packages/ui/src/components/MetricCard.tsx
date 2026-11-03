@@ -1,9 +1,9 @@
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 
 export interface MetricCardProps {
   label: string;
-  value: string | number;
-  subValue?: string;
+  value: ReactNode;
+  subValue?: ReactNode;
   trend?: "up" | "down" | "neutral";
   variant?: "default" | "success" | "warning" | "error";
 }
@@ -25,17 +25,9 @@ export const MetricCard: FC<MetricCardProps> = ({
     <div
       className={`rounded-xl border p-4 backdrop-blur transition-all duration-200 shadow-sm ${variantStyles[variant]}`}
     >
-      <div className="text-xs font-medium uppercase tracking-wider text-slate-400">
-        {label}
-      </div>
-      <div className="mt-1.5 text-2xl font-semibold tracking-tight">
-        {value}
-      </div>
-      {subValue && (
-        <div className="mt-1 text-xs text-slate-400">
-          {subValue}
-        </div>
-      )}
+      <div className="text-xs font-medium uppercase tracking-wider text-slate-400">{label}</div>
+      <div className="mt-1.5 text-2xl font-semibold tracking-tight">{value}</div>
+      {subValue && <div className="mt-1 text-xs text-slate-400">{subValue}</div>}
     </div>
   );
 };
