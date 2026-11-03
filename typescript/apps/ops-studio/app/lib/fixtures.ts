@@ -391,9 +391,27 @@ export const SAMPLE_WORKFORCE_PAYLOAD: WorkforceOptimizeRequest = {
     { id: "tech_1", name: "Radiology Tech Rahul", skills: ["imaging"] },
   ],
   shifts: [
-    { id: "shift_er_am", name: "Emergency AM", start_minute: 420, duration_minutes: 480, required_skill: "emergency" },
-    { id: "shift_er_pm", name: "Emergency PM", start_minute: 900, duration_minutes: 480, required_skill: "emergency" },
-    { id: "shift_icu_night", name: "ICU Night Watch", start_minute: 1380, duration_minutes: 480, required_skill: "icu" },
+    {
+      id: "shift_er_am",
+      name: "Emergency AM",
+      start_minute: 420,
+      duration_minutes: 480,
+      required_skill: "emergency",
+    },
+    {
+      id: "shift_er_pm",
+      name: "Emergency PM",
+      start_minute: 900,
+      duration_minutes: 480,
+      required_skill: "emergency",
+    },
+    {
+      id: "shift_icu_night",
+      name: "ICU Night Watch",
+      start_minute: 1380,
+      duration_minutes: 480,
+      required_skill: "icu",
+    },
   ],
   max_time_seconds: 5.0,
 };
