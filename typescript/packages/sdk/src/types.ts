@@ -478,37 +478,323 @@ export interface Scene {
 }
 
 export interface CastMember {
-  id: string;
+  id: string | number;
   name: string;
+  character_name?: string;
+  daily_rate?: number;
+  daily_rate_cents?: number;
   day_rate_cents?: number;
   is_minor?: boolean;
+  max_daily_hours?: number;
+  hmu_duration_minutes?: number;
+  wardrobe_duration_minutes?: number;
+  travel_duration_minutes?: number;
+  blackout_days?: number[];
+  stunt_double_id?: string | number | null;
 }
 
+export type Talent = CastMember;
+
 export interface ProductionLocation {
-  id: string;
+  id: string | number;
   name: string;
+  location_type?: "SOUNDSTAGE" | "PRACTICAL_INT" | "PRACTICAL_EXT" | string;
+  permitted_days?: number[];
+  noise_curfew_hour?: number | null;
+  allows_sync_sound?: boolean;
+  daily_rental_cost?: number;
+  daily_rental_cost_cents?: number;
+  prep_days_required?: number;
+  strike_days_required?: number;
+  turnaround_minutes?: number;
+  soundstage_facility_id?: string | number | null;
   is_soundstage?: boolean;
 }
 
+export type FilmLocation = ProductionLocation;
+
+export interface PropItem {
+  id: string | number;
+  name: string;
+  category?: "HERO" | "SET_DRESSING" | "BREAKAWAY" | "WEAPON" | "VEHICLE" | string;
+  total_quantity?: number;
+  is_destructible?: boolean;
+  requires_armorer?: boolean;
+  reset_duration_minutes?: number;
+}
+
+export interface CostumeItem {
+  id: string | number;
+  character_id: string | number;
+  costume_code: string;
+  distress_stage?: number;
+  available_duplicates?: number;
+  requires_specialist_dresser?: boolean;
+}
+
+export interface SpecialtyEquipmentItem {
+  id: string | number;
+  name: string;
+  equipment_type?:
+    | "TECHNOCRANE"
+    | "PHANTOM_HIGH_SPEED"
+    | "MOTION_CONTROL"
+    | "UNDERWATER_HOUSING"
+    | "RUSSIAN_ARM"
+    | "DRONE"
+    | string;
+  daily_rental_cost?: number;
+  daily_rental_cost_cents?: number;
+  rental_start_day?: number;
+  rental_end_day?: number;
+  requires_certified_technician?: boolean;
+}
+
+export interface StuntSFXItem {
+  id: string | number;
+  has_wirework?: boolean;
+  has_pyrotechnics?: boolean;
+  has_squibs?: boolean;
+  pre_rigging_hours_required?: number;
+  pre_rigging_minutes_required?: number;
+  mandatory_medic_count?: number;
+  stunt_hazard_level?: number;
+}
+
+export interface CalendarDayItem {
+  day_number: number;
+  calendar_date: string;
+  is_statutory_holiday?: boolean;
+  is_inauspicious?: boolean;
+  expected_weather?: "CLEAR" | "OVERCAST" | "RAIN" | "MONSOON" | string;
+  sunrise_time?: string;
+  sunset_time?: string;
+  dawn_minute?: number;
+  sunrise_minute?: number;
+  sunset_minute?: number;
+  dusk_minute?: number;
+  is_weekend?: boolean;
+}
+
+export interface FilmProductionUnit {
+  id: string | number;
+  name: string;
+  unit_type?: "MAIN" | "SECOND" | "SPLINTER" | "VFX" | string;
+  daily_operating_cost_cents?: number;
+}
+
+export interface FilmCameraSetup {
+  id: string | number;
+  name: string;
+  axis_angle?: string;
+  lighting_setup_id?: string;
+}
+
+export interface FilmScene {
+  id: string | number;
+  scene_number?: string;
+  name?: string;
+  part?: number;
+  location_id?: string | number;
+  setting?: "INT" | "EXT" | string;
+  time_of_day?: "DAY" | "NIGHT" | "MAGIC_HOUR" | string;
+  page_eighths?: number;
+  duration_minutes?: number;
+  duration_hours?: number;
+  required_cast?: Array<string | number>;
+  cast_ids?: string[];
+  required_prop_ids?: Array<string | number>;
+  required_costume_ids?: Array<string | number>;
+  required_equipment_ids?: Array<string | number>;
+  stunt_sfx_package_id?: string | number | null;
+  weather_requirement?:
+    | "ANY"
+    | "CLEAR_ONLY"
+    | "OVERCAST_ONLY"
+    | "RAIN_MANDATORY"
+    | "NO_RAIN"
+    | string;
+  sound_recording?: "SYNC_SOUND" | "MOS" | "WILD_TRACK" | string;
+  holiday_compatibility?: "NORMAL" | "HOLIDAY_ONLY" | "FORBID_HOLIDAY" | string;
+  earliest_allowed_day?: number | null;
+  latest_allowed_day?: number | null;
+  is_cover_set?: boolean;
+  cover_for_scene_id?: string | number | null;
+  requires_precedence_over?: string | number | null;
+  min_lag_days?: number;
+  is_second_unit?: boolean;
+  is_vfx_heavy?: boolean;
+  unit_type?: "MAIN" | "SECOND" | "SPLINTER" | "VFX" | string;
+  setup_id?: string | number | null;
+  background_count?: number;
+  vfx_turnover_deadline_day?: number | null;
+  stunt_hazard_level?: number;
+  dependencies?: string[];
+  is_night?: boolean;
+  is_exterior?: boolean;
+}
+
 export interface ProductionDataset {
-  production_title: string;
-  scenes: Scene[];
-  cast: CastMember[];
+  project_title?: string;
+  production_title?: string;
+  talents?: CastMember[];
+  cast?: CastMember[];
   locations: ProductionLocation[];
+  props?: PropItem[];
+  costumes?: CostumeItem[];
+  equipment?: SpecialtyEquipmentItem[];
+  stunts?: StuntSFXItem[];
+  calendar?: CalendarDayItem[];
+  scenes: FilmScene[];
+  units?: FilmProductionUnit[];
+  setups?: FilmCameraSetup[];
+  max_shooting_days?: number;
   max_days?: number;
+  max_hours_per_day?: number;
+  hmu_stations_capacity?: number;
+  medic_capacity?: number;
+}
+
+export interface StripboardStrip {
+  scene_id: string | number;
+  scene_number: string;
+  part: number;
+  strip_color: "WHITE" | "YELLOW" | "GREEN" | "BLUE" | string;
+  setting: string;
+  time_of_day: string;
+  location_id: string | number;
+  location_name: string;
+  duration_minutes: number;
+  page_eighths: number;
+  cast_ids: string[];
+  is_second_unit: boolean;
+}
+
+export interface StripboardDay {
+  day_number: number;
+  calendar_date: string;
+  is_rest_day: boolean;
+  rest_reason?: string | null;
+  expected_weather?: string;
+  total_duration_minutes: number;
+  total_page_eighths: number;
+  strips: StripboardStrip[];
+}
+
+export interface MasterStripboard {
+  project_title: string;
+  total_shoot_days: number;
+  total_calendar_days: number;
+  days: StripboardDay[];
+}
+
+export interface DayOutOfDaysReport {
+  talent_id: string | number;
+  talent_name: string;
+  character_name: string;
+  daily_codes: Record<string | number, "SW" | "W" | "H" | "WF" | "SWF" | "DROP" | "." | string>;
+  total_work_days: number;
+  total_hold_days: number;
+  total_paid_days: number;
+  estimated_cost: number;
+}
+
+export interface CallSheetSceneEntry {
+  scene_number: string;
+  start_time: string;
+  end_time: string;
+  setting: string;
+  time_of_day: string;
+  location_name: string;
+  cast_ids: string[];
+  page_eighths: number;
+}
+
+export interface CallSheetCharacterEntry {
+  talent_id: string | number;
+  character_name: string;
+  actor_name: string;
+  pickup_call: string;
+  hmu_call: string;
+  wardrobe_call: string;
+  set_call: string;
+}
+
+export interface DailyCallSheet {
+  day_number: number;
+  calendar_date: string;
+  project_title: string;
+  sunrise_time: string;
+  sunset_time: string;
+  expected_weather: string;
+  general_crew_call: string;
+  shooting_call: string;
+  first_meal_due: string;
+  second_meal_due?: string | null;
+  hospital_info: string;
+  scene_entries: CallSheetSceneEntry[];
+  character_calls: CallSheetCharacterEntry[];
 }
 
 export interface FilmScheduleResult {
-  production_title: string;
-  total_shooting_days: number;
   status: string;
-  shooting_days: Array<{
+  is_feasible?: boolean;
+  solve_time_seconds?: number;
+  objective_cost?: number;
+  project_title?: string;
+  production_title?: string;
+  total_shooting_days?: number;
+  stripboard?: MasterStripboard;
+  dood_reports?: DayOutOfDaysReport[];
+  call_sheets?: Record<string | number, DailyCallSheet>;
+  scene_day_assignments?: Record<string, number>;
+  talent_daily_status?: Record<string, Record<string | number, string>>;
+  shooting_days?: Array<{
     day_number: number;
     scenes: string[];
     cast_working: string[];
     location_id: string;
   }>;
-  dood_matrix: Record<string, string[]>;
+  dood_matrix?: Record<string, string[]>;
+}
+
+export interface FilmOptimizeRequest {
+  dataset: ProductionDataset;
+  max_time_in_seconds?: number;
+  move_penalty?: number;
+  enable_drop_pickup?: boolean;
+  enable_soundstage_lease_tracking?: boolean;
+  enable_hazard_deferral?: boolean;
+  enable_intraday_micro_optimization?: boolean;
+  fixed_assignments?: Record<string, number>;
+}
+
+export interface FilmRescheduleRequest {
+  dataset: ProductionDataset;
+  completed_days?: number[];
+  weather_disruptions?: Record<string | number, string>;
+  talent_blackouts?: Record<string, number[]>;
+  activate_cover_sets?: boolean;
+  max_time_in_seconds?: number;
+  fixed_assignments?: Record<string, number>;
+}
+
+export interface FilmIntradayRequest {
+  scenes: FilmScene[];
+  calendar_day: CalendarDayItem;
+  locations?: ProductionLocation[];
+  talents?: CastMember[];
+  shooting_call_minute?: number;
+  max_day_minutes?: number;
+}
+
+export interface FilmCallSheetRequest {
+  dataset: ProductionDataset;
+  day_number: number;
+  general_crew_call_time?: string;
+  shooting_call_time?: string;
+  hospital_info?: string;
+  optimize_intraday?: boolean;
 }
 
 // 2. Manufacturing Job-Shop

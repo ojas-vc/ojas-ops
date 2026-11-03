@@ -5,10 +5,15 @@ import type {
   CulturalIntervalsRequest,
   CulturalIntervalsResponse,
   DOODRenderRequest,
+  DailyCallSheet,
   DispatchResponse,
   DisruptionLogRecord,
   EventsOptimizeRequest,
   EventsOptimizeResponse,
+  FilmCallSheetRequest,
+  FilmIntradayRequest,
+  FilmOptimizeRequest,
+  FilmRescheduleRequest,
   FilmScheduleResult,
   GanttRenderRequest,
   GenerateScenarioRequest,
@@ -416,12 +421,45 @@ export class OjasOpsClient {
   // ==========================================================================
 
   adapters = {
-    filmProduction: async (payload: ProductionDataset): Promise<FilmScheduleResult> => {
-      return this.request<FilmScheduleResult>("/adapters/film-production/optimize", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-    },
+    filmProduction: Object.assign(
+      async (payload: FilmOptimizeRequest | ProductionDataset): Promise<FilmScheduleResult> => {
+        return this.request<FilmScheduleResult>("/adapters/film-production/optimize", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+      },
+      {
+        optimize: async (
+          payload: FilmOptimizeRequest | ProductionDataset,
+        ): Promise<FilmScheduleResult> => {
+          return this.request<FilmScheduleResult>("/adapters/film-production/optimize", {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+        },
+        reschedule: async (payload: FilmRescheduleRequest): Promise<FilmScheduleResult> => {
+          return this.request<FilmScheduleResult>("/adapters/film-production/reschedule", {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+        },
+        intraday: async (payload: FilmIntradayRequest): Promise<Array<Record<string, unknown>>> => {
+          return this.request<Array<Record<string, unknown>>>(
+            "/adapters/film-production/intraday",
+            {
+              method: "POST",
+              body: JSON.stringify(payload),
+            },
+          );
+        },
+        callSheet: async (payload: FilmCallSheetRequest): Promise<DailyCallSheet> => {
+          return this.request<DailyCallSheet>("/adapters/film-production/call-sheet", {
+            method: "POST",
+            body: JSON.stringify(payload),
+          });
+        },
+      },
+    ),
 
     manufacturing: async (
       payload: ManufacturingOptimizeRequest,

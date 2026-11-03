@@ -80,9 +80,14 @@ console.log("Makespan:", solution.makespan);
 - `client.calendars.getShiftOperationalHours(payload)`
 
 ### Domain Adapters
-- `client.adapters.filmProduction(payload)`
+- `client.adapters.filmProduction(payload)`: Shorthand alias for `client.adapters.filmProduction.optimize(payload)`
+  - `client.adapters.filmProduction.optimize(payload)`: Level 1 macro cross-boarding with DOOD & SAG-AFTRA drop-and-pickup.
+  - `client.adapters.filmProduction.reschedule(payload)`: Rolling-horizon disruption re-optimization with cover set substitution.
+  - `client.adapters.filmProduction.intraday(payload)`: Level 2 micro intra-day stripboard sequencing with setup turnaround & meal breaks.
+  - `client.adapters.filmProduction.callSheet(payload)`: Official daily call sheet with staggered HMU wave calls.
 - `client.adapters.manufacturing(payload)`
 - `client.adapters.workforce(payload)`
 - `client.adapters.marketingFlighting(payload)`
 - `client.adapters.academicTimetables(payload)`
 - `client.adapters.eventRunSheets(payload)`
+
