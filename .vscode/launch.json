@@ -13,14 +13,14 @@
       "type": "debugpy",
       "request": "launch",
       "module": "pytest",
-      "args": ["packages/ojas-ops/tests"],
+      "args": ["python/packages/ojas-ops/tests"],
       "console": "integratedTerminal"
     },
     {
       "name": "Python: Run Basic Scheduling Example",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/examples/basic_scheduling/main.py",
+      "program": "${workspaceFolder}/python/examples/basic_scheduling/main.py",
       "console": "integratedTerminal"
     }
   ]

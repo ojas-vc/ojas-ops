@@ -528,56 +528,50 @@ The API should expose enough of the underlying optimization model to support adv
 
 ## 9. Project Structure
 
-The initial implementation will use a uv workspace.
+Ojas Ops is organized as a unified polyglot monorepo matching the `/opt/applications/ojas-vc/ojas` architectural standard:
+- **`python/`**: Dedicated `uv` workspace containing the core Python packages, domain adapters, Django-Bolt API sandbox, runnable examples, and testing pipeline.
+- **`typescript/`**: Dedicated `pnpm` + Turborepo workspace containing the typed SDK client (`@ojas-ops/sdk`), UI component primitives (`@ojas-ops/ui`), and Next.js 16 interactive applications (`@ojas-ops/studio`).
+- **Root**: Top-level delegator `Makefile`, documentation, PM2 orchestration (`ecosystem.config.cjs`), and multi-job CI pipeline.
 
 ```text
 ojas-ops/
 │
-├── pyproject.toml
-├── uv.lock
+├── Makefile                  # Root orchestrator delegating to python/ and typescript/
+├── ecosystem.config.cjs      # PM2 supervisor for backend engine & Next.js apps
+├── Dockerfile                # Multi-stage production container
 ├── README.md
 ├── LICENSE
 ├── LICENCE.md
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── SECURITY.md
-├── NOTICE
+├── mkdocs.yml
+├── docs/                     # Architectural documentation
+├── research/                 # Optimization research papers
 │
-├── packages/
-│   └── ojas-ops/
-│       ├── pyproject.toml
-│       ├── src/
-│       │   └── ojas_ops/
-│       │       ├── __init__.py
-│       │       ├── models/
-│       │       ├── scheduling/
-│       │       ├── calendars/
-│       │       ├── constraints/
-│       │       ├── objectives/
-│       │       ├── solvers/
-│       │       ├── validation/
-│       │       ├── simulation/
-│       │       ├── adapters/
-│       │       └── scenarios/
-│       │
-│       └── tests/
+├── python/                   # Python Workspace (uv managed)
+│   ├── pyproject.toml        # Workspace root definition
+│   ├── uv.lock
+│   ├── Makefile              # Backend development and testing targets
+│   ├── packages/
+│   │   └── ojas-ops/         # Core Operations Research & Bolt framework
+│   │       ├── pyproject.toml
+│   │       ├── src/ojas_ops/
+│   │       └── tests/
+│   ├── apps/
+│   │   └── sandbox/          # Django + Django-Bolt API host
+│   ├── examples/             # 8 Domain runnable scenarios
+│   └── scripts/              # Example verification runners
 │
-├── examples/
-│   ├── basic_scheduling/
-│   ├── film_production/
-│   ├── manufacturing/
-│   ├── nurse_rostering/
-│   ├── academic_timetabling/
-│   ├── event_run_sheets/
-│   ├── marketing_flighting/
-│   └── festival_calendar/
-│
-├── benchmarks/
-│
-├── docs/
-│
-├── research/
-│   └── film-shooting-schedule-optimization-framework.md
+└── typescript/               # TypeScript Workspace (pnpm + Turborepo + Biome)
+    ├── pnpm-workspace.yaml
+    ├── package.json
+    ├── turbo.json
+    ├── biome.json
+    ├── tsconfig.base.json
+    ├── packages/
+    │   ├── sdk/              # @ojas-ops/sdk: Strongly-typed client for Bolt API
+    │   └── ui/               # @ojas-ops/ui: Gantt, timeline, and metric primitives
+    └── apps/
+        └── ops-studio/       # Next.js 16 + React 19 interactive studio app
+```
 │
 └── scripts/
 ```

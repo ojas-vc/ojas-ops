@@ -3,9 +3,13 @@
     "ms-python.python",
     "ms-python.vscode-pylance",
     "meta.pyrefly",
-    "charliermarsh.ruff"
+    "charliermarsh.ruff",
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next"
   ],
   "unwantedRecommendations": [
+    "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "ms-python.autopep8",
     "ms-python.black-formatter",

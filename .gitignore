@@ -220,3 +220,33 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ==========================================
+# Ojas Polyglot Monorepo Ignores
+# ==========================================
+
+# Python in subdirectories
+python/.venv/
+python/**/__pycache__/
+python/.ruff_cache/
+python/.mypy_cache/
+python/.pytest_cache/
+python/dist/
+
+# TypeScript / Node / Next.js
+node_modules/
+typescript/node_modules/
+typescript/**/node_modules/
+.next/
+typescript/**/.next/
+.turbo/
+typescript/.turbo/
+typescript/**/.turbo/
+typescript/**/*.tsbuildinfo
+typescript/**/dist/
+typescript/**/out/
+
+# PM2 / Runtime
+.pm2/
+dump.rdb
+.pnpm-store/

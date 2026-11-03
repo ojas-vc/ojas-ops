@@ -7,9 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  lint-and-format:
-    name: Lint & Code Style Gate
+  python-lint-and-format:
+    name: Python Lint & Code Style Gate
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
     steps:
       - uses: actions/checkout@v4
 
@@ -32,9 +35,12 @@ jobs:
       - name: Run Ruff Formatting Check
         run: uv run ruff format --check packages/ apps/
 
-  test-matrix:
-    name: Test Suite (Python ${{ matrix.python-version }} on ${{ matrix.os }})
-    needs: lint-and-format
+  python-test-matrix:
+    name: Python Tests (${{ matrix.python-version }} on ${{ matrix.os }})
+    needs: python-lint-and-format
+    defaults:
+      run:
+        working-directory: python
     strategy:
       fail-fast: false
       matrix:
@@ -69,3 +75,35 @@ jobs:
       - name: Run Scenario Benchmarks Smoke Test
         run: uv run python apps/sandbox/manage.py run_scenario_benchmarks --scale small --time-limit 5
 
+      - name: Verify Domain Examples
+        run: uv run python scripts/verify_examples.py
+
+  typescript-gates:
+    name: TypeScript Lint & Typecheck Gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+          cache-dependency-path: "typescript/pnpm-lock.yaml"
+
+      - name: Install TypeScript dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck Workspace
+        run: pnpm check-types
+
+      - name: Lint Workspace (Biome)
+        run: pnpm lint
