@@ -6,6 +6,8 @@ import inspect
 from collections.abc import Callable
 from typing import Any
 
+from ojas_ops.agents.security import MissingAPIKeyError, require_api_key
+
 
 class _FallbackActivityError(Exception):
     pass
@@ -53,3 +55,11 @@ def ojas_adk_activity_tool(activity_def: Callable[..., Any], **kwargs: Any) -> C
     fallback_wrapper.__annotations__ = dict(getattr(activity_def, "__annotations__", {}))
     fallback_wrapper.__signature__ = inspect.signature(activity_def)  # type: ignore[attr-defined]
     return fallback_wrapper
+
+
+def require_google_adk_api_key() -> str:
+    """Verifies that GEMINI_API_KEY or GOOGLE_API_KEY is configured for Google ADK."""
+    try:
+        return require_api_key("GEMINI_API_KEY", "Google ADK")
+    except MissingAPIKeyError:
+        return require_api_key("GOOGLE_API_KEY", "Google ADK")

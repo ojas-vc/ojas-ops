@@ -4,79 +4,41 @@ from __future__ import annotations
 
 from typing import Any
 
-import msgspec
-
-from ojas_ops.agents.tools.film import optimize_film_shoot
-from ojas_ops.agents.tools.manufacturing import optimize_job_shop
+from ojas_ops.agents.security import require_api_key
+from ojas_ops.agents.tools.registry import default_tool_registry
 
 
-class FilmScheduleInput(msgspec.Struct, kw_only=True):
-    """Input parameters for film shooting schedule optimization."""
+class BaseTool:
+    """Canonical base class for CrewAI operational tools."""
 
-    dataset_json: str
-    max_time_seconds: float = 30.0
+    name: str = ""
+    description: str = ""
+    args_schema: Any = None
 
+    def _run(self, *args: Any, **kwargs: Any) -> Any:
+        raise NotImplementedError
 
-class ManufacturingScheduleInput(msgspec.Struct, kw_only=True):
-    """Input parameters for manufacturing job shop optimization."""
+    def run(self, *args: Any, **kwargs: Any) -> Any:
+        return self._run(*args, **kwargs)
 
-    operations_json: str
-    machines_json: str
-    time_limit_seconds: float = 30.0
+    def to_langchain(self) -> Any:
+        """Allows seamless consumption by CrewAI's internal LangChain tool parser."""
+        from langchain_core.tools import StructuredTool
 
-
-try:
-    from crewai.tools import BaseTool
-
-    class CrewAIFilmOptimizerTool(BaseTool):
-        name: str = "Film Shooting Schedule Optimizer"
-        description: str = "Optimizes film cross-boarding using pure-integer CP-SAT."
-        args_schema: type[Any] = FilmScheduleInput
-
-        def _run(self, dataset_json: str, max_time_seconds: float = 30.0) -> str:
-            data = (
-                msgspec.json.decode(dataset_json.encode("utf-8"))
-                if isinstance(dataset_json, str)
-                else dataset_json
-            )
-            result = optimize_film_shoot(data, max_time_seconds=max_time_seconds)
-            return msgspec.json.encode(result).decode("utf-8")
-
-    class CrewAIManufacturingOptimizerTool(BaseTool):
-        name: str = "Manufacturing Job Shop Scheduler"
-        description: str = (
-            "Sequences operations on machines to minimize makespan and setup changeovers."
+        return StructuredTool.from_function(
+            func=self.run,
+            name=self.name,
+            description=self.description,
         )
-        args_schema: type[Any] = ManufacturingScheduleInput
-
-        def _run(
-            self, operations_json: str, machines_json: str, time_limit_seconds: float = 30.0
-        ) -> str:
-            ops = (
-                msgspec.json.decode(operations_json.encode("utf-8"))
-                if isinstance(operations_json, str)
-                else operations_json
-            )
-            macs = (
-                msgspec.json.decode(machines_json.encode("utf-8"))
-                if isinstance(machines_json, str)
-                else machines_json
-            )
-            result = optimize_job_shop(ops, macs, time_limit_seconds=time_limit_seconds)
-            return msgspec.json.encode(result).decode("utf-8")
-
-    _CREWAI_AVAILABLE = True
-except ImportError:
-    _CREWAI_AVAILABLE = False
-    CrewAIFilmOptimizerTool = None  # type: ignore[assignment,misc]
-    CrewAIManufacturingOptimizerTool = None  # type: ignore[assignment,misc]
 
 
 def get_crewai_tools() -> list[Any]:
-    """Returns initialized CrewAI tools if crewai is installed."""
-    if not _CREWAI_AVAILABLE:
-        raise ImportError(
-            "crewai is not installed in the current environment. "
-            "Install it with `pip install crewai` to use CrewAI tools."
-        )
-    return [CrewAIFilmOptimizerTool(), CrewAIManufacturingOptimizerTool()]
+    """Returns canonical tools formatted for CrewAI from default registry."""
+    return default_tool_registry.get_crewai_tools()
+
+
+def require_crewai_api_key(provider: str = "openai") -> str:
+    """Verifies that the appropriate LLM API key for CrewAI is set in environment or .env."""
+    if provider.lower() in ("anthropic", "claude"):
+        return require_api_key("ANTHROPIC_API_KEY", "CrewAI (Anthropic)")
+    return require_api_key("OPENAI_API_KEY", "CrewAI (OpenAI)")
