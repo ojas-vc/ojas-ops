@@ -3,6 +3,32 @@
 from ojas_ops.models.optimization_job import OptimizationJob
 
 
+def get_job_by_id(job_id: int) -> OptimizationJob | None:
+    """Fetch an OptimizationJob by primary key."""
+    return OptimizationJob.objects.filter(id=job_id).first()
+
+
+async def aget_job_by_id(job_id: int) -> OptimizationJob | None:
+    """Fetch an OptimizationJob by primary key asynchronously."""
+    return await OptimizationJob.objects.filter(id=job_id).afirst()
+
+
+def list_jobs_for_tenant(
+    tenant_id: str = "default",
+    limit: int = 50,
+) -> list[OptimizationJob]:
+    """List recent optimization jobs for tenant."""
+    return list(OptimizationJob.objects.filter(tenant_id=tenant_id).order_by("-created_at")[:limit])
+
+
+def alist_jobs_for_tenant(
+    tenant_id: str = "default",
+    limit: int = 50,
+):
+    """Alias for alist_recent_jobs."""
+    return alist_recent_jobs(tenant_id=tenant_id, limit=limit)
+
+
 def get_job_by_workflow_id(workflow_id: str) -> OptimizationJob | None:
     """Fetch an OptimizationJob by Temporal workflow id."""
     return OptimizationJob.objects.filter(temporal_workflow_id=workflow_id).first()
