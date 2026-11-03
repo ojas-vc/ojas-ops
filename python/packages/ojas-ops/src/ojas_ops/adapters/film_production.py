@@ -405,7 +405,7 @@ class Scene(msgspec.Struct, kw_only=True, gc=False):
 class ProductionDataset(msgspec.Struct, kw_only=True, gc=False):
     """Complete multi-part film production scheduling dataset."""
 
-    project_title: str
+    project_title: str = ""
     talents: list[Talent] = msgspec.field(default_factory=list)
     locations: list[Location] = msgspec.field(default_factory=list)
     props: list[Prop] = msgspec.field(default_factory=list)
@@ -420,6 +420,48 @@ class ProductionDataset(msgspec.Struct, kw_only=True, gc=False):
     max_hours_per_day: float = 12.0
     hmu_stations_capacity: int = 4
     medic_capacity: int = 2
+    max_time_in_seconds: float = 30.0
+    move_penalty: int = 500
+    enable_drop_pickup: bool = False
+    enable_soundstage_lease_tracking: bool = False
+    enable_hazard_deferral: bool = False
+    enable_intraday_micro_optimization: bool = True
+    fixed_assignments: dict[str, int] | None = None
+    dataset: ProductionDataset | None = None
+
+    def __post_init__(self) -> None:
+        if self.dataset is not None:
+            sub = self.dataset
+            if not self.project_title:
+                self.project_title = sub.project_title
+            if not self.talents:
+                self.talents = sub.talents
+            if not self.locations:
+                self.locations = sub.locations
+            if not self.props:
+                self.props = sub.props
+            if not self.costumes:
+                self.costumes = sub.costumes
+            if not self.equipment:
+                self.equipment = sub.equipment
+            if not self.stunts:
+                self.stunts = sub.stunts
+            if not self.calendar:
+                self.calendar = sub.calendar
+            if not self.scenes:
+                self.scenes = sub.scenes
+            if not self.units:
+                self.units = sub.units
+            if not self.setups:
+                self.setups = sub.setups
+            if self.max_shooting_days == 30 and sub.max_shooting_days != 30:
+                self.max_shooting_days = sub.max_shooting_days
+            if self.max_hours_per_day == 12.0 and sub.max_hours_per_day != 12.0:
+                self.max_hours_per_day = sub.max_hours_per_day
+            if self.hmu_stations_capacity == 4 and sub.hmu_stations_capacity != 4:
+                self.hmu_stations_capacity = sub.hmu_stations_capacity
+            if self.medic_capacity == 2 and sub.medic_capacity != 2:
+                self.medic_capacity = sub.medic_capacity
 
 
 # ==============================================================================
@@ -535,6 +577,53 @@ class FilmScheduleResult(msgspec.Struct, kw_only=True, gc=False):
     call_sheets: dict[int, DailyCallSheet] = msgspec.field(default_factory=dict)
     scene_day_assignments: dict[str, int] = msgspec.field(default_factory=dict)
     talent_daily_status: dict[str, dict[int, str]] = msgspec.field(default_factory=dict)
+
+
+class FilmOptimizeRequest(msgspec.Struct, kw_only=True, gc=False):
+    """Request payload for macro film production schedule optimization."""
+
+    dataset: ProductionDataset
+    max_time_in_seconds: float = 30.0
+    move_penalty: int = 500
+    enable_drop_pickup: bool = False
+    enable_soundstage_lease_tracking: bool = False
+    enable_hazard_deferral: bool = False
+    enable_intraday_micro_optimization: bool = True
+    fixed_assignments: dict[str, int] | None = None
+
+
+class FilmRescheduleRequest(msgspec.Struct, kw_only=True, gc=False):
+    """Request payload for rolling-horizon mid-production rescheduling."""
+
+    dataset: ProductionDataset
+    completed_days: list[int] = msgspec.field(default_factory=list)
+    weather_disruptions: dict[int, str] = msgspec.field(default_factory=dict)
+    talent_blackouts: dict[str, list[int]] = msgspec.field(default_factory=dict)
+    activate_cover_sets: bool = True
+    max_time_in_seconds: float = 15.0
+    fixed_assignments: dict[str, int] | None = None
+
+
+class FilmIntradayRequest(msgspec.Struct, kw_only=True, gc=False):
+    """Request payload for micro intra-day minute-level shot sequencing."""
+
+    scenes: list[Scene]
+    calendar_day: CalendarDay
+    locations: list[Location] = msgspec.field(default_factory=list)
+    talents: list[Talent] = msgspec.field(default_factory=list)
+    shooting_call_minute: int = 480
+    max_day_minutes: int = 720
+
+
+class FilmCallSheetRequest(msgspec.Struct, kw_only=True, gc=False):
+    """Request payload for generating an official daily call sheet."""
+
+    dataset: ProductionDataset
+    day_number: int
+    general_crew_call_time: str = "07:00"
+    shooting_call_time: str = "08:00"
+    hospital_info: str = "St. Jude Medical Center, 24/7 Trauma Wing (Tel: 555-0199)"
+    optimize_intraday: bool = True
 
 
 # ==============================================================================
@@ -1533,10 +1622,20 @@ def optimize_intraday_schedule(
             m.add(ev <= cal.dusk_minute).only_enforce_if(in_dusk)
             m.add_bool_or([in_dawn, in_dusk])
 
+    # Mandatory 6-Hour Meal Window Interval for full-day shoots
+    total_scene_mins = sum(s.duration_minutes for s in scenes)
+    if total_scene_mins >= 300:
+        meal_min_start = shooting_call_minute + 180  # earliest 3h after call
+        meal_max_start = shooting_call_minute + 360  # latest 6h after call
+        meal_sv = m.new_int_var(meal_min_start, meal_max_start, "micro_meal_s")
+        meal_ev = m.new_int_var(meal_min_start + 60, meal_max_start + 60, "micro_meal_e")
+        meal_iv = m.new_interval_var(meal_sv, 60, meal_ev, "micro_meal_iv")
+        intervals.append(meal_iv)
+
     # Camera unit non-overlapping constraint
     m.add_no_overlap(intervals)
 
-    # Transition buffers between consecutive scenes
+    # Transition buffers between consecutive scenes (TSP-SDST)
     for i in range(n):
         for j in range(n):
             if i != j:
@@ -1549,8 +1648,16 @@ def optimize_intraday_schedule(
                     and scenes[i].setup_id == scenes[j].setup_id
                 ):
                     buffer_mins = 0
-                elif scenes[i].location_id != scenes[j].location_id:
-                    buffer_mins = 30
+                elif scenes[i].location_id == scenes[j].location_id:
+                    # 180° axis or lighting setup changeover at same location
+                    buffer_mins = 20
+                else:
+                    # Company move between different practical locations or soundstages
+                    loc_i = locations.get(scenes[i].location_id) or locations.get(
+                        str(scenes[i].location_id)
+                    )
+                    turnaround = loc_i.turnaround_minutes if loc_i else 60
+                    buffer_mins = max(45, turnaround)
                 if buffer_mins > 0:
                     m.add(start_vars[j] >= end_vars[i] + buffer_mins).only_enforce_if(i_before_j)
 
@@ -1645,28 +1752,45 @@ def generate_daily_call_sheet(
             if cid not in cast_first_seen and str(cid) not in cast_first_seen:
                 cast_first_seen[cid] = start_t
 
-    # Backward calculation of actor call matrix
+    # Backward calculation of actor call matrix with HMU chair staggering
     character_calls: list[CallSheetCharacterEntry] = []
+    hmu_capacity = getattr(data, "hmu_stations_capacity", 4) or 4
+
+    # Group cast by their first scene start time
+    cast_by_time: dict[datetime, list[Talent]] = defaultdict(list)
     for cid, first_scene_time in cast_first_seen.items():
         t = talents.get(cid) or talents.get(str(cid))
-        if not t:
-            continue
-        set_call = first_scene_time - timedelta(minutes=15)
-        wardrobe_call = set_call - timedelta(minutes=t.wardrobe_duration_minutes)
-        hmu_call = wardrobe_call - timedelta(minutes=t.hmu_duration_minutes)
-        pickup_call = hmu_call - timedelta(minutes=t.travel_duration_minutes)
+        if t:
+            cast_by_time[first_scene_time].append(t)
 
-        character_calls.append(
-            CallSheetCharacterEntry(
-                talent_id=t.id,
-                character_name=t.character_name,
-                actor_name=t.name,
-                pickup_call=pickup_call.strftime("%I:%M %p"),
-                hmu_call=hmu_call.strftime("%I:%M %p"),
-                wardrobe_call=wardrobe_call.strftime("%I:%M %p"),
-                set_call=set_call.strftime("%I:%M %p"),
-            )
+    for first_scene_time, talent_group in cast_by_time.items():
+        # Minors and longer HMU requirements first
+        sorted_group = sorted(
+            talent_group,
+            key=lambda item: (not item.is_minor, -item.hmu_duration_minutes),
         )
+        for idx, t in enumerate(sorted_group):
+            wave = idx // hmu_capacity
+            stagger_offset_mins = wave * 30  # earlier waves staggered back 30m
+
+            set_call = first_scene_time - timedelta(minutes=15)
+            wardrobe_call = set_call - timedelta(minutes=t.wardrobe_duration_minutes)
+            hmu_call = wardrobe_call - timedelta(
+                minutes=t.hmu_duration_minutes + stagger_offset_mins
+            )
+            pickup_call = hmu_call - timedelta(minutes=t.travel_duration_minutes)
+
+            character_calls.append(
+                CallSheetCharacterEntry(
+                    talent_id=t.id,
+                    character_name=t.character_name,
+                    actor_name=t.name,
+                    pickup_call=pickup_call.strftime("%I:%M %p"),
+                    hmu_call=hmu_call.strftime("%I:%M %p"),
+                    wardrobe_call=wardrobe_call.strftime("%I:%M %p"),
+                    set_call=set_call.strftime("%I:%M %p"),
+                )
+            )
 
     second_meal_due = (
         (first_meal_due + timedelta(hours=6)).strftime("%I:%M %p")
@@ -1748,13 +1872,68 @@ def reschedule_production(
             )
         )
 
-    # Scene cover set release logic
+    # Preserve completed days and lock elapsed scenes
+    fixed: dict[int | str, int] = dict(fixed_assignments or {})
+    last_completed = max(completed_days) if completed_days else 0
+
+    scene_by_id: dict[int | str, Scene] = {}
+    for s in data.scenes:
+        scene_by_id[s.id] = s
+        scene_by_id[str(s.id)] = s
+
+    disrupted_days: set[int] = {
+        d
+        for d, w in weather_map.items()
+        if (isinstance(w, str) and w in ("RAIN", "MONSOON"))
+        or w in (WeatherType.RAIN, WeatherType.MONSOON)
+    }
+
+    # Scene cover set release logic and completed day preservation
     updated_scenes: list[Scene] = []
     for s in data.scenes:
         is_cover = s.is_cover_set
-        if activate_cover_sets and is_cover:
-            # If weather disrupted the primary scene, activate cover set
-            is_cover = False
+        earliest_day = s.earliest_allowed_day
+
+        s_fixed_day = fixed.get(s.id) if s.id in fixed else fixed.get(str(s.id))
+        if last_completed > 0 and s_fixed_day is None:
+            # Uncompleted scenes cannot be scheduled on past completed days
+            earliest_day = max(earliest_day or 1, last_completed + 1)
+
+        # Dynamic Cover Set Substitution
+        if activate_cover_sets and is_cover and s.cover_for_scene_id is not None:
+            primary_scene = scene_by_id.get(s.cover_for_scene_id) or scene_by_id.get(
+                str(s.cover_for_scene_id)
+            )
+            if primary_scene:
+                prim_fixed_day = (
+                    fixed.get(primary_scene.id)
+                    if primary_scene.id in fixed
+                    else fixed.get(str(primary_scene.id))
+                )
+                is_prim_weather_disrupted = (
+                    prim_fixed_day in disrupted_days
+                    and primary_scene.weather_requirement
+                    in (
+                        WeatherRequirement.NO_RAIN,
+                        WeatherRequirement.CLEAR_ONLY,
+                        "NO_RAIN",
+                        "CLEAR_ONLY",
+                    )
+                )
+                if is_prim_weather_disrupted and prim_fixed_day is not None:
+                    # Activate cover scene for this disrupted day
+                    is_cover = False
+                    fixed[s.id] = prim_fixed_day
+                    fixed[str(s.id)] = prim_fixed_day
+                    # Defer primary scene to subsequent clear day
+                    if primary_scene.id in fixed:
+                        del fixed[primary_scene.id]
+                    if str(primary_scene.id) in fixed:
+                        del fixed[str(primary_scene.id)]
+                elif not disrupted_days:
+                    # Generic activation if requested without specific disruptions
+                    is_cover = False
+
         updated_scenes.append(
             Scene(
                 id=s.id,
@@ -1775,7 +1954,7 @@ def reschedule_production(
                 weather_requirement=s.weather_requirement,
                 sound_recording=s.sound_recording,
                 holiday_compatibility=s.holiday_compatibility,
-                earliest_allowed_day=s.earliest_allowed_day,
+                earliest_allowed_day=earliest_day,
                 latest_allowed_day=s.latest_allowed_day,
                 is_cover_set=is_cover,
                 cover_for_scene_id=s.cover_for_scene_id,
@@ -1804,7 +1983,7 @@ def reschedule_production(
     return optimize_production_schedule(
         reschedule_dataset,
         max_time_in_seconds=max_time_in_seconds,
-        fixed_assignments=fixed_assignments,
+        fixed_assignments=fixed,
     )
 
 

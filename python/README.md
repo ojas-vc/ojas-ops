@@ -116,9 +116,13 @@ The core framework exposes 24 production endpoints in `ojas_ops.api`:
   - `/calendars/astrological/blackouts` (Vedic Panchang Rahu Kalam & Yamagandam)
   - `/calendars/shift/operational-hours` (Industrial shifts, lunch/maintenance windows)
 - **Domain Adapters**:
-  - `/adapters/film-production/solve`
+  - `/adapters/film-production/optimize` (Macro Level 1 cross-boarding with DOOD & SAG-AFTRA drop-and-pickup)
+  - `/adapters/film-production/reschedule` (Rolling-horizon disruption handler with completed day preservation and cover set substitution)
+  - `/adapters/film-production/intraday` (Micro Level 2 stripboard shot sequencing with setup turnaround & union meals)
+  - `/adapters/film-production/call-sheet` (Official daily call sheet with staggered HMU salon chair waves)
   - `/adapters/manufacturing/solve`
   - `/adapters/workforce/solve`
   - `/adapters/marketing-flighting/solve`
   - `/adapters/academic-timetables/solve`
   - `/adapters/event-run-sheets/solve`
+
