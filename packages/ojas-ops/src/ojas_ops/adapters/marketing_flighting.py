@@ -24,11 +24,20 @@ class MediaFlight(msgspec.Struct, kw_only=True):
     channel_id: str
     stage: str = "launch"  # teaser, launch, sustained, countdown
     duration_days: int = 7
-    daily_budget: float = 1000.0
+    daily_budget_cents: int = 100000  # $1,000.00
     projected_leads_per_day: int = 50
     earliest_day: int | None = None
     latest_day: int | None = None
     dependencies: list[str] = msgspec.field(default_factory=list)
+
+    @property
+    def daily_budget(self) -> float:
+        """Backward-compatible float daily budget."""
+        return self.daily_budget_cents / 100.0
+
+    @daily_budget.setter
+    def daily_budget(self, value: float) -> None:
+        self.daily_budget_cents = int(round(value * 100))
 
 
 class MarketingChannel(msgspec.Struct, kw_only=True):
@@ -37,7 +46,16 @@ class MarketingChannel(msgspec.Struct, kw_only=True):
     id: str
     name: str = ""
     max_concurrent_flights: int = 1
-    daily_budget_cap: float = 50000.0
+    daily_budget_cap_cents: int = 5000000  # $50,000.00
+
+    @property
+    def daily_budget_cap(self) -> float:
+        """Backward-compatible float daily budget cap."""
+        return self.daily_budget_cap_cents / 100.0
+
+    @daily_budget_cap.setter
+    def daily_budget_cap(self, value: float) -> None:
+        self.daily_budget_cap_cents = int(round(value * 100))
 
 
 class MarketingFlightingScheduler(DomainAdapter):
@@ -54,12 +72,18 @@ class MarketingFlightingScheduler(DomainAdapter):
         name: str = "",
         max_concurrent_flights: int = 1,
         daily_budget_cap: float = 50000.0,
+        daily_budget_cap_cents: int | None = None,
     ) -> MarketingChannel:
+        cap_cents = (
+            daily_budget_cap_cents
+            if daily_budget_cap_cents is not None
+            else int(round(daily_budget_cap * 100))
+        )
         ch = MarketingChannel(
             id=id,
             name=name or id,
             max_concurrent_flights=max_concurrent_flights,
-            daily_budget_cap=daily_budget_cap,
+            daily_budget_cap_cents=cap_cents,
         )
         self.channels[id] = ch
         return ch
@@ -72,18 +96,22 @@ class MarketingFlightingScheduler(DomainAdapter):
         name: str = "",
         stage: str = "launch",
         daily_budget: float = 1000.0,
+        daily_budget_cents: int | None = None,
         projected_leads_per_day: int = 50,
         earliest_day: int | None = None,
         latest_day: int | None = None,
         dependencies: list[str] | None = None,
     ) -> MediaFlight:
+        budget_cents = (
+            daily_budget_cents if daily_budget_cents is not None else int(round(daily_budget * 100))
+        )
         fl = MediaFlight(
             id=id,
             name=name or id,
             channel_id=channel_id,
             stage=stage,
             duration_days=duration_days,
-            daily_budget=daily_budget,
+            daily_budget_cents=budget_cents,
             projected_leads_per_day=projected_leads_per_day,
             earliest_day=earliest_day,
             latest_day=latest_day,

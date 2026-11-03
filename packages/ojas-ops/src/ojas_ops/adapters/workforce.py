@@ -25,7 +25,17 @@ class StaffMember(msgspec.Struct, kw_only=True):
     skills: list[str] = msgspec.field(default_factory=list)
     max_work_minutes: int = 40 * 60  # 40 hours standard
     min_rest_minutes: int = 12 * 60  # 12 hours minimum rest between shifts
+    hourly_rate_cents: int = 0
     blackout_windows: list[IntervalWindow] = msgspec.field(default_factory=list)
+
+    @property
+    def hourly_rate(self) -> float:
+        """Backward-compatible float hourly rate."""
+        return self.hourly_rate_cents / 100.0
+
+    @hourly_rate.setter
+    def hourly_rate(self, value: float) -> None:
+        self.hourly_rate_cents = int(round(value * 100))
 
 
 class ShiftSlot(msgspec.Struct, kw_only=True):
@@ -55,8 +65,13 @@ class WorkforceScheduler(DomainAdapter):
         skills: list[str] | None = None,
         max_work_minutes: int = 40 * 60,
         min_rest_minutes: int = 12 * 60,
+        hourly_rate: float = 0.0,
+        hourly_rate_cents: int | None = None,
         blackout_windows: list[IntervalWindow] | None = None,
     ) -> StaffMember:
+        cents = (
+            hourly_rate_cents if hourly_rate_cents is not None else int(round(hourly_rate * 100))
+        )
         member = StaffMember(
             id=id,
             name=name or id,
@@ -64,6 +79,7 @@ class WorkforceScheduler(DomainAdapter):
             skills=skills or [],
             max_work_minutes=max_work_minutes,
             min_rest_minutes=min_rest_minutes,
+            hourly_rate_cents=cents,
             blackout_windows=blackout_windows or [],
         )
         self.staff[id] = member

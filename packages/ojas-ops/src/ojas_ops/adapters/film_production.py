@@ -629,7 +629,9 @@ def optimize_production_schedule(
 
     for s in data.scenes:
         valid_days: list[int] = []
-        loc_opt: Location | None = location_dict.get(s.location_id) or location_dict.get(str(s.location_id))
+        loc_opt: Location | None = location_dict.get(s.location_id) or location_dict.get(
+            str(s.location_id)
+        )
 
         for d in range(1, num_days + 1):
             cal = calendar_dict[d]
@@ -649,7 +651,9 @@ def optimize_production_schedule(
             elif is_valid and s.latest_allowed_day is not None and d > s.latest_allowed_day:
                 is_valid = False
             # Location Permits
-            elif is_valid and loc_opt and loc_opt.permitted_days and d not in loc_opt.permitted_days:
+            elif (
+                is_valid and loc_opt and loc_opt.permitted_days and d not in loc_opt.permitted_days
+            ):
                 is_valid = False
             # Astrological / Inauspicious Days
             elif is_valid and cal.is_inauspicious:
@@ -710,7 +714,11 @@ def optimize_production_schedule(
             ):
                 is_valid = False
             # VFX Early Turnover Deadline
-            elif is_valid and s.vfx_turnover_deadline_day is not None and d > s.vfx_turnover_deadline_day:
+            elif (
+                is_valid
+                and s.vfx_turnover_deadline_day is not None
+                and d > s.vfx_turnover_deadline_day
+            ):
                 is_valid = False
             # Location Noise Curfew
             elif (
@@ -721,7 +729,15 @@ def optimize_production_schedule(
                 and loc_opt.noise_curfew_hour < 22
                 and s.stunt_sfx_package_id is not None
             ):
-                stunt_pkg = next((p for p in data.stunts if p.id == s.stunt_sfx_package_id or str(p.id) == str(s.stunt_sfx_package_id)), None)
+                stunt_pkg = next(
+                    (
+                        p
+                        for p in data.stunts
+                        if p.id == s.stunt_sfx_package_id
+                        or str(p.id) == str(s.stunt_sfx_package_id)
+                    ),
+                    None,
+                )
                 if stunt_pkg and (stunt_pkg.has_pyrotechnics or stunt_pkg.has_squibs):
                     is_valid = False
             else:
@@ -906,7 +922,11 @@ def optimize_production_schedule(
                 model.add_max_equality(loc_var, active_scenes)
 
     for d in range(1, num_days + 1):
-        day_locs = [loc_active[loc_item.id, d] for loc_item in data.locations if (loc_item.id, d) in loc_active]
+        day_locs = [
+            loc_active[loc_item.id, d]
+            for loc_item in data.locations
+            if (loc_item.id, d) in loc_active
+        ]
         if day_locs:
             model.add(sum(day_locs) <= 2)
 
@@ -1022,12 +1042,14 @@ def optimize_production_schedule(
             ]
             if night_vars_d and day_vars_next:
                 has_night_d = model.new_bool_var(f"has_night_d{d}")
-                has_day_next = model.new_bool_var(f"has_day_d{d+1}")
+                has_day_next = model.new_bool_var(f"has_day_d{d + 1}")
                 model.add_max_equality(has_night_d, night_vars_d)
                 model.add_max_equality(has_day_next, day_vars_next)
 
                 turnaround_violation = model.new_bool_var(f"turnaround_violation_d{d}")
-                model.add_bool_and([has_night_d, has_day_next]).only_enforce_if(turnaround_violation)
+                model.add_bool_and([has_night_d, has_day_next]).only_enforce_if(
+                    turnaround_violation
+                )
                 model.add(turnaround_violation == 1).only_enforce_if([has_night_d, has_day_next])
                 turnaround_penalty_terms.append(turnaround_violation * 1000)
 
@@ -1035,7 +1057,9 @@ def optimize_production_schedule(
     # CONSTRAINT 8: Continuous Soundstage Leases & Stage Facility Disjunction
     # --------------------------------------------------------------------------
     stage_lease_terms: list[cp_model.LinearExpr] = []
-    location_prep_strike_intervals: dict[int | str, tuple[cp_model.IntVar, cp_model.IntVar, cp_model.IntVar]] = {}
+    location_prep_strike_intervals: dict[
+        int | str, tuple[cp_model.IntVar, cp_model.IntVar, cp_model.IntVar]
+    ] = {}
 
     for loc in data.locations:
         scenes_at_loc = scenes_by_location[loc.id]
@@ -1066,11 +1090,17 @@ def optimize_production_schedule(
         model.add(prep_start_day == first_shoot_loc - prep_days).only_enforce_if(loc_is_used)
         model.add(strike_end_day == last_shoot_loc + strike_days).only_enforce_if(loc_is_used)
 
-        lease_days = model.new_int_var(0, num_days + prep_days + strike_days, f"lease_days_{loc.id}")
+        lease_days = model.new_int_var(
+            0, num_days + prep_days + strike_days, f"lease_days_{loc.id}"
+        )
         model.add(lease_days == strike_end_day - prep_start_day + 1).only_enforce_if(loc_is_used)
         model.add(lease_days == 0).only_enforce_if(loc_is_used.negated())
 
-        rental_rate = int(loc.daily_rental_cost) if loc.daily_rental_cost > 0 else (loc.daily_rental_cost_cents // 100)
+        rental_rate = (
+            int(loc.daily_rental_cost)
+            if loc.daily_rental_cost > 0
+            else (loc.daily_rental_cost_cents // 100)
+        )
         if enable_soundstage_lease_tracking and rental_rate > 0:
             stage_lease_terms.append(lease_days * rental_rate)
 
@@ -1099,17 +1129,21 @@ def optimize_production_schedule(
                             for db in range(1, num_days + 1):
                                 if (loc_b.id, db) in loc_active:
                                     if da + strike_a >= db - prep_b:
-                                        model.add_bool_or([
-                                            loc_active[loc_a.id, da].negated(),
-                                            loc_active[loc_b.id, db].negated(),
-                                            a_before_b.negated(),
-                                        ])
+                                        model.add_bool_or(
+                                            [
+                                                loc_active[loc_a.id, da].negated(),
+                                                loc_active[loc_b.id, db].negated(),
+                                                a_before_b.negated(),
+                                            ]
+                                        )
                                     if db + strike_b >= da - prep_a:
-                                        model.add_bool_or([
-                                            loc_active[loc_a.id, da].negated(),
-                                            loc_active[loc_b.id, db].negated(),
-                                            a_before_b,
-                                        ])
+                                        model.add_bool_or(
+                                            [
+                                                loc_active[loc_a.id, da].negated(),
+                                                loc_active[loc_b.id, db].negated(),
+                                                a_before_b,
+                                            ]
+                                        )
 
     # --------------------------------------------------------------------------
     # CONSTRAINT 9: Multi-Unit Concurrency & Cast Exclusivity
@@ -1141,7 +1175,9 @@ def optimize_production_schedule(
         for s in data.scenes:
             is_high_hazard = s.stunt_hazard_level >= 4
             if not is_high_hazard and s.stunt_sfx_package_id:
-                stunt_pkg = next((pkg for pkg in data.stunts if pkg.id == s.stunt_sfx_package_id), None)
+                stunt_pkg = next(
+                    (pkg for pkg in data.stunts if pkg.id == s.stunt_sfx_package_id), None
+                )
                 if stunt_pkg and stunt_pkg.stunt_hazard_level >= 4:
                     is_high_hazard = True
 
@@ -1153,7 +1189,9 @@ def optimize_production_schedule(
                             feasible_days_by_scene[s.id],
                         )
                         early_stunt = model.new_bool_var(f"early_stunt_s{s.id}_c{cid}")
-                        model.add(4 * s_day - 3 * earliest[cid] < latest[cid]).only_enforce_if(early_stunt)
+                        model.add(4 * s_day - 3 * earliest[cid] < latest[cid]).only_enforce_if(
+                            early_stunt
+                        )
                         hazard_penalty_terms.append(early_stunt * 2000)
 
     # --------------------------------------------------------------------------
@@ -1297,7 +1335,9 @@ def optimize_production_schedule(
                 hold_days = 0
 
                 for d in range(1, num_days + 1):
-                    is_working = (t.id, d) in talent_work and solver.value(talent_work[t.id, d]) == 1
+                    is_working = (t.id, d) in talent_work and solver.value(
+                        talent_work[t.id, d]
+                    ) == 1
                     if d < e1_val:
                         daily_codes[d] = DOODStatusCode.OFF
                     elif d == e1_val and d == l1_val:
@@ -1503,7 +1543,11 @@ def optimize_intraday_schedule(
                 i_before_j = m.new_bool_var(f"before_{i}_{j}")
                 m.add(end_vars[i] <= start_vars[j]).only_enforce_if(i_before_j)
                 buffer_mins = 0
-                if scenes[i].setup_id and scenes[j].setup_id and scenes[i].setup_id == scenes[j].setup_id:
+                if (
+                    scenes[i].setup_id
+                    and scenes[j].setup_id
+                    and scenes[i].setup_id == scenes[j].setup_id
+                ):
                     buffer_mins = 0
                 elif scenes[i].location_id != scenes[j].location_id:
                     buffer_mins = 30
@@ -2001,7 +2045,9 @@ class FilmProductionScheduler(DomainAdapter):
         sunset_time: str = "18:30",
         is_weekend: bool = False,
     ) -> CalendarDay:
-        weather = WeatherType(expected_weather) if isinstance(expected_weather, str) else expected_weather
+        weather = (
+            WeatherType(expected_weather) if isinstance(expected_weather, str) else expected_weather
+        )
         cal = CalendarDay(
             day_number=day_number,
             calendar_date=calendar_date,
@@ -2051,7 +2097,11 @@ class FilmProductionScheduler(DomainAdapter):
         vfx_turnover_deadline_day: int | None = None,
         stunt_hazard_level: int = 1,
     ) -> Scene:
-        cast_list: list[int | str] = list(required_cast) if required_cast is not None else [str(c) for c in (character_ids or [])]
+        cast_list: list[int | str] = (
+            list(required_cast)
+            if required_cast is not None
+            else [str(c) for c in (character_ids or [])]
+        )
         dur_h = duration_hours if duration_hours is not None else (duration_minutes / 60.0)
         wr = (
             WeatherRequirement(weather_requirement)
@@ -2059,9 +2109,7 @@ class FilmProductionScheduler(DomainAdapter):
             else weather_requirement
         )
         sr = (
-            SoundRecording(sound_recording)
-            if isinstance(sound_recording, str)
-            else sound_recording
+            SoundRecording(sound_recording) if isinstance(sound_recording, str) else sound_recording
         )
         hc = (
             HolidayCompatibility(holiday_compatibility)

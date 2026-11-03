@@ -45,7 +45,16 @@ class Machine(msgspec.Struct, kw_only=True):
     id: str
     name: str = ""
     capacity: int = 1
-    hourly_rate: float = 0.0
+    hourly_rate_cents: int = 0
+
+    @property
+    def hourly_rate(self) -> float:
+        """Backward-compatible float hourly rate."""
+        return self.hourly_rate_cents / 100.0
+
+    @hourly_rate.setter
+    def hourly_rate(self, value: float) -> None:
+        self.hourly_rate_cents = int(round(value * 100))
 
 
 class ManufacturingScheduler(DomainAdapter):
@@ -64,8 +73,12 @@ class ManufacturingScheduler(DomainAdapter):
         name: str = "",
         capacity: int = 1,
         hourly_rate: float = 0.0,
+        hourly_rate_cents: int | None = None,
     ) -> Machine:
-        m = Machine(id=id, name=name or id, capacity=capacity, hourly_rate=hourly_rate)
+        cents = (
+            hourly_rate_cents if hourly_rate_cents is not None else int(round(hourly_rate * 100))
+        )
+        m = Machine(id=id, name=name or id, capacity=capacity, hourly_rate_cents=cents)
         self.machines[id] = m
         return m
 

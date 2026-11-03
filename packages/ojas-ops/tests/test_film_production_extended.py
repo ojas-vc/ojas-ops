@@ -393,8 +393,12 @@ def test_soundstage_continuous_lease_holding() -> None:
     for d in range(1, 6):
         scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
 
-    scheduler.add_scene(id=1, scene_number="1", duration_hours=3.0, required_cast=[1], location_id=1)
-    scheduler.add_scene(id=2, scene_number="2", duration_hours=3.0, required_cast=[1], location_id=1)
+    scheduler.add_scene(
+        id=1, scene_number="1", duration_hours=3.0, required_cast=[1], location_id=1
+    )
+    scheduler.add_scene(
+        id=2, scene_number="2", duration_hours=3.0, required_cast=[1], location_id=1
+    )
 
     res = scheduler.optimize(enable_soundstage_lease_tracking=True)
     assert res.is_feasible
@@ -438,8 +442,12 @@ def test_soundstage_facility_disjunction() -> None:
     for d in range(1, 9):
         scheduler.add_calendar_day(d, f"2026-11-{d:02d}", expected_weather="CLEAR")
 
-    scheduler.add_scene(id=1, scene_number="1", duration_hours=4.0, required_cast=[1], location_id=1)
-    scheduler.add_scene(id=2, scene_number="2", duration_hours=4.0, required_cast=[1], location_id=2)
+    scheduler.add_scene(
+        id=1, scene_number="1", duration_hours=4.0, required_cast=[1], location_id=1
+    )
+    scheduler.add_scene(
+        id=2, scene_number="2", duration_hours=4.0, required_cast=[1], location_id=2
+    )
 
     res = scheduler.optimize(enable_soundstage_lease_tracking=True)
     assert res.is_feasible
@@ -543,16 +551,23 @@ def test_intraday_micro_optimization_and_golden_hour() -> None:
     t = Talent(id=1, name="Hero")
 
     scenes = [
-        Scene(id=1, scene_number="101", duration_minutes=45, time_of_day=TimeOfDay.MAGIC_HOUR, location_id=1),
-        Scene(id=2, scene_number="102", duration_minutes=120, time_of_day=TimeOfDay.DAY, location_id=1),
+        Scene(
+            id=1,
+            scene_number="101",
+            duration_minutes=45,
+            time_of_day=TimeOfDay.MAGIC_HOUR,
+            location_id=1,
+        ),
+        Scene(
+            id=2, scene_number="102", duration_minutes=120, time_of_day=TimeOfDay.DAY, location_id=1
+        ),
     ]
 
     from ojas_ops.adapters.film_production import optimize_intraday_schedule
+
     # 08:00 AM shooting call = 480 mins
     # Sunset is 18:00 = 1080 mins; dusk is 1110 mins; dusk magic hour window is [1035, 1110]
-    schedule = optimize_intraday_schedule(
-        scenes, cal, {1: loc}, {1: t}, shooting_call_minute=480
-    )
+    schedule = optimize_intraday_schedule(scenes, cal, {1: loc}, {1: t}, shooting_call_minute=480)
 
     assert len(schedule) == 2
     magic_item = next(item for item in schedule if item[0].id == 1)
@@ -577,5 +592,3 @@ def test_pure_integer_model_attributes() -> None:
 
     s = Scene(id=1, scene_number="1", duration_hours=2.5)
     assert s.duration_minutes == 150
-
-
