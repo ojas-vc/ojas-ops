@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import type { Resource, ScheduleSolution } from "@ojas-ops/sdk";
 import { GanttChart, MetricCard } from "@ojas-ops/ui";
+import { useState } from "react";
 
 const HOSPITAL_RESOURCES: Resource[] = [
   { id: "nurse_alice", name: "Alice (ICU Specialist)" },
@@ -16,11 +16,41 @@ const HOSPITAL_SOLUTION: ScheduleSolution = {
   makespan: 24,
   objective_value: 24,
   assignments: [
-    { task_id: "icu_triage", start_time: 0, end_time: 8, duration: 8, assigned_resources: ["nurse_alice"] },
-    { task_id: "icu_night_shift", start_time: 8, end_time: 16, duration: 8, assigned_resources: ["nurse_alice"] },
-    { task_id: "ward_day_shift", start_time: 0, end_time: 8, duration: 8, assigned_resources: ["nurse_bob"] },
-    { task_id: "ward_evening_shift", start_time: 8, end_time: 16, duration: 8, assigned_resources: ["nurse_carol"] },
-    { task_id: "trauma_oncall", start_time: 12, end_time: 20, duration: 8, assigned_resources: ["nurse_david"] },
+    {
+      task_id: "icu_triage",
+      start_time: 0,
+      end_time: 8,
+      duration: 8,
+      assigned_resources: ["nurse_alice"],
+    },
+    {
+      task_id: "icu_night_shift",
+      start_time: 8,
+      end_time: 16,
+      duration: 8,
+      assigned_resources: ["nurse_alice"],
+    },
+    {
+      task_id: "ward_day_shift",
+      start_time: 0,
+      end_time: 8,
+      duration: 8,
+      assigned_resources: ["nurse_bob"],
+    },
+    {
+      task_id: "ward_evening_shift",
+      start_time: 8,
+      end_time: 16,
+      duration: 8,
+      assigned_resources: ["nurse_carol"],
+    },
+    {
+      task_id: "trauma_oncall",
+      start_time: 12,
+      end_time: 20,
+      duration: 8,
+      assigned_resources: ["nurse_david"],
+    },
   ],
   metrics: {
     wall_time: 0.025,
@@ -36,7 +66,9 @@ export default function GanttPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Gantt & Timeline Inspector</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">
+            Gantt & Timeline Inspector
+          </h1>
           <p className="text-xs text-slate-400">
             Multi-resource allocation view with timeline zoom and assignment inspection.
           </p>
