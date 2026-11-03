@@ -23,6 +23,16 @@ from ojas_ops.api.workforce_adapter import WorkforceAdapterViewSet
 
 api = BoltAPI(
     prefix="",
+    middleware=[
+        {
+            "type": "cors",
+            "origins": ["*"],
+            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "QUERY"],
+            "headers": None,
+            "credentials": False,
+            "max_age": 3600,
+        }
+    ],
     openapi_config=OpenAPIConfig(
         title="Ojas Ops Optimization API",
         version="0.4.0",

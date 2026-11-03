@@ -9,6 +9,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# CORS settings for frontend clients (Ops Studio on port 5900/3000)
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5900",
+    "http://127.0.0.1:5900",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+CORS_ALLOW_CREDENTIALS = False
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

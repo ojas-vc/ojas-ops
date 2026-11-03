@@ -12,7 +12,6 @@ from ojas_ops.adapters.film_production import (
     DailyCallSheet,
     FilmCallSheetRequest,
     FilmIntradayRequest,
-    FilmOptimizeRequest,
     FilmRescheduleRequest,
     FilmScheduleResult,
     ProductionDataset,

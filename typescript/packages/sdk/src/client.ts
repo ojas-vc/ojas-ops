@@ -64,7 +64,13 @@ export class OjasOpsClient {
 
   constructor(options: OjasOpsClientOptions = {}) {
     this.baseUrl = (options.baseUrl || "http://127.0.0.1:8000").replace(/\/$/, "");
-    this.fetch = options.fetchFn || globalThis.fetch;
+    const customFetch = options.fetchFn;
+    this.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+      if (customFetch) {
+        return customFetch(input, init);
+      }
+      return globalThis.fetch(input, init);
+    };
   }
 
   private buildQueryString(query?: TenantPaginationQuery): string {
