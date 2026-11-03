@@ -7,8 +7,11 @@ from uuid import uuid4
 
 import msgspec
 import pytest
-from ojas_ops import contracts
-from ojas_ops.contracts import (
+from ojas_ops import schemas
+from ojas_ops.models.resource import ResourceType
+from ojas_ops.models.schedule import ScheduleResult, ScheduleStatus
+from ojas_ops.models.task import TaskPriority
+from ojas_ops.schemas import (
     APIError,
     Contract,
     DisruptionContract,
@@ -31,9 +34,6 @@ from ojas_ops.contracts import (
     TaskContract,
     ValueObject,
 )
-from ojas_ops.models.resource import ResourceType
-from ojas_ops.models.schedule import ScheduleResult, ScheduleStatus
-from ojas_ops.models.task import TaskPriority
 
 
 def test_base_contract_forbids_unknown_fields():
@@ -62,9 +62,9 @@ def test_value_object_immutability():
 
 def test_validated_identifiers_and_constraints():
     class EntityContract(Contract):
-        id: contracts.TaskId
-        duration: contracts.DurationMinutes
-        capacity: contracts.PositiveCapacity
+        id: schemas.TaskId
+        duration: schemas.DurationMinutes
+        capacity: schemas.PositiveCapacity
 
     # Valid entity
     valid = EntityContract(id="task_01-alpha", duration=120, capacity=2)

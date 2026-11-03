@@ -7,7 +7,7 @@ __author__ = "Balu Varanasi"
 __email__ = "balu@chitram.ai"
 
 
-from ojas_ops import contracts
+from ojas_ops import schemas
 from ojas_ops.adapters import (
     AcademicTimetableScheduler,
     DomainAdapter,
@@ -99,7 +99,7 @@ __all__ = [
     "CalendarProvider",
     "Constraint",
     "ConstraintViolation",
-    "contracts",
+    "schemas",
     "CpSatSolver",
     "CulturalCalendarProvider",
     "CumulativeResourceConstraint",

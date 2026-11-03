@@ -1,9 +1,6 @@
-"""Base contract classes for strictly typed, contract-first communication."""
+"""Base schema contract classes for strictly typed data transfer objects."""
 
 from __future__ import annotations
-
-__author__ = "Balu Varanasi"
-__email__ = "balu@chitram.ai"
 
 import msgspec
 
