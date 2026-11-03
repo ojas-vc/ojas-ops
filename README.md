@@ -848,14 +848,51 @@ Rescheduling should preserve unaffected portions of an existing schedule wheneve
 - **Automated Example Verification (`scripts/verify_examples.py`):**
   - End-to-end verification of all 8 domain examples passing 100%.
 
-## 13. Development, Build & Release Commands
+## 13. Running Backend and Frontend & Development Commands
+
+### 13.1 Quick Start: Running the Services
+
+Ojas Ops consists of a **Django-Bolt Python API backend** (port `8000`) and a **Next.js Ops Studio frontend** (port `5900`).
+
+To run both services locally for development:
+
+#### Terminal 1 — Backend API Server (`http://127.0.0.1:8000`):
+```bash
+# Using root Makefile:
+make dev-backend
+
+# Or directly using uv:
+cd python && uv run python apps/sandbox/manage.py runbolt
+```
+> **Backend Health Verification**:
+> ```bash
+> curl http://127.0.0.1:8000/healthz
+> # {"status": "ok", "service": "ojas-ops-api", "version": "0.1.0"}
+> ```
+
+#### Terminal 2 — Frontend Ops Studio (`http://localhost:5900`):
+```bash
+# Using root Makefile:
+make dev-frontend
+
+# Or directly using pnpm:
+cd typescript && pnpm dev
+```
+> Open your browser at **`http://localhost:5900`** to access the Ops Studio dashboard, Stripboard, DOOD Matrix, Call Sheet inspector, and Solvers.
+
+---
+
+### 13.2 Unified Makefile Commands
 
 The root monorepo `Makefile` provides unified orchestration across both `python/` and `typescript/` workspaces:
 
-### Root Orchestration Targets
+#### Root Orchestration Targets
 
 | Command              | Purpose                                                                             |
 | :------------------- | :---------------------------------------------------------------------------------- |
+| `make dev`           | Display instructions for launching both development servers                        |
+| `make dev-backend`   | Run backend Django-Bolt API server on `http://127.0.0.1:8000`                       |
+| `make dev-frontend`  | Run frontend Next.js Ops Studio development server on `http://localhost:5900`       |
 | `make help`          | Display available root targets and documentation                                    |
 | `make check`         | Run all static verification gates (Python ruff/mypy + TypeScript check-types/biome) |
 | `make test`          | Run backend Python test suite via pytest (`python/Makefile`)                        |
@@ -865,17 +902,20 @@ The root monorepo `Makefile` provides unified orchestration across both `python/
 | `make fmt`           | Format all codebases across both Python (Ruff) and TypeScript (Biome)               |
 | `make clean-caches`  | Clean build, test, and lint cache directories (`.ruff_cache`, `.turbo`, `.next`)    |
 
-### Backend Targets (`python/`)
+#### Backend Targets (`python/`)
 
 | Command                     | Purpose                                                                        |
 | :-------------------------- | :----------------------------------------------------------------------------- |
+| `make -C python dev`        | Run Django-Bolt API development server on `http://127.0.0.1:8000`               |
+| `make -C python runbolt`    | Apply database migrations and launch Django-Bolt server                        |
+| `make -C python migrate`    | Apply SQLite database migrations in `apps/sandbox`                             |
 | `make -C python check`      | Run Ruff format check, Ruff linter, and Mypy static type checker               |
 | `make -C python fmt`        | Auto-format Python codebase with Ruff                                          |
-| `make -C python test`       | Run full pytest test suite (28+ tests)                                         |
+| `make -C python test`       | Run full pytest test suite (98 tests)                                          |
 | `make -C python build`      | Build source distribution (`.tar.gz`) and wheel (`.whl`) into `dist/`          |
 | `make -C python release`    | Complete end-to-end Python release pipeline (checks, tests, build, dry-run)    |
 
-### Frontend Targets (`typescript/`)
+#### Frontend Targets (`typescript/`)
 
 | Command                       | Purpose                                                                      |
 | :---------------------------- | :--------------------------------------------------------------------------- |

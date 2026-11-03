@@ -55,6 +55,12 @@ help: ## Show this help message with available commands
 			printf "  $(CYAN)%-18s$(RESET) %s\n", $$1, $$2 \
 	}' $(MAKEFILE_LIST)
 	@echo ""
+	@echo -e "$(BOLD)Development Server:$(RESET)"
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / { \
+		if ($$1 ~ /^(dev|run|runbolt|migrate)/) \
+			printf "  $(CYAN)%-18s$(RESET) %s\n", $$1, $$2 \
+	}' $(MAKEFILE_LIST)
+	@echo ""
 	@echo -e "$(BOLD)Code Quality & Static Analysis:$(RESET)"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / { \
 		if ($$1 ~ /^(fmt|format|lint|lint-fix|typecheck|mypy|check)/) \
@@ -123,6 +129,21 @@ update: ## Upgrade all dependencies and regenerate uv.lock
 	@echo -e "$(YELLOW)Upgrading all dependencies...$(RESET)"
 	@$(UV) lock --upgrade
 	@$(UV) sync
+
+# ==============================================================================
+# Development Server & Services
+# ==============================================================================
+
+.PHONY: dev run runbolt migrate
+migrate: venv ## Apply database migrations in apps/sandbox
+	@echo -e "$(GREEN)Applying database migrations...$(RESET)"
+	@cd apps/sandbox && $(PYTHON) manage.py migrate --no-input
+
+dev: run ## Alias for run
+run: runbolt ## Alias for runbolt
+runbolt: migrate ## Start Django-Bolt API development server on http://127.0.0.1:8000
+	@echo -e "$(BOLD)$(CYAN)Starting Django-Bolt API server on http://127.0.0.1:8000...$(RESET)"
+	@cd apps/sandbox && $(PYTHON) manage.py runbolt -b 0.0.0.0 -p 8000
 
 # ==============================================================================
 # Code Quality, Formatting & Static Analysis

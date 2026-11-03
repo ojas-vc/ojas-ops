@@ -58,6 +58,19 @@ NEXT_PUBLIC_OJAS_OPS_API_URL=http://127.0.0.1:8000
 
 ## 3. Development & Production Commands
 
+### Running Ops Studio with Backend
+To use all live features (e.g., Schedule Runs, Solvers, Call Sheets), ensure the Django-Bolt backend is running:
+
+```bash
+# Terminal 1: Launch Backend API (http://127.0.0.1:8000)
+make dev-backend   # from repository root
+
+# Terminal 2: Launch Ops Studio Frontend (http://localhost:5900)
+make dev-frontend  # from repository root
+```
+
+### Direct Studio Commands
+
 ```bash
 # Start Next.js development server on port 5900
 pnpm dev

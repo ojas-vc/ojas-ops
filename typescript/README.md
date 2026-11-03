@@ -64,14 +64,46 @@ Interactive Next.js 16 App Router application for operations research engineers,
 
 ---
 
-## 4. Development & Build Commands
+## 4. Running Frontend Services & Development Commands
+
+### Development Server (Next.js Ops Studio on Port 5900)
+
+Ops Studio connects to the Django-Bolt backend API (defaulting to `http://127.0.0.1:8000`).
+
+#### Option A: Using Root Makefile (Recommended)
+```bash
+# From repository root:
+make dev-frontend
+```
+
+#### Option B: Using `pnpm` directly
+```bash
+cd typescript
+
+# 1. Install workspace dependencies
+pnpm install
+
+# 2. Start Next.js development server (Turbopack)
+pnpm dev
+# (or directly inside apps/ops-studio: pnpm --filter @ojas-ops/studio dev)
+```
+
+Open your browser at **`http://localhost:5900`** to access the Ops Studio dashboard, Stripboard, DOOD Cast Matrix, Call Sheets, and Solvers.
+
+### Environment Configuration
+The frontend automatically points to `http://127.0.0.1:8000`. To customize the backend endpoint, set `NEXT_PUBLIC_OJAS_OPS_API_URL`:
+```bash
+# In typescript/apps/ops-studio/.env.local (optional):
+NEXT_PUBLIC_OJAS_OPS_API_URL=http://127.0.0.1:8000
+```
+
+---
+
+## 5. Verification & Quality Gates
 
 Run tasks across the entire TypeScript workspace using Turborepo:
 
 ```bash
-# Start Next.js development server
-pnpm dev
-
 # Check TypeScript types across all packages (noEmit)
 pnpm check-types
 

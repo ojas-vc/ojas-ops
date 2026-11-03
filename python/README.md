@@ -46,23 +46,47 @@ uv sync
 
 ## 3. Running Backend Services
 
-### Development Server (Django-Bolt API)
+### Development Server (Django-Bolt API on Port 8000)
 
-The sandbox provides high-performance asynchronous HTTP and WebSocket endpoints powered by Django-Bolt:
+The sandbox provides high-performance asynchronous HTTP and WebSocket endpoints powered by Django-Bolt and Google OR-Tools CP-SAT:
 
+#### Option A: Using Makefile (Recommended)
 ```bash
-cd python/apps/sandbox
-uv run python manage.py runserver 0.0.0.0:8000
+# From repository root:
+make dev-backend
+
+# Or from the python/ directory:
+make dev
 ```
 
-Verify service health:
+#### Option B: Using `uv` directly
 ```bash
+cd python
+
+# 1. Apply database migrations
+uv run python apps/sandbox/manage.py migrate
+
+# 2. Launch Django-Bolt asynchronous API server
+uv run python apps/sandbox/manage.py runbolt --host 0.0.0.0 --port 8000
+```
+
+#### Service Verification & Probes
+Once running, verify service liveness and CP-SAT readiness:
+
+```bash
+# Liveness probe
 curl http://127.0.0.1:8000/healthz
-# {"status": "ok", "service": "ojas-ops-api", "version": "0.1.0"}
+# {"status":"ok","service":"ojas-ops"}
 
+# Readiness probe
 curl http://127.0.0.1:8000/readyz
-# {"ready": "true", "engine": "Google OR-Tools CP-SAT"}
+# {"ready":"true","engine":"Google OR-Tools CP-SAT"}
+
+# Interactive OpenAPI Swagger documentation
+open http://127.0.0.1:8000/docs
 ```
+
+> **Note**: Django-Bolt runs with Rust-accelerated CORS enabled (`Access-Control-Allow-Origin: *`), allowing the Next.js Ops Studio frontend (`http://localhost:5900`) to communicate seamlessly with backend APIs.
 
 ---
 
@@ -125,4 +149,3 @@ The core framework exposes 24 production endpoints in `ojas_ops.api`:
   - `/adapters/marketing-flighting/solve`
   - `/adapters/academic-timetables/solve`
   - `/adapters/event-run-sheets/solve`
-
