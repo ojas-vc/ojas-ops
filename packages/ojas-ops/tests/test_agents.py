@@ -2,19 +2,40 @@
 
 import asyncio
 
+import pytest
 from ojas_ops.agents.elicitation import (
     FILM_EXTRACTION_SYSTEM_PROMPT,
     JOB_SHOP_EXTRACTION_SYSTEM_PROMPT,
 )
 from ojas_ops.agents.providers.anthropic import (
     format_claude_tool_result,
+    get_anthropic_client,
     get_claude_tool_definitions,
     handle_claude_tool_call,
 )
-from ojas_ops.agents.providers.antigravity import get_antigravity_tools
-from ojas_ops.agents.providers.google_adk import ojas_adk_activity_tool
-from ojas_ops.agents.tools.film import audit_dood
-from ojas_ops.agents.tools.manufacturing import optimize_job_shop
+from ojas_ops.agents.providers.antigravity import (
+    get_antigravity_tools,
+    require_antigravity_api_key,
+)
+from ojas_ops.agents.providers.crewai import (
+    get_crewai_tools,
+    require_crewai_api_key,
+)
+from ojas_ops.agents.providers.google_adk import (
+    ojas_adk_activity_tool,
+    require_google_adk_api_key,
+)
+from ojas_ops.agents.providers.langchain import (
+    get_langchain_tools,
+    require_langchain_api_key,
+)
+from ojas_ops.agents.security import MissingAPIKeyError, require_api_key
+from ojas_ops.agents.tools import (
+    AgentTool,
+    audit_dood,
+    default_tool_registry,
+    optimize_job_shop,
+)
 
 SAMPLE_FILM_DATASET = {
     "project_title": "Agent Unit Test Film",
@@ -90,12 +111,34 @@ SAMPLE_FILM_DATASET = {
 }
 
 
+def test_canonical_agent_tool_and_registry():
+    """Verify ToolRegistry and canonical AgentTool execution with dict and string inputs."""
+    assert len(default_tool_registry.all()) == 5
+    film_tool = default_tool_registry.get("optimize_film_schedule")
+    assert isinstance(film_tool, AgentTool)
+    assert film_tool.name == "optimize_film_schedule"
+
+    # Test execution with dict kwargs
+    res_dict = film_tool.run(dataset_dict=SAMPLE_FILM_DATASET, max_time_seconds=3.0)
+    assert res_dict["is_feasible"] is True
+
+    # Test execution with stringified JSON kwargs
+    import msgspec
+
+    json_str = msgspec.json.encode(SAMPLE_FILM_DATASET).decode("utf-8")
+    res_json = film_tool.run(dataset_dict=json_str, max_time_seconds=3.0)
+    assert res_json["is_feasible"] is True
+
+
 def test_antigravity_tools_schema_and_execution():
+    """Verify Antigravity tool declarations from canonical registry."""
     tools = get_antigravity_tools()
-    assert len(tools) == 3
+    assert len(tools) == 5
     tool_names = [t["name"] for t in tools]
     assert "optimize_film_schedule" in tool_names
+    assert "audit_dood" in tool_names
     assert "optimize_job_shop" in tool_names
+    assert "simulate_schedule_delay" in tool_names
     assert "verify_schedule_feasibility" in tool_names
 
     # Test executing film schedule tool handler
@@ -125,23 +168,27 @@ def test_manufacturing_tool_execution():
 
 
 def test_anthropic_claude_tools():
+    """Verify Anthropic Claude specifications and dispatch via canonical registry."""
     tool_defs = get_claude_tool_definitions()
-    assert len(tool_defs) == 3
-    assert tool_defs[0]["name"] == "optimize_film_schedule"
+    assert len(tool_defs) == 5
+    tool_names = [t["name"] for t in tool_defs]
+    assert "optimize_film_schedule" in tool_names
+    assert "audit_dood" in tool_names
+    assert "optimize_job_shop" in tool_names
+    assert "simulate_schedule_delay" in tool_names
+    assert "verify_schedule_feasibility" in tool_names
 
     # Test result formatting
     formatted = format_claude_tool_result("tool_use_999", {"makespan": 120})
     assert formatted["type"] == "tool_result"
     assert formatted["tool_use_id"] == "tool_use_999"
-    assert '"makespan": 120' in formatted["content"]
+    assert "120" in formatted["content"]
     assert formatted["is_error"] is False
 
     # Test handle_claude_tool_call
-    res = asyncio.run(
-        handle_claude_tool_call(
-            "optimize_film_schedule",
-            {"dataset_dict": SAMPLE_FILM_DATASET, "max_time_seconds": 5.0},
-        )
+    res = handle_claude_tool_call(
+        "optimize_film_schedule",
+        {"dataset_dict": SAMPLE_FILM_DATASET, "max_time_seconds": 5.0},
     )
     assert res["is_feasible"] is True
 
@@ -160,48 +207,71 @@ def test_elicitation_prompts():
     assert "operations" in JOB_SHOP_EXTRACTION_SYSTEM_PROMPT
 
 
-def test_crewai_provider_msgspec_structs():
-    import pytest
-    from ojas_ops.agents.providers.crewai import (
-        FilmScheduleInput,
-        ManufacturingScheduleInput,
-        get_crewai_tools,
-    )
+def test_crewai_provider_tools():
+    """Verify CrewAI tool bindings from canonical registry."""
+    tools = get_crewai_tools()
+    assert len(tools) == 5
+    tool_names = [t.name for t in tools]
+    assert "optimize_film_schedule" in tool_names
+    assert "optimize_job_shop" in tool_names
 
-    film_inp = FilmScheduleInput(dataset_json="{}", max_time_seconds=15.0)
-    assert film_inp.max_time_seconds == 15.0
-
-    mfg_inp = ManufacturingScheduleInput(operations_json="[]", machines_json="[]")
-    assert mfg_inp.time_limit_seconds == 30.0
-
-    with pytest.raises(ImportError, match="crewai is not installed"):
-        get_crewai_tools()
-
-
-def test_langchain_provider_msgspec_structs():
-    import msgspec
-    import pytest
-    from ojas_ops.agents.providers.langchain import (
-        FilmToolInput,
-        ManufacturingToolInput,
-        _mfg_tool,
-        get_langchain_tools,
-    )
-
-    film_inp = FilmToolInput(dataset_json="{}", max_time_seconds=20.0)
-    assert film_inp.max_time_seconds == 20.0
-
-    mfg_inp = ManufacturingToolInput(operations_json="[]", machines_json="[]")
-    assert mfg_inp.time_limit_seconds == 30.0
-
-    # Verify msgspec serialization in _mfg_tool
-    ops_json = msgspec.json.encode(
-        [{"id": "OP1", "machine_id": "M1", "duration_minutes": 30}]
-    ).decode("utf-8")
-    macs_json = msgspec.json.encode([{"id": "M1", "hourly_rate": 50.0}]).decode("utf-8")
-    res_str = _mfg_tool(ops_json, macs_json, time_limit_seconds=3.0)
-    res = msgspec.json.decode(res_str.encode("utf-8"))
+    mfg_tool = next(t for t in tools if t.name == "optimize_job_shop")
+    ops = [{"id": "OP1", "machine_id": "M1", "duration_minutes": 20}]
+    macs = [{"id": "M1", "hourly_rate": 40.0}]
+    res = mfg_tool.run(operations=ops, machines=macs, time_limit_seconds=3.0)
     assert res["is_feasible"] is True
 
-    with pytest.raises(ImportError, match="langchain_core is not installed"):
-        get_langchain_tools()
+
+def test_langchain_provider_tools():
+    """Verify LangChain tool bindings from canonical registry."""
+    tools = get_langchain_tools()
+    assert len(tools) == 5
+    tool_names = [t.name for t in tools]
+    assert "optimize_film_schedule" in tool_names
+    assert "audit_dood" in tool_names
+    assert "optimize_job_shop" in tool_names
+
+    film_tool = next(t for t in tools if t.name == "optimize_film_schedule")
+    res = film_tool.func(dataset_dict=SAMPLE_FILM_DATASET, max_time_seconds=3.0)
+    assert res["is_feasible"] is True
+
+
+def test_runtime_api_key_verification(monkeypatch):
+    """Verify lazy runtime API key checks and MissingAPIKeyError."""
+    # Ensure key is absent
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+
+    with pytest.raises(MissingAPIKeyError, match="ANTHROPIC_API_KEY"):
+        require_api_key("ANTHROPIC_API_KEY", "Anthropic Claude")
+
+    with pytest.raises(MissingAPIKeyError, match="ANTHROPIC_API_KEY"):
+        get_anthropic_client()
+
+    with pytest.raises(MissingAPIKeyError, match="OPENAI_API_KEY"):
+        require_crewai_api_key()
+
+    with pytest.raises(MissingAPIKeyError, match="OPENAI_API_KEY"):
+        require_langchain_api_key()
+
+    with pytest.raises(MissingAPIKeyError, match="GOOGLE_API_KEY"):
+        require_antigravity_api_key()
+
+    with pytest.raises(MissingAPIKeyError, match="GOOGLE_API_KEY"):
+        require_google_adk_api_key()
+
+    # Verify success when key is present
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test-key-12345")
+    assert require_api_key("ANTHROPIC_API_KEY", "Anthropic Claude") == "sk-ant-test-key-12345"
+    client = get_anthropic_client()
+    assert client.api_key == "sk-ant-test-key-12345"
+
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-openai-test-key")
+    assert require_crewai_api_key() == "sk-openai-test-key"
+    assert require_langchain_api_key() == "sk-openai-test-key"
+
+    monkeypatch.setenv("GEMINI_API_KEY", "gemini-test-key")
+    assert require_antigravity_api_key() == "gemini-test-key"
+    assert require_google_adk_api_key() == "gemini-test-key"

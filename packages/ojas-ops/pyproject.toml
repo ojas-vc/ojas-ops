@@ -20,8 +20,12 @@ django = [
 temporal = [
     "temporalio>=1.8.0",
 ]
+agents = [
+    "anthropic>=0.40.0",
+    "langchain-core>=0.3.0",
+]
 all = [
-    "ojas-ops[django,temporal]",
+    "ojas-ops[django,temporal,agents]",
 ]
 dev = [
     "pytest>=8.0.0",
@@ -30,6 +34,8 @@ dev = [
     "django>=5.2",
     "django-bolt>=0.13.0",
     "temporalio>=1.8.0",
+    "anthropic>=0.40.0",
+    "langchain-core>=0.3.0",
 ]
 
 [build-system]
