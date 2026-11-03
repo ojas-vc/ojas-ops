@@ -114,8 +114,14 @@ def generate_workforce_scenario(
     horizon_hours: int = 48,
     *,
     seed: int = 42,
+    num_nurses: int | None = None,
+    num_days: int | None = None,
 ) -> ScenarioDefinition:
     """Generate a healthcare or workforce shift-rostering scenario with skill qualification pools."""
+    if num_nurses is not None:
+        num_staff = num_nurses
+    if num_days is not None:
+        horizon_hours = num_days * 24
     rng = random.Random(seed)
     all_skills = ["icu", "triage", "emergency", "pediatric", "general"]
 
@@ -200,8 +206,11 @@ def generate_film_scenario(
     num_locations: int = 4,
     *,
     seed: int = 42,
+    num_actors: int | None = None,
 ) -> ScenarioDefinition:
     """Generate a media/film production shooting schedule scenario with cast and location turnaround."""
+    if num_actors is not None:
+        num_cast = num_actors
     rng = random.Random(seed)
 
     cast_resources = [

@@ -739,12 +739,53 @@ Rescheduling should preserve unaffected portions of an existing schedule wheneve
   - `admin/` (`schedule_run.py`, `optimization_job.py`, `scenario_record.py`, `disruption_log.py`).
   - `migrations/` (`0001_initial.py`).
 - **Rust-Powered HTTP Engine via `django-bolt` (`ojas_ops.api`):**
-  - High-throughput endpoints serving 300k+ req/sec using Actix Web + Tokio + PyO3 with native `msgspec.Struct` decoding:
-    - `POST /schedules/optimize/sync` (synchronous CP-SAT solve for <=30s operations).
-    - `POST /schedules/validate` (independent deterministic validation).
-    - `POST /scenarios/run` (declarative scenario execution and golden verification).
-    - `GET /workflows/{id}/status` (query Temporal optimization job status & incumbent bounds).
-    - `GET /healthz` & `GET /readyz` (liveness and solver readiness checks).
+  - High-throughput endpoints serving 300k+ req/sec using Actix Web + Tokio + PyO3 with full **Class-Based Views (CBVs)** and **Model-Based Views (`ModelViewSet`)**:
+    - **Model-Based Views (`ModelViewSet` with Full CRUD, Pagination & Multi-Tenant Filtering):**
+      - `ScheduleRunModelViewSet` at `/schedules/runs`:
+        - `GET /schedules/runs` (paginated list with `tenant_id` filtering)
+        - `POST /schedules/runs` (create record, HTTP 201)
+        - `GET /schedules/runs/{id}` (retrieve details)
+        - `PUT /schedules/runs/{id}` (full update)
+        - `PATCH /schedules/runs/{id}` (partial update)
+        - `DELETE /schedules/runs/{id}` (destroy, HTTP 204)
+      - `OptimizationJobModelViewSet` at `/workflows/jobs`: Full CRUD for tracking async durable solver runs.
+      - `ScenarioRecordModelViewSet` at `/scenarios/records`: Full CRUD for storing and querying benchmark runs.
+      - `DisruptionLogModelViewSet` at `/simulation/logs`: Full CRUD for audit tracking of operational disruption events.
+    - **Domain Service ViewSets (`ViewSet` with `@action` Methods):**
+      - **Schedules (`ScheduleViewSet` at `/schedules`):**
+        - `POST /schedules/optimize/sync` (synchronous CP-SAT solve for <=30s operations).
+        - `POST /schedules/validate` (independent deterministic validation).
+      - **Workflows (`WorkflowViewSet` at `/workflows`):**
+        - `POST /workflows/solve` (dispatch async durable Temporal workflow for heavy optimization).
+        - `POST /workflows/hitl/start` (dispatch Human-in-the-Loop review and approval workflow).
+        - `GET /workflows/{workflow_id}/status` (query incumbent objective, best bound, and progress).
+        - `POST /workflows/{workflow_id}/signal/approval` (signal approval/rejection with reviewer notes).
+        - `GET /workflows/{workflow_id}/state` (query review status and reviewer decision).
+      - **Simulation & Rescheduling (`SimulationViewSet` at `/simulation`):**
+        - `POST /simulation/simulate` (inject disruptions and compute affected tasks & stability metrics).
+        - `POST /simulation/reschedule` (reactive re-optimization balancing makespan with stability).
+      - **Visualizations & Reports (`VisualizationViewSet` at `/visualizations`):**
+        - `POST /visualizations/stripboard/html` (render interactive HTML stripboard with day breaks).
+        - `POST /visualizations/stripboard/svg` (render vector SVG stripboard).
+        - `POST /visualizations/dood/html` (render interactive DOOD cast utilization matrix).
+        - `POST /visualizations/gantt/svg` (render vector SVG Gantt chart timeline with resource rows).
+        - `POST /visualizations/report/html` (export standalone print-ready HTML page).
+      - **Domain Adapters (`AdaptersViewSet` at `/adapters`):**
+        - `POST /adapters/film/optimize` (extended film shooting schedule optimization with DOOD).
+        - `POST /adapters/manufacturing/optimize` (job-shop sequence optimization with family changeovers).
+        - `POST /adapters/workforce/optimize` (staff shift rostering with qualification matching and rest rules).
+        - `POST /adapters/marketing/optimize` (multi-channel campaign cadence and budget flighting).
+        - `POST /adapters/academic/optimize` (conflict-free academic timetables for classrooms and faculty).
+        - `POST /adapters/events/optimize` (multi-track conference run sheets and hall turnaround buffers).
+      - **Calendars & Cultural Panchang (`CalendarViewSet` at `/calendars`):**
+        - `POST /calendars/cultural/intervals` (compute Rahu Kalam, Yamagandam, and auspicious muhurats).
+        - `POST /calendars/standard/blackouts` (generate operational working shift and weekend blackout windows).
+      - **Scenarios & Benchmarks (`ScenarioViewSet` at `/scenarios`):**
+        - `POST /scenarios/run` (execute declarative scenario JSON and verify golden assertions).
+        - `POST /scenarios/generate` (generate synthetic benchmark scenarios: jobshop, workforce, film).
+    - **Telemetry and Health Probes (`APIView`):**
+      - `HealthCheckView` at `GET /healthz` (liveness probe).
+      - `ReadinessCheckView` at `GET /readyz` (CP-SAT solver engine and runtime readiness probe).
 - **Dedicated Host Sandbox Project (`apps/sandbox/`):**
   - Standalone runnable Django host in `apps/sandbox/` (a first-class `uv` workspace member) with `manage.py`, `pyproject.toml`, `config/settings.py`, `config/urls.py`, and database migrations.
   - Management commands:

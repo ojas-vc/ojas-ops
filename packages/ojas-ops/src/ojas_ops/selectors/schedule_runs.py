@@ -8,9 +8,27 @@ def get_schedule_run_by_id(run_id: int) -> ScheduleRun | None:
     return ScheduleRun.objects.filter(id=run_id).first()
 
 
+async def aget_schedule_run_by_id(run_id: int) -> ScheduleRun | None:
+    """Fetch a ScheduleRun by primary key asynchronously."""
+    return await ScheduleRun.objects.filter(id=run_id).afirst()
+
+
 def list_schedule_runs_for_tenant(
     tenant_id: str = "default",
     limit: int = 50,
 ) -> list[ScheduleRun]:
     """List recent schedule runs for a tenant."""
     return list(ScheduleRun.objects.filter(tenant_id=tenant_id).order_by("-created_at")[:limit])
+
+
+async def alist_schedule_runs_for_tenant(
+    tenant_id: str = "default",
+    limit: int = 50,
+) -> list[ScheduleRun]:
+    """List recent schedule runs for a tenant asynchronously."""
+    return [
+        r
+        async for r in ScheduleRun.objects.filter(tenant_id=tenant_id).order_by("-created_at")[
+            :limit
+        ]
+    ]

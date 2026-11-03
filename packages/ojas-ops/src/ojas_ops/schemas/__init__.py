@@ -1,5 +1,23 @@
 """Typed msgspec schema contracts for Ojas Ops."""
 
+from ojas_ops.schemas.adapters import (
+    AcademicOptimizeRequest,
+    AcademicOptimizeResponse,
+    EventsOptimizeRequest,
+    EventsOptimizeResponse,
+    ManufacturingOptimizeRequest,
+    ManufacturingOptimizeResponse,
+    MarketingOptimizeRequest,
+    MarketingOptimizeResponse,
+    WorkforceOptimizeRequest,
+    WorkforceOptimizeResponse,
+)
+from ojas_ops.schemas.calendars import (
+    CulturalIntervalsRequest,
+    CulturalIntervalsResponse,
+    StandardBlackoutsRequest,
+    StandardBlackoutsResponse,
+)
 from ojas_ops.schemas.common import RequestContext, ScheduleId, TaskId, TenantId
 from ojas_ops.schemas.events import (
     DisruptionInjectedEvent,
@@ -45,8 +63,27 @@ from ojas_ops.schemas.task import (
     TaskPriority,
 )
 from ojas_ops.schemas.time import Horizon, IntervalWindow, TimeWindow
+from ojas_ops.schemas.visualizations import (
+    DOODRenderRequest,
+    GanttRenderRequest,
+    RenderHtmlResponse,
+    RenderSvgResponse,
+    ReportExportRequest,
+    StripboardRenderRequest,
+)
+from ojas_ops.schemas.workflows import (
+    ListWorkflowJobsResponse,
+    WorkflowJobSummary,
+    WorkflowSignalRequest,
+    WorkflowSignalResponse,
+)
 
 __all__ = [
+    "AcademicOptimizeRequest",
+    "AcademicOptimizeResponse",
+    "CulturalIntervalsRequest",
+    "CulturalIntervalsResponse",
+    "DOODRenderRequest",
     "DependencyType",
     "DisruptionContract",
     "DisruptionInjectedEvent",
@@ -54,10 +91,21 @@ __all__ = [
     "DisruptionType",
     "DomainEvent",
     "EventMetadata",
+    "EventsOptimizeRequest",
+    "EventsOptimizeResponse",
+    "GanttRenderRequest",
     "Horizon",
     "IntervalWindow",
+    "ListWorkflowJobsResponse",
+    "ManufacturingOptimizeRequest",
+    "ManufacturingOptimizeResponse",
+    "MarketingOptimizeRequest",
+    "MarketingOptimizeResponse",
     "OptimizeScheduleRequest",
     "OptimizeScheduleResponse",
+    "RenderHtmlResponse",
+    "RenderSvgResponse",
+    "ReportExportRequest",
     "RequestContext",
     "RescheduleRequest",
     "RescheduleResponse",
@@ -79,6 +127,9 @@ __all__ = [
     "SimulateDisruptionResponse",
     "SolveConfigContract",
     "SolveStrategy",
+    "StandardBlackoutsRequest",
+    "StandardBlackoutsResponse",
+    "StripboardRenderRequest",
     "Task",
     "TaskContract",
     "TaskDependency",
@@ -88,4 +139,9 @@ __all__ = [
     "TimeWindow",
     "ValidateScheduleRequest",
     "ValidateScheduleResponse",
+    "WorkflowJobSummary",
+    "WorkflowSignalRequest",
+    "WorkflowSignalResponse",
+    "WorkforceOptimizeRequest",
+    "WorkforceOptimizeResponse",
 ]

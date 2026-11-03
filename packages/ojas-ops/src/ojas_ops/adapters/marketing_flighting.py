@@ -61,8 +61,13 @@ class MarketingChannel(msgspec.Struct, kw_only=True):
 class MarketingFlightingScheduler(DomainAdapter):
     """Schedules synchronized multi-channel advertising flights with lead absorption smoothing."""
 
-    def __init__(self, *, total_campaign_days: int = 60) -> None:
-        self.total_campaign_days = total_campaign_days
+    def __init__(
+        self,
+        *,
+        total_campaign_days: int = 60,
+        horizon_days: int | None = None,
+    ) -> None:
+        self.total_campaign_days = horizon_days if horizon_days is not None else total_campaign_days
         self.channels: dict[str, MarketingChannel] = {}
         self.flights: dict[str, MediaFlight] = {}
 

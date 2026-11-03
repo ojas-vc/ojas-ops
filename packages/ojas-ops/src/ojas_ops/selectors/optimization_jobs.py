@@ -21,3 +21,30 @@ def list_active_jobs(tenant_id: str = "default") -> list[OptimizationJob]:
             status__in=["PENDING", "RUNNING"],
         ).order_by("-created_at")
     )
+
+
+async def alist_active_jobs(
+    tenant_id: str = "default",
+    limit: int = 50,
+) -> list[OptimizationJob]:
+    """List currently pending or running optimization jobs asynchronously."""
+    return [
+        j
+        async for j in OptimizationJob.objects.filter(
+            tenant_id=tenant_id,
+            status__in=["PENDING", "RUNNING"],
+        ).order_by("-created_at")[:limit]
+    ]
+
+
+async def alist_recent_jobs(
+    tenant_id: str = "default",
+    limit: int = 50,
+) -> list[OptimizationJob]:
+    """List recent optimization jobs for tenant asynchronously."""
+    return [
+        j
+        async for j in OptimizationJob.objects.filter(
+            tenant_id=tenant_id,
+        ).order_by("-created_at")[:limit]
+    ]

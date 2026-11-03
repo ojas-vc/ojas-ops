@@ -157,3 +157,63 @@ def test_sandbox_database_persistence():
         affected_tasks=["task_1"],
     )
     assert disruption.id is not None
+
+
+def test_sandbox_simulation_endpoints(client):
+    sim_payload = {
+        "tenant_id": "tenant_sandbox",
+        "schedule_id": "sched_sb_01",
+        "baseline_schedule": {
+            "status": "optimal",
+            "makespan": 120,
+            "tasks": {
+                "t1": {
+                    "task_id": "t1",
+                    "start": 0,
+                    "end": 60,
+                    "duration": 60,
+                    "assigned_resources": ["r1"],
+                }
+            },
+        },
+        "disruptions": [
+            {
+                "disruption_type": "task_delay",
+                "task_id": "t1",
+                "delay_minutes": 20,
+                "description": "Late setup",
+            }
+        ],
+    }
+    resp = client.post("/simulation/simulate", json=sim_payload)
+    assert resp.status_code == 200
+    assert resp.json()["new_makespan"] == 140
+
+
+def test_sandbox_visualizations(client):
+    gantt_payload = {
+        "tasks": [{"id": "t1", "resource": "res1", "start": 0, "end": 60}],
+        "resources": ["res1"],
+        "total_makespan": 60,
+    }
+    resp = client.post("/visualizations/gantt/svg", json=gantt_payload)
+    assert resp.status_code == 200
+    assert "<svg" in resp.json()["svg"]
+
+
+def test_sandbox_calendars(client):
+    resp = client.post(
+        "/calendars/cultural/intervals",
+        json={"horizon_days": 3},
+    )
+    assert resp.status_code == 200
+    assert len(resp.json()["blackout_windows"]) > 0
+
+
+def test_sandbox_scenarios_generate(client):
+    resp = client.post(
+        "/scenarios/generate",
+        json={"scenario_type": "jobshop", "num_jobs": 3, "num_machines": 2},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["scenario_type"] == "jobshop"

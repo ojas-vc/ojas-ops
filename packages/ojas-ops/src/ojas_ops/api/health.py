@@ -1,17 +1,19 @@
-"""Health and telemetry metrics API router."""
+"""Class-Based APIViews for health probes and readiness telemetry."""
 
-from django_bolt import Router
-
-router = Router()
+from django_bolt import APIView
 
 
-@router.get("/healthz")
-async def health_check() -> dict[str, str]:
-    """Basic service health check."""
-    return {"status": "ok", "service": "ojas-ops"}
+class HealthCheckView(APIView):
+    """Liveness probe reporting service status."""
+
+    async def get(self, request) -> dict[str, str]:
+        """Basic service health check."""
+        return {"status": "ok", "service": "ojas-ops"}
 
 
-@router.get("/readyz")
-async def readiness_check() -> dict[str, str]:
-    """Readiness probe checking solver dependencies."""
-    return {"ready": "true", "engine": "google-ortools-cp-sat"}
+class ReadinessCheckView(APIView):
+    """Readiness probe checking CP-SAT solver and runtime engine dependencies."""
+
+    async def get(self, request) -> dict[str, str]:
+        """Readiness probe checking solver dependencies."""
+        return {"ready": "true", "engine": "google-ortools-cp-sat"}
