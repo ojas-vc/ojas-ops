@@ -1,0 +1,18 @@
+name: iatse-commercial
+version: "1.0"
+domain: film-production
+description: IATSE National Commercial Agreement parameters for commercial spots and high-turnaround branded shoots.
+
+parameters:
+  max_regular_hours: 10
+  meal_penalty_trigger_hours: 6
+  turnaround_rest_hours: 10
+  sixth_day_overtime_multiplier: 1.5
+  seventh_day_overtime_multiplier: 2.0
+
+hard_constraints:
+  - "First meal break must be called no later than 6 hours after general call."
+  - "Minimum 10 hours rest turnaround between dismiss call and subsequent call."
+
+soft_constraints:
+  - "Minimize sixth consecutive day commercial crew calls."

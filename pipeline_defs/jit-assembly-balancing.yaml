@@ -1,0 +1,27 @@
+name: jit-assembly-balancing
+version: "1.0"
+description: Just-In-Time (JIT) assembly line balancing optimizing station cycle times, sub-assembly buffers, and dock synchronizations.
+category: manufacturing
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - automotive-oem
+
+stages:
+  - name: line_balancing
+    skill: skills/pipelines/jit-assembly-balancing/line-balancing-director.md
+    required_artifacts_in: []
+    produces:
+      - takt_time_assignments
+      - workstation_cycle_metrics
+    checkpoint_required: true
+
+  - name: buffer_synchronization
+    skill: skills/pipelines/jit-assembly-balancing/buffer-director.md
+    required_artifacts_in:
+      - takt_time_assignments
+    produces:
+      - kanban_buffer_limits
+      - dock_delivery_intervals
+    checkpoint_required: true
+    human_approval_default: true

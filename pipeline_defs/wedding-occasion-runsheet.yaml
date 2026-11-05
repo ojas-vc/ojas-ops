@@ -1,0 +1,27 @@
+name: wedding-occasion-runsheet
+version: "1.0"
+description: Multi-day luxury and cultural wedding event run-sheet sequencing vendor load-ins, ceremony rituals, muhurat anchors, and hospitality logistics.
+category: events
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - vedic-muhurat-standard
+
+stages:
+  - name: ritual_anchoring
+    skill: skills/pipelines/wedding-occasion-runsheet/ritual-director.md
+    required_artifacts_in: []
+    produces:
+      - sacred_muhurat_milestones
+      - venue_availability_windows
+    checkpoint_required: true
+
+  - name: runsheet_sequencing
+    skill: skills/pipelines/wedding-occasion-runsheet/runsheet-director.md
+    required_artifacts_in:
+      - sacred_muhurat_milestones
+    produces:
+      - master_wedding_runsheet
+      - vendor_dispatch_timeline
+    checkpoint_required: true
+    human_approval_default: true

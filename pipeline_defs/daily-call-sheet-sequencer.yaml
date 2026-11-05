@@ -1,0 +1,37 @@
+name: daily-call-sheet-sequencer
+version: "1.0"
+description: Level 2 intra-day shot sequencing optimizing camera setup angles, solar ephemeris, talent turnaround, and statutory meal breaks.
+category: media_production
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - sag-aftra-theatrical
+  - fwice-bollywood
+  - iatse-commercial
+
+stages:
+  - name: solar_ephemeris
+    skill: skills/pipelines/daily-call-sheet-sequencer/solar-ephemeris-director.md
+    required_artifacts_in: []
+    produces:
+      - sun_azimuth_windows
+      - golden_hour_schedule
+    checkpoint_required: true
+
+  - name: setup_sequencing
+    skill: skills/pipelines/daily-call-sheet-sequencer/setup-sequencer-director.md
+    required_artifacts_in:
+      - sun_azimuth_windows
+    produces:
+      - intra_day_shot_sequence
+      - camera_relocation_matrix
+    checkpoint_required: true
+
+  - name: call_sheet_gate
+    skill: skills/pipelines/daily-call-sheet-sequencer/call-sheet-director.md
+    required_artifacts_in:
+      - intra_day_shot_sequence
+    produces:
+      - published_daily_call_sheet
+    checkpoint_required: true
+    human_approval_default: true

@@ -1,0 +1,21 @@
+name: fwice-bollywood
+version: "1.0"
+domain: film-production
+description: Federation of Western India Cine Employees (FWICE) working guidelines for Mumbai film & television shoots.
+
+parameters:
+  max_daily_hours: 12
+  mandatory_meal_interval_hours: 5
+  sunday_rest_mandatory: true
+  bhatta_lunch_minutes: 60
+  conveyance_night_cutoff: "22:00"
+  turnaround_rest_hours: 12
+
+hard_constraints:
+  - "Shifts exceeding 12 hours require union shop-steward penalty approval."
+  - "Sunday shoots forbidden unless compensated with double overtime bhatta."
+  - "Mandatory 12-hour turnaround between camera wrap and subsequent call."
+
+soft_constraints:
+  - "Minimize night shoot clusters exceeding 3 consecutive nights."
+  - "Prefer indoor studio floor setups during peak Mumbai monsoon months (June-August)."

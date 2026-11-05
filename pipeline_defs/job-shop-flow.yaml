@@ -1,0 +1,103 @@
+name: job-shop-flow
+version: "1.0"
+description: Disjunctive discrete manufacturing job-shop scheduling optimizing machine routing, sequence-dependent setup times (SDST), and shift handovers.
+category: manufacturing
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - automotive-oem
+  - iso9001-cleanroom
+
+orchestration:
+  mode: hybrid
+  skill: skills/pipelines/job-shop-flow/plant-scheduler.md
+  solver_timeout_seconds_default: 60.0
+  max_revisions_per_stage: 3
+
+stages:
+  - name: routing
+    skill: skills/pipelines/job-shop-flow/routing-director.md
+    required_artifacts_in: []
+    produces:
+      - operations_bom
+      - machine_capabilities
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Valid machine assignments
+      - Complete BOM precedence DAG
+    success_criteria:
+      - Zero unassigned operations
+      - Acyclic precedence graph
+
+  - name: setup_matrix
+    skill: skills/pipelines/job-shop-flow/setup-matrix-director.md
+    required_artifacts_in:
+      - operations_bom
+      - machine_capabilities
+    produces:
+      - sdst_matrix
+      - tooling_changeover_costs
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Triangle inequality conformance
+      - Minimum calibration holding times
+    success_criteria:
+      - Complete N x N setup transition matrix
+
+  - name: schedule
+    skill: skills/pipelines/job-shop-flow/schedule-director.md
+    required_artifacts_in:
+      - operations_bom
+      - machine_capabilities
+      - sdst_matrix
+    produces:
+      - job_shop_schedule
+      - machine_utilization_metrics
+    tools_available:
+      - optimize_job_shop
+      - verify_schedule_feasibility
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Minimum makespan
+      - Zero overlapping operations on same spindle
+    success_criteria:
+      - Zero disjunctive machine overlaps
+      - 0 hard constraint violations
+
+  - name: dispatch
+    skill: skills/pipelines/job-shop-flow/dispatch-director.md
+    required_artifacts_in:
+      - job_shop_schedule
+    produces:
+      - work_centre_dispatch_queue
+      - operator_shift_allocations
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Shift handover ergonomics
+      - Buffer inventory thresholds
+    success_criteria:
+      - Plant supervisor formal sign-off
+
+  - name: qa
+    skill: skills/pipelines/job-shop-flow/qa-director.md
+    required_artifacts_in:
+      - work_centre_dispatch_queue
+    produces:
+      - quality_inspection_docket
+      - preventive_maintenance_log
+    tools_available:
+      - verify_schedule_feasibility
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Tool wear cycles
+      - Quality inspection dwell conformance
+    success_criteria:
+      - Ready for shop floor production release

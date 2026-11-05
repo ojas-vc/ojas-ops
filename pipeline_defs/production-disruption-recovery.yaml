@@ -1,0 +1,31 @@
+name: production-disruption-recovery
+version: "1.0"
+description: Reactive incident triage and Pareto schedule recovery balancing makespan, rework cost, and schedule perturbation.
+category: media_production
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - sag-aftra-theatrical
+  - fwice-bollywood
+
+stages:
+  - name: incident_triage
+    skill: skills/pipelines/production-disruption-recovery/incident-triage-director.md
+    required_artifacts_in: []
+    produces:
+      - disruption_incident_report
+      - affected_task_clusters
+    checkpoint_required: true
+
+  - name: stability_reschedule
+    skill: skills/pipelines/production-disruption-recovery/recovery-director.md
+    required_artifacts_in:
+      - disruption_incident_report
+    produces:
+      - rescheduled_stripboard
+      - perturbation_scorecard
+    tools_available:
+      - simulate_schedule_delay
+      - verify_schedule_feasibility
+    checkpoint_required: true
+    human_approval_default: true

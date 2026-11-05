@@ -1,0 +1,27 @@
+name: surgical-suite-allocator
+version: "1.0"
+description: Operating Room (OR) surgical suite bin-packing optimizing block time utilization, surgeon availability, and sterilization turnovers.
+category: healthcare
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - icu-acuity-california
+
+stages:
+  - name: surgical_demand_intake
+    skill: skills/pipelines/surgical-suite-allocator/intake-director.md
+    required_artifacts_in: []
+    produces:
+      - elective_case_queue
+      - surgeon_block_entitlements
+    checkpoint_required: true
+
+  - name: suite_bin_packing
+    skill: skills/pipelines/surgical-suite-allocator/or-allocator-director.md
+    required_artifacts_in:
+      - elective_case_queue
+    produces:
+      - or_suite_schedule
+      - turnover_sterilization_windows
+    checkpoint_required: true
+    human_approval_default: true

@@ -1,0 +1,20 @@
+name: automotive-oem
+version: "1.0"
+domain: manufacturing
+description: Tier-1 Automotive OEM manufacturing policies governing sequence-dependent setups, tool life wear, and JIT dock delivery windows.
+
+parameters:
+  max_consecutive_shift_hours: 8
+  min_preventive_maintenance_interval_hours: 48
+  tooling_changeover_penalty_weight: 15.0
+  buffer_stock_safety_margin_hours: 4
+  quality_inspection_dwell_minutes: 20
+
+hard_constraints:
+  - "Zero overlapping disjunctive machine operations on identical CNC spindles."
+  - "Mandatory tool calibration block after 1,200 continuous operational cycles."
+  - "Raw material delivery dock windows must precede operation release by at least 2 hours."
+
+soft_constraints:
+  - "Minimize sequence-dependent setup time (SDST) color-and-die changeovers."
+  - "Smooth total plant power consumption during peak tariff grid hours (14:00-18:00)."

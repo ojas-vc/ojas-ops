@@ -1,0 +1,21 @@
+name: vedic-muhurat-standard
+version: "1.0"
+domain: cultural
+description: Canonical Vedic astrological standards governing Shubh Muhurat window selection, planetary ephemeris, and inauspicious temporal exclusions.
+
+parameters:
+  exclude_rahu_kalam: true
+  exclude_yamagandam: true
+  exclude_gulika_kalam: true
+  enable_abhijit_muhurat: true
+  choghadiya_prioritize: ["Amrit", "Shubh", "Labh"]
+  choghadiya_forbidden: ["Rog", "Kaal", "Udveg"]
+
+hard_constraints:
+  - "Inauguration, muhurat shots, and foundation laying strictly forbidden during Rahu Kalam."
+  - "Major life/corporate contract signatures forbidden during Yamagandam."
+  - "Planetary hora and nakshatra compatibility score must meet or exceed minimum threshold."
+
+soft_constraints:
+  - "Prioritize midday Abhijit Muhurat (8th muhurat of the day) for auspicious start."
+  - "Align muhurat with ascending Shukla Paksha lunar phase when calendar permits."

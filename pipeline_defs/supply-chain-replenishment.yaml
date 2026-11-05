@@ -1,0 +1,26 @@
+name: supply-chain-replenishment
+version: "1.0"
+description: Multi-echelon inventory replenishment waves synchronizing supplier lead times, buffer stocks, and transit waves.
+category: logistics
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - automotive-oem
+
+stages:
+  - name: demand_wave_forecasting
+    skill: skills/pipelines/supply-chain-replenishment/forecast-director.md
+    required_artifacts_in: []
+    produces:
+      - demand_forecast_waves
+    checkpoint_required: true
+
+  - name: inventory_allocation
+    skill: skills/pipelines/supply-chain-replenishment/replenishment-director.md
+    required_artifacts_in:
+      - demand_forecast_waves
+    produces:
+      - supplier_purchase_orders
+      - warehouse_replenishment_schedule
+    checkpoint_required: true
+    human_approval_default: true

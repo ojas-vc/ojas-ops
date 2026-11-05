@@ -251,3 +251,7 @@ typescript/**/out/
 .pm2/
 dump.rdb
 .pnpm-store/
+
+# Dynamic project stores
+/projects/
+/python/projects/

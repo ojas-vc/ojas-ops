@@ -1,0 +1,80 @@
+name: muhurat-auspicious-scheduler
+version: "1.0"
+description: Vedic astronomical and astrological calendar pipeline computing auspicious muhurats while excluding inauspicious planetary intervals.
+category: cultural
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - vedic-muhurat-standard
+
+orchestration:
+  mode: hybrid
+  skill: skills/pipelines/muhurat-auspicious-scheduler/astrological-consultant.md
+  solver_timeout_seconds_default: 30.0
+  max_revisions_per_stage: 3
+
+stages:
+  - name: panchang_ephemeris
+    skill: skills/pipelines/muhurat-auspicious-scheduler/panchang-ephemeris-director.md
+    required_artifacts_in: []
+    produces:
+      - planetary_ephemeris_data
+      - solar_lunar_transitions
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Sunrise, solar noon, and sunset calculations for geographic latitude/longitude
+      - Tithi, Vara, Nakshatra, Yoga, and Karana mapping
+    success_criteria:
+      - Verified local astronomical ephemeris
+
+  - name: rahu_kalam_exclusion
+    skill: skills/pipelines/muhurat-auspicious-scheduler/rahu-kalam-exclusion-director.md
+    required_artifacts_in:
+      - planetary_ephemeris_data
+    produces:
+      - inauspicious_blackout_windows
+      - yamagandam_intervals
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Strict 1/8th daytime interval calculation for Rahu Kalam and Yamagandam
+      - Gulika Kalam and Durmuhurtam windows
+    success_criteria:
+      - Complete temporal blackout windows mapped
+
+  - name: muhurat_window
+    skill: skills/pipelines/muhurat-auspicious-scheduler/muhurat-window-director.md
+    required_artifacts_in:
+      - planetary_ephemeris_data
+      - inauspicious_blackout_windows
+    produces:
+      - candidate_muhurat_windows
+      - choghadiya_rankings
+    tools_available:
+      - verify_schedule_feasibility
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Zero intersection with Rahu Kalam and Yamagandam
+      - Abhijit Muhurat prioritization
+      - Event compatibility (Inauguration, Contract Signing, Muhurat Shot)
+    success_criteria:
+      - Human Astrological Consultant sign-off on chosen window
+
+  - name: certified_docket
+    skill: skills/pipelines/muhurat-auspicious-scheduler/certified-docket-director.md
+    required_artifacts_in:
+      - candidate_muhurat_windows
+    produces:
+      - certified_muhurat_docket
+      - calendar_ics_export
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Formal astrological certificate generation
+    success_criteria:
+      - Export-ready auspicious docket

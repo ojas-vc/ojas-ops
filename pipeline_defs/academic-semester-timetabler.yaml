@@ -1,0 +1,25 @@
+name: academic-semester-timetabler
+version: "1.0"
+description: University Course-Room-Cohort timetabling eliminating student cohort collisions and faculty preference breaches.
+category: education
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets: []
+
+stages:
+  - name: curriculum_mapping
+    skill: skills/pipelines/academic-semester-timetabler/curriculum-director.md
+    required_artifacts_in: []
+    produces:
+      - cohort_course_requirements
+    checkpoint_required: true
+
+  - name: timetable_solve
+    skill: skills/pipelines/academic-semester-timetabler/timetabler-director.md
+    required_artifacts_in:
+      - cohort_course_requirements
+    produces:
+      - semester_master_timetable
+      - room_occupancy_matrix
+    checkpoint_required: true
+    human_approval_default: true

@@ -32,6 +32,22 @@ class ToolRegistry:
         """Return list of all registered tools."""
         return list(self._tools.values())
 
+    def find_by_capability(self, capability: str) -> list[AgentTool]:
+        """Find tools supporting a given operational capability."""
+        return [
+            tool
+            for tool in self._tools.values()
+            if tool.capability == capability or capability in tool.supports
+        ]
+
+    def find_by_skill(self, skill_name: str) -> list[AgentTool]:
+        """Find tools assigned to a given stage director skill."""
+        return [
+            tool
+            for tool in self._tools.values()
+            if skill_name in tool.agent_skills
+        ]
+
     def get_antigravity_tools(self) -> list[dict[str, Any]]:
         """Export all tools formatted for Google Antigravity."""
         return [tool.to_antigravity() for tool in self._tools.values()]
@@ -93,6 +109,10 @@ def create_default_registry() -> ToolRegistry:
                 "required": ["dataset_dict"],
             },
             fn=optimize_film_shoot,
+            capability="film-crossboarding",
+            provider="ortools-cpsat",
+            tier="core",
+            agent_skills=["crossboard-director"],
         )
     )
 
@@ -120,6 +140,10 @@ def create_default_registry() -> ToolRegistry:
                 "required": ["dataset_dict"],
             },
             fn=audit_dood,
+            capability="dood-audit",
+            provider="ojas-ops",
+            tier="core",
+            agent_skills=["dood-director"],
         )
     )
 
@@ -153,6 +177,10 @@ def create_default_registry() -> ToolRegistry:
                 "required": ["operations", "machines"],
             },
             fn=optimize_job_shop,
+            capability="job-shop-flow",
+            provider="ortools-cpsat",
+            tier="core",
+            agent_skills=["schedule-director"],
         )
     )
 
@@ -190,6 +218,10 @@ def create_default_registry() -> ToolRegistry:
             },
             fn=simulate_schedule_delay,
             is_async=True,
+            capability="disruption-simulation",
+            provider="ojas-ops",
+            tier="advanced",
+            agent_skills=["simulation-director"],
         )
     )
 
@@ -223,6 +255,10 @@ def create_default_registry() -> ToolRegistry:
             },
             fn=verify_schedule_feasibility,
             is_async=True,
+            capability="schedule-validation",
+            provider="ojas-ops",
+            tier="core",
+            agent_skills=["validator-reviewer"],
         )
     )
 

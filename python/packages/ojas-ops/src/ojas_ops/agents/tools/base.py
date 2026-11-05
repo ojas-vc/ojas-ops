@@ -23,6 +23,12 @@ class AgentTool(msgspec.Struct, kw_only=True):
     fn: Callable[..., Any]
     input_type: type[msgspec.Struct] | None = None
     is_async: bool = False
+    capability: str = ""
+    provider: str = "ojas-ops"
+    tier: str = "core"
+    agent_skills: list[str] = msgspec.field(default_factory=list)
+    supports: list[str] = msgspec.field(default_factory=list)
+    fallback_tools: list[str] = msgspec.field(default_factory=list)
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
         """Universal synchronous runner handling dictionaries or stringified JSON payloads."""

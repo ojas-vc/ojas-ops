@@ -1,0 +1,26 @@
+name: flow-shop-batching
+version: "1.0"
+description: Continuous flow manufacturing and Clean-in-Place (CIP) batch scheduling for pharmaceutical and chemical lines.
+category: manufacturing
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - iso9001-cleanroom
+
+stages:
+  - name: batch_sizing
+    skill: skills/pipelines/flow-shop-batching/batch-sizing-director.md
+    required_artifacts_in: []
+    produces:
+      - production_batch_manifest
+    checkpoint_required: true
+
+  - name: flow_scheduling
+    skill: skills/pipelines/flow-shop-batching/flow-scheduling-director.md
+    required_artifacts_in:
+      - production_batch_manifest
+    produces:
+      - continuous_flow_schedule
+      - cleanroom_holding_audit
+    checkpoint_required: true
+    human_approval_default: true

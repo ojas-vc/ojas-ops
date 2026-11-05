@@ -1,0 +1,20 @@
+name: tech-conference-standard
+version: "1.0"
+domain: events
+description: Premier Multi-Track Technical Conference curation policies, keynote anchors, speaker buffers, and track cannibalization prevention.
+
+parameters:
+  speaker_transit_buffer_minutes: 20
+  qa_buffer_minutes: 10
+  keynote_plenary_lockout: true
+  max_concurrent_same_topic_tracks: 1
+  lunch_break_minutes: 75
+
+hard_constraints:
+  - "Zero breakout track scheduling during plenary Keynote addresses."
+  - "No speaker may be double-booked or have less than 20 minutes buffer between sessions."
+  - "Directly competing topics (e.g. LLM Reasoning) cannot be scheduled in concurrent slots."
+
+soft_constraints:
+  - "Balance room capacity with historical session registration interest."
+  - "Cluster sponsor showcase sessions during afternoon coffee breaks."

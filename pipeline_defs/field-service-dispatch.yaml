@@ -1,0 +1,25 @@
+name: field-service-dispatch
+version: "1.0"
+description: Vehicle Routing Problem with Time Windows (VRPTW) dispatching technician fleets across customer service orders.
+category: logistics
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets: []
+
+stages:
+  - name: order_clustering
+    skill: skills/pipelines/field-service-dispatch/geo-cluster-director.md
+    required_artifacts_in: []
+    produces:
+      - geographic_work_clusters
+    checkpoint_required: true
+
+  - name: route_dispatch
+    skill: skills/pipelines/field-service-dispatch/dispatch-director.md
+    required_artifacts_in:
+      - geographic_work_clusters
+    produces:
+      - technician_route_manifest
+      - travel_time_efficiency_metrics
+    checkpoint_required: true
+    human_approval_default: true

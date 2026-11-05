@@ -1,0 +1,99 @@
+name: clinical-shift-rostering
+version: "1.0"
+description: Constrained clinical workforce shift rostering enforcing Title 22 patient acuity ratios, union fatigue constraints, and rotational equity.
+category: healthcare
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - icu-acuity-california
+
+orchestration:
+  mode: hybrid
+  skill: skills/pipelines/clinical-shift-rostering/chief-nursing-officer.md
+  solver_timeout_seconds_default: 60.0
+  max_revisions_per_stage: 3
+
+stages:
+  - name: census_acuity
+    skill: skills/pipelines/clinical-shift-rostering/census-acuity-director.md
+    required_artifacts_in: []
+    produces:
+      - patient_acuity_census
+      - unit_bed_matrix
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Acuity classification (Level 1 ICU to Level 4 Med-Surg)
+      - Bed census forecast
+    success_criteria:
+      - Verified census per 4-hour window
+
+  - name: shift_demand
+    skill: skills/pipelines/clinical-shift-rostering/shift-demand-director.md
+    required_artifacts_in:
+      - patient_acuity_census
+      - unit_bed_matrix
+    produces:
+      - nurse_demand_matrix
+      - specialty_skill_requirements
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Mandatory Title 22 nurse-to-patient ratio enforcement
+      - Dedicated charge nurse exclusion from patient assignments
+    success_criteria:
+      - Complete required nurse hours mapped across Day, Evening, and Night blocks
+
+  - name: roster_optimization
+    skill: skills/pipelines/clinical-shift-rostering/roster-optimization-director.md
+    required_artifacts_in:
+      - nurse_demand_matrix
+      - specialty_skill_requirements
+    produces:
+      - clinical_shift_roster
+      - individual_nurse_schedules
+    tools_available:
+      - verify_schedule_feasibility
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Maximum 3 consecutive 12-hour shifts
+      - Minimum 48 hours continuous rest post night block
+      - Zero double booking
+    success_criteria:
+      - 0 Hard labor/statutory violations
+
+  - name: fatigue_equity
+    skill: skills/pipelines/clinical-shift-rostering/fatigue-equity-director.md
+    required_artifacts_in:
+      - clinical_shift_roster
+    produces:
+      - fatigue_compliance_audit
+      - gini_equity_scorecard
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: true
+    review_focus:
+      - Weekend rotation balance
+      - Night-to-day rotational whip minimization
+    success_criteria:
+      - Chief Nursing Officer (CNO) sign-off
+      - Gini coefficient <= 0.18 for weekend shifts
+
+  - name: handover
+    skill: skills/pipelines/clinical-shift-rostering/handover-director.md
+    required_artifacts_in:
+      - clinical_shift_roster
+      - fatigue_compliance_audit
+    produces:
+      - published_unit_roster_calendar
+      - nurse_notification_dockets
+    tools_available: []
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Shift overlap 30-minute clinical handover window
+    success_criteria:
+      - Published to staff mobile portal

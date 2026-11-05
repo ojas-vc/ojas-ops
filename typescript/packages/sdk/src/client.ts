@@ -18,6 +18,8 @@ import type {
   GanttRenderRequest,
   GateApprovalRequest,
   GateApprovalResponse,
+  GateRevisionRequest,
+  GateRevisionResponse,
   GenerateScenarioRequest,
   GeneratedScenarioSummary,
   HealthResponse,
@@ -29,6 +31,7 @@ import type {
   OptimizeScheduleRequest,
   OptimizeScheduleResponse,
   PaginatedResponse,
+  PipelineEventItem,
   PipelineManifest,
   PipelineManifestSummary,
   ProductionDataset,
@@ -50,6 +53,8 @@ import type {
   ScheduleRunRecord,
   SimulateDisruptionRequest,
   SimulateDisruptionResponse,
+  StageRunRequest,
+  StageRunResponse,
   StandardBlackoutsRequest,
   StandardBlackoutsResponse,
   StripboardRenderRequest,
@@ -587,6 +592,53 @@ export class OjasOpsClient {
           method: "POST",
           body: JSON.stringify(payload),
         }
+      );
+    },
+
+    runStage: async (
+      projectId: string,
+      stageName: string,
+      payload: StageRunRequest = {}
+    ): Promise<StageRunResponse> => {
+      return this.request<StageRunResponse>(
+        `/projects/${encodeURIComponent(projectId)}/stages/${encodeURIComponent(stageName)}/run`,
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }
+      );
+    },
+
+    reviseGate: async (
+      projectId: string,
+      stageName: string,
+      payload: GateRevisionRequest
+    ): Promise<GateRevisionResponse> => {
+      return this.request<GateRevisionResponse>(
+        `/projects/${encodeURIComponent(projectId)}/gates/${encodeURIComponent(stageName)}/revise`,
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }
+      );
+    },
+
+    getArtifact: async (
+      projectId: string,
+      artifactName: string,
+      tenantId = "default"
+    ): Promise<Record<string, unknown>> => {
+      return this.request<Record<string, unknown>>(
+        `/projects/${encodeURIComponent(projectId)}/artifacts/${encodeURIComponent(artifactName)}?tenant_id=${encodeURIComponent(tenantId)}`
+      );
+    },
+
+    getEvents: async (
+      projectId: string,
+      tenantId = "default"
+    ): Promise<PipelineEventItem[]> => {
+      return this.request<PipelineEventItem[]>(
+        `/projects/${encodeURIComponent(projectId)}/events?tenant_id=${encodeURIComponent(tenantId)}`
       );
     },
   };

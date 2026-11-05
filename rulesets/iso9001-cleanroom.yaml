@@ -1,0 +1,17 @@
+name: iso9001-cleanroom
+version: "1.0"
+domain: manufacturing
+description: ISO 14644 Cleanroom Class 5 to Class 8 manufacturing specifications and CIP (Clean-in-Place) sanitation cycles.
+
+parameters:
+  max_uncleaned_hold_hours: 8
+  cip_cycle_duration_minutes: 90
+  environmental_settling_minutes: 30
+  pressure_differential_pascals: 15
+
+hard_constraints:
+  - "No batch processing permitted if Clean-in-Place (CIP) hold time exceeds 8 hours."
+  - "Mandatory 30-minute environmental particle settling window post sanitation."
+
+soft_constraints:
+  - "Cluster similar product families to minimize full cleanroom sterilization cycles."

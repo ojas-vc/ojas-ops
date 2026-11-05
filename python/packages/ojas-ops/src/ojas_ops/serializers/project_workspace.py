@@ -1,44 +1,37 @@
 """Serializers for ProjectWorkspace operational model."""
 
-from rest_framework import serializers
+from __future__ import annotations
 
-from ojas_ops.models.project_workspace import ProjectWorkspace
+from typing import Any
+
+from django_bolt.serializers import Serializer
 
 
-class ProjectWorkspaceSerializer(serializers.ModelSerializer):
+class ProjectWorkspaceSerializer(Serializer):
     """Full serializer for ProjectWorkspace instances."""
 
-    class Meta:
-        model = ProjectWorkspace
-        fields = [
-            "id",
-            "tenant_id",
-            "project_id",
-            "title",
-            "pipeline_type",
-            "ruleset",
-            "status",
-            "current_stage",
-            "temporal_workflow_id",
-            "completed_stages",
-            "metadata",
-            "created_at",
-            "updated_at",
-        ]
-        read_only_fields = ["id", "created_at", "updated_at"]
+    id: int
+    tenant_id: str
+    project_id: str
+    title: str
+    pipeline_type: str
+    ruleset: str = ""
+    status: str = "IN_PROGRESS"
+    current_stage: str = ""
+    temporal_workflow_id: str = ""
+    completed_stages: list[str] = []
+    metadata: dict[str, Any] = {}
+    created_at: str = ""
+    updated_at: str = ""
 
 
-class ProjectWorkspaceCreateSerializer(serializers.ModelSerializer):
+class ProjectWorkspaceCreateSerializer(Serializer):
     """Serializer for initializing a new ProjectWorkspace."""
 
-    class Meta:
-        model = ProjectWorkspace
-        fields = [
-            "tenant_id",
-            "project_id",
-            "title",
-            "pipeline_type",
-            "ruleset",
-            "metadata",
-        ]
+    project_id: str
+    title: str
+    pipeline_type: str
+    tenant_id: str = "default"
+    ruleset: str = ""
+    metadata: dict[str, Any] = {}
 

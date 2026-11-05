@@ -1,0 +1,27 @@
+name: festival-workforce-rebalance
+version: "1.0"
+description: Regional lunar and cultural festival leave scheduling rebalancing shift coverage during peak holiday surges (Diwali, Eid, Lunar New Year).
+category: cultural
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - vedic-muhurat-standard
+
+stages:
+  - name: holiday_leave_intake
+    skill: skills/pipelines/festival-workforce-rebalance/leave-director.md
+    required_artifacts_in: []
+    produces:
+      - festival_leave_requests
+      - minimum_safe_manning_thresholds
+    checkpoint_required: true
+
+  - name: roster_rebalance
+    skill: skills/pipelines/festival-workforce-rebalance/rebalance-director.md
+    required_artifacts_in:
+      - festival_leave_requests
+    produces:
+      - festival_shift_rebalance_schedule
+      - compensatory_leave_ledger
+    checkpoint_required: true
+    human_approval_default: true

@@ -1,0 +1,28 @@
+name: workforce-fatigue-compliance
+version: "1.0"
+description: Labor union and statutory fatigue compliance auditing, identifying forced calls, turnaround breaches, and schedule repair.
+category: healthcare
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - icu-acuity-california
+  - sag-aftra-theatrical
+
+stages:
+  - name: fatigue_audit
+    skill: skills/pipelines/workforce-fatigue-compliance/audit-director.md
+    required_artifacts_in: []
+    produces:
+      - violation_register
+      - fatigue_risk_scorecard
+    checkpoint_required: true
+
+  - name: compliance_repair
+    skill: skills/pipelines/workforce-fatigue-compliance/compliance-director.md
+    required_artifacts_in:
+      - violation_register
+    produces:
+      - repaired_workforce_schedule
+      - settlement_penalty_ledger
+    checkpoint_required: true
+    human_approval_default: true

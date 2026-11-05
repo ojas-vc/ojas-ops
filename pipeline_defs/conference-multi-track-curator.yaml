@@ -1,0 +1,27 @@
+name: conference-multi-track-curator
+version: "1.0"
+description: Multi-track summit and tech conference curation preventing topical cannibalization, speaker double-booking, and room overflows.
+category: events
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - tech-conference-standard
+
+stages:
+  - name: topic_clustering
+    skill: skills/pipelines/conference-multi-track-curator/clustering-director.md
+    required_artifacts_in: []
+    produces:
+      - topical_clusters
+      - room_capacity_manifest
+    checkpoint_required: true
+
+  - name: track_curation
+    skill: skills/pipelines/conference-multi-track-curator/curator-director.md
+    required_artifacts_in:
+      - topical_clusters
+    produces:
+      - master_conference_agenda
+      - speaker_buffer_report
+    checkpoint_required: true
+    human_approval_default: true

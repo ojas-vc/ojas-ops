@@ -1,0 +1,24 @@
+name: campaign-cadence-flighting
+version: "1.0"
+description: Omnichannel performance marketing flighting pacing budget spend envelopes to synchronize with sales CRM intake capacity.
+category: growth
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets: []
+
+stages:
+  - name: capacity_envelope
+    skill: skills/pipelines/campaign-cadence-flighting/envelope-director.md
+    required_artifacts_in: []
+    produces:
+      - sales_intake_capacity
+    checkpoint_required: true
+
+  - name: flighting_pacing
+    skill: skills/pipelines/campaign-cadence-flighting/flighting-director.md
+    required_artifacts_in:
+      - sales_intake_capacity
+    produces:
+      - omnichannel_spend_schedule
+    checkpoint_required: true
+    human_approval_default: true

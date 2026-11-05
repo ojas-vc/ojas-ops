@@ -1,5 +1,8 @@
 """Temporal activities for Ojas Ops."""
 
+from ojas_ops.temporal.activities.agent_activity import (
+    execute_agent_stage_activity,
+)
 from ojas_ops.temporal.activities.persist_activity import (
     persist_schedule_run_activity,
 )
@@ -13,6 +16,7 @@ from ojas_ops.temporal.activities.validate_activity import (
 
 __all__ = [
     "TemporalHeartbeatCallback",
+    "execute_agent_stage_activity",
     "persist_schedule_run_activity",
     "run_cp_sat_solver_activity",
     "validate_schedule_activity",

@@ -1,0 +1,20 @@
+name: icu-acuity-california
+version: "1.0"
+domain: healthcare
+description: California Department of Public Health Title 22 and union-mandated nurse-to-patient staffing ratios, fatigue limits, and rotational fairness.
+
+parameters:
+  max_consecutive_12h_shifts: 3
+  mandatory_post_night_rest_hours: 48
+  icu_nurse_to_patient_ratio: "1:2"
+  charge_nurse_patient_assignment_permitted: false
+  weekend_rotation_balance_equity: 0.85
+
+hard_constraints:
+  - "Mandatory 1:2 nurse-to-patient ratio in Intensive Care Units at all times."
+  - "No nurse shall be assigned more than 3 consecutive 12-hour shifts without 48 hours continuous rest."
+  - "Charge nurse shall have zero direct patient assignments in Level 1 trauma facilities."
+
+soft_constraints:
+  - "Minimize night-to-day rotational whip (prefer consistent night block cohorts)."
+  - "Equitable Gini coefficient for weekend shift distribution across nursing staff."

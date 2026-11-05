@@ -67,8 +67,11 @@ def get_ojas_ops_root() -> Path:
     env_root = os.getenv("OJAS_OPS_ROOT")
     if env_root:
         return Path(env_root)
-    # Default to 4 levels up from this file: python/packages/ojas-ops/src/ojas_ops/config.py -> ojas-ops
-    return Path(__file__).resolve().parents[4]
+    # Search upward for directory containing pipeline_defs
+    for p in [Path.cwd(), *Path(__file__).resolve().parents]:
+        if (p / "pipeline_defs").is_dir():
+            return p
+    return Path(__file__).resolve().parents[5]
 
 
 def get_projects_dir() -> Path:

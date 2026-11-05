@@ -1106,3 +1106,41 @@ export interface GateApprovalResponse {
   stage: string;
   notes?: string;
 }
+
+export interface StageRunRequest {
+  tenant_id?: string;
+  inputs?: Record<string, unknown>;
+  revision_notes?: string;
+}
+
+export interface StageRunResponse {
+  status: string;
+  project_id: string;
+  stage: string;
+  checkpoint?: ProjectCheckpointRecord;
+  artifacts?: Record<string, unknown>;
+}
+
+export interface GateRevisionRequest {
+  tenant_id?: string;
+  feedback: string;
+  overrides?: Record<string, unknown>;
+}
+
+export interface GateRevisionResponse {
+  status: string;
+  project_id: string;
+  stage: string;
+  checkpoint?: ProjectCheckpointRecord;
+}
+
+export interface PipelineEventItem {
+  id: string;
+  timestamp: string;
+  tenant_id?: string;
+  project_id: string;
+  type: string;
+  message: string;
+  stage?: string;
+  data?: Record<string, unknown>;
+}

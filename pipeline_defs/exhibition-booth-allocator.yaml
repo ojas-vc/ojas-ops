@@ -1,0 +1,26 @@
+name: exhibition-booth-allocator
+version: "1.0"
+description: Expo hall spatial gravity and booth floor plan allocation enforcing competitor disjunctions and foot-traffic optimization.
+category: events
+stability: production
+default_checkpoint_policy: guided
+compatible_rulesets:
+  - tech-conference-standard
+
+stages:
+  - name: spatial_gravity
+    skill: skills/pipelines/exhibition-booth-allocator/gravity-director.md
+    required_artifacts_in: []
+    produces:
+      - booth_spatial_grid
+      - competitor_conflict_matrix
+    checkpoint_required: true
+
+  - name: booth_allocation
+    skill: skills/pipelines/exhibition-booth-allocator/booth-director.md
+    required_artifacts_in:
+      - booth_spatial_grid
+    produces:
+      - expo_floorplan_assignments
+    checkpoint_required: true
+    human_approval_default: true

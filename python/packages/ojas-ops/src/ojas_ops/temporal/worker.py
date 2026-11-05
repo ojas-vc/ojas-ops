@@ -9,6 +9,7 @@ from temporalio.client import Client
 from temporalio.worker import Worker
 
 from ojas_ops.temporal.activities import (
+    execute_agent_stage_activity,
     persist_schedule_run_activity,
     run_cp_sat_solver_activity,
     validate_schedule_activity,
@@ -16,6 +17,7 @@ from ojas_ops.temporal.activities import (
 from ojas_ops.temporal.converter import get_ojas_ops_data_converter
 from ojas_ops.temporal.workflows import (
     FilmScheduleApprovalWorkflow,
+    PipelineExecutionWorkflow,
     ScheduleOptimizationWorkflow,
 )
 
@@ -44,7 +46,12 @@ async def start_worker(
         wf_worker = Worker(
             client,
             task_queue=WORKFLOW_TASK_QUEUE,
-            workflows=[ScheduleOptimizationWorkflow, FilmScheduleApprovalWorkflow],
+            workflows=[
+                ScheduleOptimizationWorkflow,
+                FilmScheduleApprovalWorkflow,
+                PipelineExecutionWorkflow,
+            ],
+            activities=[execute_agent_stage_activity],
             identity=f"ojas-ops-wf-worker-{worker_id}",
         )
         workers.append(wf_worker)
@@ -57,6 +64,7 @@ async def start_worker(
                 run_cp_sat_solver_activity,
                 validate_schedule_activity,
                 persist_schedule_run_activity,
+                execute_agent_stage_activity,
             ],
             identity=f"ojas-ops-act-worker-{worker_id}",
         )

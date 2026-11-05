@@ -39,6 +39,12 @@ export default function RootLayout({
                   Dashboard
                 </Link>
                 <Link
+                  href="/projects"
+                  className="rounded-lg px-2.5 py-1.5 font-semibold text-indigo-400 hover:text-indigo-300 hover:bg-slate-900 transition"
+                >
+                  Pipelines
+                </Link>
+                <Link
                   href="/schedules"
                   className="rounded-lg px-2.5 py-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-900 transition"
                 >
