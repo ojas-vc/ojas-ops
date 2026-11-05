@@ -35,3 +35,4 @@ stages:
       - published_daily_call_sheet
     checkpoint_required: true
     human_approval_default: true
+

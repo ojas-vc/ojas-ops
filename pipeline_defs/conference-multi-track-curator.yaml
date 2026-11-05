@@ -25,3 +25,4 @@ stages:
       - speaker_buffer_report
     checkpoint_required: true
     human_approval_default: true
+

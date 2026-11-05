@@ -23,3 +23,4 @@ stages:
       - room_occupancy_matrix
     checkpoint_required: true
     human_approval_default: true
+
