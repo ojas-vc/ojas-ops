@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/artifacts/dood_matrix",
+  "title": "Day Out of Days (DOOD) Cast Matrix Artifact",
+  "description": "Talent utilization and hold audit tracking Work (W), Hold (H), Drop/Pickup (D/P), and Travel (T) codes per actor per day.",
+  "type": "object",
+  "required": ["version", "total_days", "actors"],
+  "properties": {
+    "version": { "type": "string" },
+    "total_days": { "type": "integer" },
+    "total_talent_cost": { "type": "number" },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["actor_id", "actor_name", "daily_schedule"],
+        "properties": {
+          "actor_id": { "type": "string" },
+          "actor_name": { "type": "string" },
+          "daily_rate": { "type": "number" },
+          "work_days_count": { "type": "integer" },
+          "hold_days_count": { "type": "integer" },
+          "drop_pickup_count": { "type": "integer" },
+          "total_paid_days": { "type": "integer" },
+          "daily_schedule": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["W", "H", "D", "P", "T", "R", "I", "-"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

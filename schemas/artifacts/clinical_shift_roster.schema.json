@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/artifacts/clinical_shift_roster",
+  "title": "Clinical Shift Roster Artifact",
+  "description": "Master 28-day hospital unit nursing shift assignments with patient acuity coverage and fatigue metrics.",
+  "type": "object",
+  "required": ["version", "horizon_days", "roster"],
+  "properties": {
+    "version": { "type": "string" },
+    "horizon_days": { "type": "integer" },
+    "unit_id": { "type": "string" },
+    "gini_equity_coefficient": { "type": "number" },
+    "roster": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["nurse_id", "nurse_name", "shift_assignments"],
+        "properties": {
+          "nurse_id": { "type": "string" },
+          "nurse_name": { "type": "string" },
+          "skill_tier": { "type": "string" },
+          "total_shifts_count": { "type": "integer" },
+          "night_shifts_count": { "type": "integer" },
+          "weekend_shifts_count": { "type": "integer" },
+          "shift_assignments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["day", "shift_code"],
+              "properties": {
+                "day": { "type": "integer" },
+                "shift_code": { "type": "string", "enum": ["DAY", "NIGHT", "OFF", "TRAINING"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/artifacts/stripboard",
+  "title": "Macro Stripboard Artifact",
+  "description": "Structured macro stripboard schedule with day breaks, scene strips, cast requirements, and shooting locations.",
+  "type": "object",
+  "required": ["version", "total_days", "days"],
+  "properties": {
+    "version": { "type": "string" },
+    "pipeline": { "type": "string" },
+    "total_days": { "type": "integer", "minimum": 1 },
+    "total_scenes": { "type": "integer" },
+    "days": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["day_number", "date", "scenes"],
+        "properties": {
+          "day_number": { "type": "integer" },
+          "date": { "type": "string" },
+          "location_id": { "type": "string" },
+          "location_name": { "type": "string" },
+          "is_night": { "type": "boolean", "default": false },
+          "scenes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "title"],
+              "properties": {
+                "id": { "type": "string" },
+                "title": { "type": "string" },
+                "int_ext": { "type": "string", "enum": ["INT", "EXT", "INT/EXT"] },
+                "day_night": { "type": "string", "enum": ["DAY", "NIGHT", "DUSK", "DAWN"] },
+                "pages": { "type": "string" },
+                "cast_ids": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

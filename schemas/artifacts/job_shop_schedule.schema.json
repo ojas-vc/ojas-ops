@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/artifacts/job_shop_schedule",
+  "title": "Discrete Job Shop Schedule Artifact",
+  "description": "Disjunctive machine schedule containing operation intervals, sequence-dependent setup blocks, and machine utilization metrics.",
+  "type": "object",
+  "required": ["version", "makespan_minutes", "scheduled_operations"],
+  "properties": {
+    "version": { "type": "string" },
+    "makespan_minutes": { "type": "number" },
+    "total_setup_minutes": { "type": "number" },
+    "optimality_gap": { "type": "number" },
+    "scheduled_operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["operation_id", "part_id", "machine_id", "start_minute", "end_minute"],
+        "properties": {
+          "operation_id": { "type": "string" },
+          "part_id": { "type": "string" },
+          "machine_id": { "type": "string" },
+          "start_minute": { "type": "number" },
+          "end_minute": { "type": "number" },
+          "setup_duration_minutes": { "type": "number", "default": 0 }
+        }
+      }
+    }
+  }
+}

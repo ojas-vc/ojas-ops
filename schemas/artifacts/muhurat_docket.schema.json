@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/artifacts/muhurat_docket",
+  "title": "Certified Muhurat Docket Artifact",
+  "description": "Certified astrological and astronomical schedule providing verified Shubh Muhurat windows and exclusion intervals.",
+  "type": "object",
+  "required": ["version", "location", "approved_window"],
+  "properties": {
+    "version": { "type": "string" },
+    "location": {
+      "type": "object",
+      "required": ["city", "latitude", "longitude"],
+      "properties": {
+        "city": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" }
+      }
+    },
+    "approved_window": {
+      "type": "object",
+      "required": ["start_time", "end_time", "panchang_summary"],
+      "properties": {
+        "start_time": { "type": "string" },
+        "end_time": { "type": "string" },
+        "duration_minutes": { "type": "integer" },
+        "tithi": { "type": "string" },
+        "nakshatra": { "type": "string" },
+        "choghadiya": { "type": "string" },
+        "is_abhijit": { "type": "boolean" },
+        "panchang_summary": { "type": "string" }
+      }
+    },
+    "excluded_blackouts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "start_time", "end_time"],
+        "properties": {
+          "type": { "type": "string" },
+          "start_time": { "type": "string" },
+          "end_time": { "type": "string" }
+        }
+      }
+    }
+  }
+}
