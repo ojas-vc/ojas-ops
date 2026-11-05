@@ -143,7 +143,7 @@ dev: run ## Alias for run
 run: runbolt ## Alias for runbolt
 runbolt: migrate ## Start Django-Bolt API development server on http://127.0.0.1:8000
 	@echo -e "$(BOLD)$(CYAN)Starting Django-Bolt API server on http://127.0.0.1:8000...$(RESET)"
-	@cd apps/sandbox && $(PYTHON) manage.py runbolt -b 0.0.0.0 -p 8000
+	@cd apps/sandbox && $(PYTHON) manage.py runbolt --host 0.0.0.0 --port 8000
 
 # ==============================================================================
 # Code Quality, Formatting & Static Analysis
