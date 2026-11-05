@@ -272,3 +272,4 @@ async def execute_agent_stage_activity(payload: dict[str, Any]) -> dict[str, Any
             "artifacts": artifacts_out,
             "requires_human_approval": requires_human,
         }
+

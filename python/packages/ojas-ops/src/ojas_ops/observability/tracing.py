@@ -44,3 +44,4 @@ def trace_span(
             yield span
     else:
         yield None
+

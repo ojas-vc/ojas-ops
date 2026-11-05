@@ -80,3 +80,4 @@ def get_structured_logger(
         if v is not None
     }
     return StructuredLoggerAdapter(logger, context)
+

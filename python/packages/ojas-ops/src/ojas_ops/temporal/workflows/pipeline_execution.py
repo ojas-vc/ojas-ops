@@ -186,3 +186,4 @@ class PipelineExecutionWorkflow:
             "completed_stages": self.completed_stages,
             "error_message": self.error_message,
         }
+

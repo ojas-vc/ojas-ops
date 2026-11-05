@@ -118,3 +118,4 @@ async def subscribe_project_events(
             yield event
     finally:
         _SUBSCRIBERS[key].discard(queue)
+
