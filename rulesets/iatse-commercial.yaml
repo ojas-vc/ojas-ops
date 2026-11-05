@@ -16,3 +16,4 @@ hard_constraints:
 
 soft_constraints:
   - "Minimize sixth consecutive day commercial crew calls."
+

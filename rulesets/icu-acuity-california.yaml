@@ -18,3 +18,4 @@ hard_constraints:
 soft_constraints:
   - "Minimize night-to-day rotational whip (prefer consistent night block cohorts)."
   - "Equitable Gini coefficient for weekend shift distribution across nursing staff."
+

@@ -15,3 +15,4 @@ hard_constraints:
 
 soft_constraints:
   - "Cluster similar product families to minimize full cleanroom sterilization cycles."
+

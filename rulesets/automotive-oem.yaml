@@ -18,3 +18,4 @@ hard_constraints:
 soft_constraints:
   - "Minimize sequence-dependent setup time (SDST) color-and-die changeovers."
   - "Smooth total plant power consumption during peak tariff grid hours (14:00-18:00)."
+

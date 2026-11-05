@@ -19,3 +19,4 @@ hard_constraints:
 soft_constraints:
   - "Minimize night shoot clusters exceeding 3 consecutive nights."
   - "Prefer indoor studio floor setups during peak Mumbai monsoon months (June-August)."
+

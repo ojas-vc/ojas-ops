@@ -18,3 +18,4 @@ hard_constraints:
 soft_constraints:
   - "Balance room capacity with historical session registration interest."
   - "Cluster sponsor showcase sessions during afternoon coffee breaks."
+
