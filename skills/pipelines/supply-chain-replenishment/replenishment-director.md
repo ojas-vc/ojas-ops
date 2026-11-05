@@ -2,3 +2,4 @@
 
 ## Objective
 Optimize purchase orders and transit schedules to prevent stockouts while minimizing holding costs and container expediting fees.
+

@@ -7,3 +7,4 @@ $\min \alpha \cdot \text{Makespan} + \beta \cdot \text{Cost} + \gamma \cdot \sum
 ## Invariant Rules
 - Minimize displacement of already confirmed location permits and talent flights.
 - Require Line Producer sign-off on cost variance.
+
