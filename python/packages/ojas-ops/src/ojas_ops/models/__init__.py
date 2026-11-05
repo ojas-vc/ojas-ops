@@ -27,6 +27,7 @@ from ojas_ops.models.time import Horizon, IntervalWindow, TimeWindow
 _DJANGO_MODELS = {
     "DisruptionLog": "ojas_ops.models.disruption_log",
     "OptimizationJob": "ojas_ops.models.optimization_job",
+    "ProjectWorkspace": "ojas_ops.models.project_workspace",
     "ScenarioRecord": "ojas_ops.models.scenario_record",
     "ScheduleRun": "ojas_ops.models.schedule_run",
 }
@@ -49,6 +50,7 @@ try:
     if settings.configured:
         from ojas_ops.models.disruption_log import DisruptionLog  # noqa: F401
         from ojas_ops.models.optimization_job import OptimizationJob  # noqa: F401
+        from ojas_ops.models.project_workspace import ProjectWorkspace  # noqa: F401
         from ojas_ops.models.scenario_record import ScenarioRecord  # noqa: F401
         from ojas_ops.models.schedule_run import ScheduleRun  # noqa: F401
 except Exception:
@@ -63,6 +65,7 @@ __all__ = [
     "Horizon",
     "IntervalWindow",
     "OptimizationJob",
+    "ProjectWorkspace",
     "Resource",
     "ResourceAssignment",
     "ResourceRequirement",

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/pipelines/pipeline_manifest",
+  "title": "Ojas Ops Pipeline Manifest",
+  "description": "Declarative pipeline definition specifying stages, artifacts, tools, rulesets, and review gates.",
+  "type": "object",
+  "required": ["name", "version", "stages"],
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "category": {
+      "type": "string",
+      "enum": [
+        "media_production",
+        "manufacturing",
+        "healthcare",
+        "events",
+        "growth",
+        "cultural",
+        "logistics",
+        "education",
+        "custom"
+      ]
+    },
+    "stability": {
+      "type": "string",
+      "enum": ["production", "beta", "experimental"]
+    },
+    "default_checkpoint_policy": {
+      "type": "string",
+      "enum": ["guided", "manual_all", "autonomous"],
+      "default": "guided"
+    },
+    "compatible_rulesets": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "required_skills": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "orchestration": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string" },
+        "skill": { "type": "string" },
+        "solver_timeout_seconds_default": { "type": "number", "default": 60.0 },
+        "max_revisions_per_stage": { "type": "integer", "default": 3 }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "skill"],
+        "properties": {
+          "name": { "type": "string" },
+          "skill": { "type": "string", "description": "Markdown skill path guiding this stage" },
+          "required_artifacts_in": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "optional_artifacts_in": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "produces": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "tools_available": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "checkpoint_required": { "type": "boolean", "default": true },
+          "human_approval_default": { "type": "boolean", "default": false },
+          "review_focus": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "success_criteria": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
+

@@ -12,7 +12,10 @@ from ojas_ops.api.health_check import HealthCheckView
 from ojas_ops.api.manufacturing_adapter import ManufacturingAdapterViewSet
 from ojas_ops.api.marketing_flighting_adapter import MarketingFlightingAdapterViewSet
 from ojas_ops.api.optimization_job import OptimizationJobModelViewSet
+from ojas_ops.api.pipeline import PipelineModelViewSet
+from ojas_ops.api.project_workspace import ProjectWorkspaceModelViewSet
 from ojas_ops.api.readiness_check import ReadinessCheckView
+from ojas_ops.api.ruleset import RulesetViewSet
 from ojas_ops.api.scenario import ScenarioModelViewSet
 from ojas_ops.api.schedule_run import ScheduleRunModelViewSet
 from ojas_ops.api.schedules import ScheduleViewSet
@@ -45,8 +48,11 @@ api.viewset("/schedule-runs", tags=["schedule-runs"])(ScheduleRunModelViewSet)
 api.viewset("/optimization-jobs", tags=["optimization-jobs"])(OptimizationJobModelViewSet)
 api.viewset("/scenarios", tags=["scenarios"])(ScenarioModelViewSet)
 api.viewset("/disruption-logs", tags=["disruption-logs"])(DisruptionLogModelViewSet)
+api.viewset("/projects", tags=["projects"])(ProjectWorkspaceModelViewSet)
 
 # --- 2. Operations Research & Scheduling Services ---
+api.viewset("/pipelines", tags=["pipelines"])(PipelineModelViewSet)
+api.viewset("/rulesets", tags=["rulesets"])(RulesetViewSet)
 api.viewset("/schedules", tags=["schedules"])(ScheduleViewSet)
 api.viewset("/simulations", tags=["simulations"])(SimulationViewSet)
 api.viewset("/visualizations", tags=["visualizations"])(VisualizationViewSet)
@@ -79,7 +85,10 @@ __all__ = [
     "ManufacturingAdapterViewSet",
     "MarketingFlightingAdapterViewSet",
     "OptimizationJobModelViewSet",
+    "PipelineModelViewSet",
+    "ProjectWorkspaceModelViewSet",
     "ReadinessCheckView",
+    "RulesetViewSet",
     "ScenarioModelViewSet",
     "ScheduleRunModelViewSet",
     "ScheduleViewSet",

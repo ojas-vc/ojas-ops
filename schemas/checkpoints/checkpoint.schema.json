@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/checkpoints/checkpoint",
+  "title": "Pipeline Stage Checkpoint",
+  "description": "Full resumable snapshot after each operational pipeline stage.",
+  "type": "object",
+  "required": [
+    "version",
+    "tenant_id",
+    "project_id",
+    "pipeline_type",
+    "stage",
+    "status",
+    "timestamp",
+    "artifacts"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "tenant_id": { "type": "string", "default": "default" },
+    "project_id": { "type": "string" },
+    "pipeline_type": { "type": "string", "description": "Pipeline manifest identifier" },
+    "stage": { "type": "string", "description": "Active or completed stage name" },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "failed", "awaiting_human", "in_progress", "revising"]
+    },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "ruleset": { "type": "string" },
+    "checkpoint_policy": {
+      "type": "string",
+      "enum": ["guided", "manual_all", "autonomous"],
+      "default": "guided"
+    },
+    "human_approval_required": { "type": "boolean", "default": false },
+    "human_approved": { "type": "boolean", "default": false },
+    "artifacts": {
+      "type": "object",
+      "description": "Map of artifact names to artifact payloads or file paths",
+      "additionalProperties": true
+    },
+    "review": {
+      "type": "object",
+      "description": "ValidationReport or reviewer audit for this stage"
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Solver metrics (makespan, solve_time, optimality_gap)"
+    },
+    "error": { "type": "string" },
+    "metadata": { "type": "object" }
+  },
+  "additionalProperties": false
+}
+

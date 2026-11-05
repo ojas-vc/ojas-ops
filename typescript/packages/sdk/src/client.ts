@@ -16,6 +16,8 @@ import type {
   FilmRescheduleRequest,
   FilmScheduleResult,
   GanttRenderRequest,
+  GateApprovalRequest,
+  GateApprovalResponse,
   GenerateScenarioRequest,
   GeneratedScenarioSummary,
   HealthResponse,
@@ -27,13 +29,21 @@ import type {
   OptimizeScheduleRequest,
   OptimizeScheduleResponse,
   PaginatedResponse,
+  PipelineManifest,
+  PipelineManifestSummary,
   ProductionDataset,
+  ProjectCheckpointRecord,
+  ProjectInitRequest,
+  ProjectInitResponse,
+  ProjectWorkspaceRecord,
   ReadinessResponse,
   RenderHtmlResponse,
   RenderSvgResponse,
   ReportExportRequest,
   RescheduleRequest,
   RescheduleResponse,
+  RulesetPolicy,
+  RulesetSummary,
   ScenarioDefinition,
   ScenarioExecutionResponse,
   ScenarioRecordDTO,
@@ -506,6 +516,78 @@ export class OjasOpsClient {
         method: "POST",
         body: JSON.stringify(payload),
       });
+    },
+  };
+
+  // ==========================================================================
+  // 7. Instruction-Driven Pipelines & Project Workspaces
+  // ==========================================================================
+
+  pipelines = {
+    list: async (): Promise<PipelineManifestSummary[]> => {
+      return this.request<PipelineManifestSummary[]>("/pipelines");
+    },
+
+    get: async (name: string): Promise<PipelineManifest> => {
+      return this.request<PipelineManifest>(`/pipelines/${encodeURIComponent(name)}`);
+    },
+  };
+
+  rulesets = {
+    list: async (): Promise<RulesetSummary[]> => {
+      return this.request<RulesetSummary[]>("/rulesets");
+    },
+
+    get: async (name: string): Promise<RulesetPolicy> => {
+      return this.request<RulesetPolicy>(`/rulesets/${encodeURIComponent(name)}`);
+    },
+  };
+
+  projects = {
+    list: async (tenantId = "default"): Promise<PaginatedResponse<ProjectWorkspaceRecord>> => {
+      return this.request<PaginatedResponse<ProjectWorkspaceRecord>>(
+        `/projects?tenant_id=${encodeURIComponent(tenantId)}`
+      );
+    },
+
+    init: async (payload: ProjectInitRequest): Promise<ProjectInitResponse> => {
+      return this.request<ProjectInitResponse>("/projects/init", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+
+    getCompletedStages: async (
+      projectId: string,
+      tenantId = "default"
+    ): Promise<{ project_id: string; completed_stages: string[] }> => {
+      return this.request<{ project_id: string; completed_stages: string[] }>(
+        `/projects/${encodeURIComponent(projectId)}/stages/completed?tenant_id=${encodeURIComponent(tenantId)}`
+      );
+    },
+
+    getCheckpoint: async (
+      projectId: string,
+      stageName: string,
+      tenantId = "default"
+    ): Promise<ProjectCheckpointRecord> => {
+      return this.request<ProjectCheckpointRecord>(
+        `/projects/${encodeURIComponent(projectId)}/checkpoints/${encodeURIComponent(stageName)}?tenant_id=${encodeURIComponent(tenantId)}`
+      );
+    },
+
+    approveGate: async (
+      projectId: string,
+      stageName: string,
+      payload: GateApprovalRequest
+    ): Promise<GateApprovalResponse> => {
+      return this.request<GateApprovalResponse>(
+        `/projects/${encodeURIComponent(projectId)}/gates/${encodeURIComponent(stageName)}/approve`,
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        }
+      );
     },
   };
 }

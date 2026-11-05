@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ojas-ops/rulesets/ruleset",
+  "title": "Operational Ruleset & Policy",
+  "description": "Domain-specific policy or labor agreement specifying constraints and parameter thresholds.",
+  "type": "object",
+  "required": ["name", "version", "domain", "description", "parameters"],
+  "properties": {
+    "name": { "type": "string" },
+    "version": { "type": "string" },
+    "domain": { "type": "string" },
+    "description": { "type": "string" },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "hard_constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "soft_constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}
+

@@ -976,3 +976,133 @@ export interface EventsOptimizeResponse {
   session_assignments: Record<string, { start: number; end: number; resources: string[] }>;
   solve_time_seconds: number;
 }
+
+// ============================================================================
+// 7. Instruction-Driven Pipelines & Project Workspaces
+// ============================================================================
+
+export type PipelineStageStatus =
+  | "pending"
+  | "running"
+  | "awaiting_human"
+  | "completed"
+  | "failed"
+  | "revising";
+
+export interface PipelineManifestSummary {
+  name: string;
+  version: string;
+  description: string;
+  category: string;
+  stability: "production" | "beta" | "experimental";
+  stages_count: number;
+  compatible_rulesets: string[];
+}
+
+export interface PipelineStageDefinition {
+  name: string;
+  skill: string;
+  required_artifacts_in?: string[];
+  optional_artifacts_in?: string[];
+  produces?: string[];
+  tools_available?: string[];
+  checkpoint_required?: boolean;
+  human_approval_default?: boolean;
+  review_focus?: string[];
+  success_criteria?: string[];
+}
+
+export interface PipelineManifest {
+  name: string;
+  version: string;
+  description: string;
+  category: string;
+  stability: "production" | "beta" | "experimental";
+  default_checkpoint_policy?: "guided" | "manual_all" | "autonomous";
+  compatible_rulesets?: string[];
+  required_skills?: string[];
+  stages: PipelineStageDefinition[];
+}
+
+export interface RulesetSummary {
+  name: string;
+  version: string;
+  domain: string;
+  description: string;
+}
+
+export interface RulesetPolicy {
+  name: string;
+  version: string;
+  domain: string;
+  description: string;
+  parameters: Record<string, unknown>;
+  hard_constraints?: string[];
+  soft_constraints?: string[];
+}
+
+export interface ProjectWorkspaceRecord {
+  id: number;
+  tenant_id: string;
+  project_id: string;
+  title: string;
+  pipeline_type: string;
+  ruleset?: string;
+  status: string;
+  current_stage: string;
+  temporal_workflow_id?: string;
+  completed_stages: string[];
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProjectInitRequest {
+  project_id: string;
+  title: string;
+  pipeline_type: string;
+  tenant_id?: string;
+  ruleset?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ProjectInitResponse {
+  status: string;
+  project_id: string;
+  tenant_id: string;
+  pipeline_type: string;
+  path: string;
+  id?: number | null;
+}
+
+export interface ProjectCheckpointRecord {
+  version: string;
+  tenant_id: string;
+  project_id: string;
+  pipeline_type: string;
+  stage: string;
+  status: PipelineStageStatus;
+  timestamp: string;
+  ruleset?: string;
+  checkpoint_policy: string;
+  human_approval_required: boolean;
+  human_approved: boolean;
+  artifacts: Record<string, unknown>;
+  review?: Record<string, unknown>;
+  metrics?: Record<string, unknown>;
+  error?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface GateApprovalRequest {
+  tenant_id?: string;
+  notes?: string;
+  overrides?: Record<string, unknown>;
+}
+
+export interface GateApprovalResponse {
+  status: string;
+  project_id: string;
+  stage: string;
+  notes?: string;
+}

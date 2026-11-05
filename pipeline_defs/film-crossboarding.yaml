@@ -1,0 +1,160 @@
+name: film-crossboarding
+version: "1.0"
+description: >
+  Two-level hierarchical film shooting schedule optimization. Ingests scene breakdowns,
+  applies union labor contracts and continuous soundstage leases, solves Level-1 CP-SAT
+  macro stripboard, minimizes SAG-AFTRA DOOD hold days, and validates all turnarounds.
+category: media_production
+stability: production
+
+default_checkpoint_policy: guided
+
+extensions:
+  custom_rulesets: true
+  custom_playbooks: true
+  custom_solvers: true
+
+required_skills:
+  - pipelines/film/executive-producer
+  - pipelines/film/breakdown-director
+  - pipelines/film/calendar-director
+  - pipelines/film/crossboard-director
+  - pipelines/film/dood-director
+  - pipelines/film/regulatory-director
+  - pipelines/film/publish-director
+  - meta/validator-reviewer
+  - meta/checkpoint-protocol
+  - meta/stability-tracker
+
+orchestration:
+  mode: executive-producer
+  skill: pipelines/film/executive-producer
+  max_revisions_per_stage: 3
+  solver_timeout_seconds_default: 60
+
+compatible_rulesets:
+  - sag-aftra-theatrical
+  - fwice-bollywood
+  - iatse-commercial
+  - indie-guerrilla
+
+stages:
+  # ── Stage 1: Ingestion & Breakdown Audit ────────────────────────
+  - name: breakdown_audit
+    skill: pipelines/film/breakdown-director
+    produces:
+      - scene_breakdown_manifest
+    tools_available:
+      - script_extractor
+      - scene_classifier
+    checkpoint_required: false
+    human_approval_default: false
+    review_focus:
+      - All speaking characters tagged with cast IDs
+      - Practical vs Soundstage sets explicitly classified
+      - Stunt hazard levels flagged for completion bond deferral
+      - Continuous costume distress progressions annotated
+    success_criteria:
+      - Schema-valid scene_breakdown_manifest
+      - Zero unassigned scene locations
+
+  # ── Stage 2: Operational Calendars & Contracts ──────────────────
+  - name: calendar_ingest
+    skill: pipelines/film/calendar-director
+    required_artifacts_in:
+      - scene_breakdown_manifest
+    produces:
+      - production_environment_profile
+    tools_available:
+      - panchang_calculator
+      - union_contract_loader
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Lead actor blackout dates and hard stop dates mapped
+      - Soundstage lease prep and strike minimum window buffers defined
+      - Municipal noise curfews and night-shoot permit windows verified
+    success_criteria:
+      - Calendar intervals verified for all target production dates
+
+  # ── Stage 3: Macro Cross-Boarding Optimization ──────────────────
+  - name: macro_crossboard
+    skill: pipelines/film/crossboard-director
+    required_artifacts_in:
+      - scene_breakdown_manifest
+      - production_environment_profile
+    produces:
+      - macro_stripboard
+      - solver_run_metrics
+    tools_available:
+      - optimize_film_schedule
+      - solver_selector
+    checkpoint_required: true
+    human_approval_default: true # Critical HITL gate: pitch schedule to Line Producer
+    review_focus:
+      - Total shooting days matches or beats budget ceiling
+      - Soundstage lease is strictly continuous (no interleaved drop/re-lease)
+      - High hazard stunts deferred past 70% production milestone
+      - Large crowd scenes clustered to minimize background cost
+    success_criteria:
+      - CP-SAT solver status is OPTIMAL or FEASIBLE
+      - Deterministic validator reports zero hard constraint violations
+
+  # ── Stage 4: Day-Out-of-Days (DOOD) Cast Optimization ───────────
+  - name: dood_optimization
+    skill: pipelines/film/dood-director
+    required_artifacts_in:
+      - macro_stripboard
+    produces:
+      - dood_matrix
+      - talent_cost_audit
+    tools_available:
+      - audit_dood
+      - dood_compressor
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - SAG-AFTRA 10-day Drop-and-Pickup rules properly applied
+      - Idle hold days minimized between Start-Work and Finish-Work
+      - Child actor daily set and schooling hour ceilings strictly enforced
+    success_criteria:
+      - Zero illegal unbilled drop periods
+
+  # ── Stage 5: Regulatory & Biological Turnaround Review ──────────
+  - name: regulatory_review
+    skill: pipelines/film/regulatory-director
+    required_artifacts_in:
+      - macro_stripboard
+      - dood_matrix
+    produces:
+      - turnaround_compliance_report
+    tools_available:
+      - verify_schedule_feasibility
+    checkpoint_required: true
+    human_approval_default: false
+    review_focus:
+      - Daily turnaround >= 12h for cast, >= 10h for technical crew
+      - Weekly turnaround >= 54h following night-shoots
+      - No "Fraturday" shifts pushing Monday start into darkness
+    success_criteria:
+      - Zero unpenalized turnaround encroachments
+
+  # ── Stage 6: Publish Production Package ─────────────────────────
+  - name: publish_schedule
+    skill: pipelines/film/publish-director
+    required_artifacts_in:
+      - macro_stripboard
+      - dood_matrix
+      - turnaround_compliance_report
+    produces:
+      - master_production_schedule
+      - stripboard_svg
+      - dood_table_html
+    tools_available:
+      - render_stripboard_svg
+      - export_production_report
+    checkpoint_required: false
+    human_approval_default: true
+    success_criteria:
+      - All production assets generated and persisted to exports/
+

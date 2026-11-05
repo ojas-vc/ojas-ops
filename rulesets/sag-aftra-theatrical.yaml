@@ -1,0 +1,35 @@
+name: sag-aftra-theatrical
+version: "1.0"
+domain: media_production
+description: >
+  SAG-AFTRA Codified Basic Agreement for theatrical and television feature productions.
+  Enforces 12-hour continuous daily turnaround, 54-hour continuous weekly rest,
+  10-day Drop-and-Pickup (DPU) contractual rule, and California DLSE minor work-hour ceilings.
+
+parameters:
+  daily_turnaround_hours_min: 12.0
+  weekly_turnaround_hours_min: 54.0
+  drop_and_pickup_span_days_min: 10
+  meal_interval_hours_max: 6.0
+  meal_break_duration_minutes_min: 60
+  forced_call_penalty_rate_multiplier: 2.0
+  minor_max_set_hours_under_6_months: 2.0
+  minor_max_camera_minutes_under_6_months: 20
+  minor_max_set_hours_2_to_5_years: 3.0
+  minor_max_set_hours_6_to_8_years: 8.0
+  minor_mandatory_schooling_hours: 3.0
+  completion_bond_stunt_deferral_threshold: 0.70
+
+hard_constraints:
+  - "Daily rest between wrap and next call must be >= 12.0 hours for all cast members."
+  - "Weekly rest following 5-day week must be >= 54.0 continuous hours."
+  - "Meal breaks must commence no later than 6.0 hours from call time."
+  - "Any talent drop interval less than 10 consecutive days must be paid as continuous hold days."
+  - "High-hazard stunt scenes must not be scheduled prior to 70% production completion."
+  - "Soundstage rental leases must be continuous without uncontracted gaps."
+
+soft_constraints:
+  - "Minimize total cast idle hold days."
+  - "Minimize camera setup rotations exceeding 45 degrees between consecutive setups."
+  - "Cluster large background crowd scenes (>= 50 extras) into consecutive days."
+
