@@ -15,20 +15,20 @@ extensions:
   custom_solvers: true
 
 required_skills:
-  - pipelines/film/executive-producer
-  - pipelines/film/breakdown-director
-  - pipelines/film/calendar-director
-  - pipelines/film/crossboard-director
-  - pipelines/film/dood-director
-  - pipelines/film/regulatory-director
-  - pipelines/film/publish-director
-  - meta/validator-reviewer
-  - meta/checkpoint-protocol
-  - meta/stability-tracker
+  - skills/pipelines/film-crossboarding/executive-producer.md
+  - skills/pipelines/film-crossboarding/breakdown-director.md
+  - skills/pipelines/film-crossboarding/calendar-director.md
+  - skills/pipelines/film-crossboarding/crossboard-director.md
+  - skills/pipelines/film-crossboarding/dood-director.md
+  - skills/pipelines/film-crossboarding/regulatory-director.md
+  - skills/pipelines/film-crossboarding/publish-director.md
+  - skills/meta/validator-reviewer.md
+  - skills/meta/checkpoint-protocol.md
+  - skills/meta/onboarding.md
 
 orchestration:
   mode: executive-producer
-  skill: pipelines/film/executive-producer
+  skill: skills/pipelines/film-crossboarding/executive-producer.md
   max_revisions_per_stage: 3
   solver_timeout_seconds_default: 60
 
@@ -36,12 +36,11 @@ compatible_rulesets:
   - sag-aftra-theatrical
   - fwice-bollywood
   - iatse-commercial
-  - indie-guerrilla
 
 stages:
   # ── Stage 1: Ingestion & Breakdown Audit ────────────────────────
   - name: breakdown_audit
-    skill: pipelines/film/breakdown-director
+    skill: skills/pipelines/film-crossboarding/breakdown-director.md
     produces:
       - scene_breakdown_manifest
     tools_available:
@@ -60,7 +59,7 @@ stages:
 
   # ── Stage 2: Operational Calendars & Contracts ──────────────────
   - name: calendar_ingest
-    skill: pipelines/film/calendar-director
+    skill: skills/pipelines/film-crossboarding/calendar-director.md
     required_artifacts_in:
       - scene_breakdown_manifest
     produces:
@@ -79,7 +78,7 @@ stages:
 
   # ── Stage 3: Macro Cross-Boarding Optimization ──────────────────
   - name: macro_crossboard
-    skill: pipelines/film/crossboard-director
+    skill: skills/pipelines/film-crossboarding/crossboard-director.md
     required_artifacts_in:
       - scene_breakdown_manifest
       - production_environment_profile
@@ -102,7 +101,7 @@ stages:
 
   # ── Stage 4: Day-Out-of-Days (DOOD) Cast Optimization ───────────
   - name: dood_optimization
-    skill: pipelines/film/dood-director
+    skill: skills/pipelines/film-crossboarding/dood-director.md
     required_artifacts_in:
       - macro_stripboard
     produces:
@@ -122,7 +121,7 @@ stages:
 
   # ── Stage 5: Regulatory & Biological Turnaround Review ──────────
   - name: regulatory_review
-    skill: pipelines/film/regulatory-director
+    skill: skills/pipelines/film-crossboarding/regulatory-director.md
     required_artifacts_in:
       - macro_stripboard
       - dood_matrix
@@ -141,7 +140,7 @@ stages:
 
   # ── Stage 6: Publish Production Package ─────────────────────────
   - name: publish_schedule
-    skill: pipelines/film/publish-director
+    skill: skills/pipelines/film-crossboarding/publish-director.md
     required_artifacts_in:
       - macro_stripboard
       - dood_matrix
