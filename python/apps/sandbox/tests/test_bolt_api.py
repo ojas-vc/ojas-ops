@@ -217,3 +217,68 @@ def test_sandbox_scenarios_generate(client):
     )
     assert resp.status_code == 200
     assert resp.json()["scenario_type"] == "jobshop"
+
+
+def test_sandbox_pipelines_endpoints(client):
+    res = client.get("/pipelines")
+    assert res.status_code == 200
+    data = res.json()
+    assert isinstance(data, list)
+    assert len(data) >= 18
+    assert any(p["name"] == "film-crossboarding" for p in data)
+
+    res_detail = client.get("/pipelines/film-crossboarding")
+    assert res_detail.status_code == 200
+    detail_data = res_detail.json()
+    assert detail_data["name"] == "film-crossboarding"
+    assert "stages" in detail_data
+
+
+def test_sandbox_rulesets_endpoints(client):
+    res = client.get("/rulesets")
+    assert res.status_code == 200
+    data = res.json()
+    assert isinstance(data, list)
+    assert len(data) >= 8
+    assert any(r["name"] == "sag-aftra-theatrical" for r in data)
+
+    res_detail = client.get("/rulesets/sag-aftra-theatrical")
+    assert res_detail.status_code == 200
+    detail_data = res_detail.json()
+    assert detail_data["name"] == "sag-aftra-theatrical"
+    assert "parameters" in detail_data
+
+
+def test_sandbox_projects_init_endpoint(client):
+    payload = {
+        "tenant_id": "test_tenant",
+        "project_id": f"proj-test-{uuid.uuid4().hex[:6]}",
+        "title": "Indie Feature Shoot (October 2026)",
+        "pipeline_type": "film-crossboarding",
+        "ruleset": "sag-aftra-theatrical",
+        "metadata": {
+            "initial_inputs": {
+                "dataset_dict": {
+                    "scenes": [
+                        {"id": "S1", "name": "Int. Warehouse", "duration_days": 2, "cast_ids": ["A1", "A2"], "location_id": "LOC1"},
+                        {"id": "S2", "name": "Ext. Pier Sunset", "duration_days": 1, "cast_ids": ["A1"], "location_id": "LOC2"},
+                    ],
+                    "cast": [
+                        {"id": "A1", "name": "Lead Detective", "daily_rate": 3500},
+                        {"id": "A2", "name": "Informant", "daily_rate": 2200},
+                    ],
+                    "locations": [
+                        {"id": "LOC1", "name": "Industrial Warehouse Stage", "daily_rate": 5000},
+                        {"id": "LOC2", "name": "Harbor Pier", "daily_rate": 2500},
+                    ],
+                }
+            }
+        },
+    }
+    res = client.post("/projects/init", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "INITIALIZED"
+    assert data["project_id"] == payload["project_id"]
+    assert data["pipeline_type"] == "film-crossboarding"
+

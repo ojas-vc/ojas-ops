@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Annotated, Any
 
 from django_bolt import action
+from django_bolt.params import Body
 
 from ojas_ops.api.base import BaseOjasModelViewSet
 from ojas_ops.models.project_workspace import ProjectWorkspace
@@ -30,7 +31,9 @@ class ProjectWorkspaceModelViewSet(BaseOjasModelViewSet):
     lookup_field = "project_id"
 
     @action(methods=["POST"], detail=False, path="init")
-    async def initialize_project(self, request: Any, payload: dict[str, Any]) -> dict[str, Any]:
+    async def initialize_project(
+        self, request: Any, payload: Annotated[dict[str, Any], Body()]
+    ) -> dict[str, Any]:
         """Initialize a project workspace on disk and database."""
         tenant_id = payload.get("tenant_id", "default")
         project_id = payload.get("project_id")
@@ -88,9 +91,14 @@ class ProjectWorkspaceModelViewSet(BaseOjasModelViewSet):
 
     @action(methods=["POST"], detail=False, path="{project_id}/gates/{stage_name}/approve")
     async def approve_stage_gate(
-        self, request: Any, project_id: str, stage_name: str, payload: dict[str, Any]
+        self,
+        request: Any,
+        project_id: str,
+        stage_name: str,
+        payload: Annotated[dict[str, Any] | None, Body()] = None,
     ) -> dict[str, Any]:
         """Submit Human-in-the-Loop approval for an awaiting stage gate."""
+        payload = payload or {}
         tenant_id = payload.get("tenant_id", "default")
         notes = payload.get("notes", "")
 
@@ -124,12 +132,17 @@ class ProjectWorkspaceModelViewSet(BaseOjasModelViewSet):
 
     @action(methods=["POST"], detail=False, path="{project_id}/stages/{stage_name}/run")
     async def run_stage(
-        self, request: Any, project_id: str, stage_name: str, payload: dict[str, Any]
+        self,
+        request: Any,
+        project_id: str,
+        stage_name: str,
+        payload: Annotated[dict[str, Any] | None, Body()] = None,
     ) -> dict[str, Any]:
         """Dispatch or execute a pipeline stage for the project."""
         from ojas_ops.pipelines.loader import load_pipeline_manifest
         from ojas_ops.temporal.activities.agent_activity import execute_agent_stage_activity
 
+        payload = payload or {}
         tenant_id = payload.get("tenant_id", "default")
         inputs = payload.get("inputs", {})
 
@@ -169,9 +182,14 @@ class ProjectWorkspaceModelViewSet(BaseOjasModelViewSet):
 
     @action(methods=["POST"], detail=False, path="{project_id}/gates/{stage_name}/revise")
     async def revise_stage_gate(
-        self, request: Any, project_id: str, stage_name: str, payload: dict[str, Any]
+        self,
+        request: Any,
+        project_id: str,
+        stage_name: str,
+        payload: Annotated[dict[str, Any] | None, Body()] = None,
     ) -> dict[str, Any]:
         """Request revision on an awaiting gate and trigger stage re-execution."""
+        payload = payload or {}
         tenant_id = payload.get("tenant_id", "default")
         feedback = payload.get("feedback", "")
         return await self.run_stage(
